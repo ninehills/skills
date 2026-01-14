@@ -1,3 +1,6 @@
 [submodule "ai-drawio"]
 	path = ai-drawio
 	url = https://github.com/GBSOSS/ai-drawio.git
+[submodule "planning-with-files"]
+	path = planning-with-files
+	url = https://github.com/OthmanAdi/planning-with-files.git

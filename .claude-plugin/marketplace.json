@@ -13,6 +13,12 @@
             "author": {
                 "name": "GBSOSS"
             }
+        },
+        {
+            "name": "planning-with-files",
+            "source": "./planning-with-files",
+            "description": "Manus-style persistent markdown files for planning, progress tracking, and knowledge storage. Now with hooks integration.",
+            "version": "2.0.0"
         }
     ]
 }
