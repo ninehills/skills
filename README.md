@@ -8,3 +8,4 @@ My LLM skills
 - ui-ux-pro-max-skill: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git@7f22b57
 - ui-skills: https://github.com/ibelick/ui-skills.git@fff1d1a
 - vercel-deploy: https://github.com/vercel-labs/agent-skills/tree/main/skills/vercel-deploy
+- agent-browser: https://github.com/vercel-labs/agent-browser/tree/main/skills/agent-browser
