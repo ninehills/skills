@@ -1,0 +1,3 @@
+[submodule "ai-drawio"]
+	path = ai-drawio
+	url = https://github.com/GBSOSS/ai-drawio.git
