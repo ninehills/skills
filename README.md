@@ -9,3 +9,4 @@ My LLM skills
 - ui-skills: https://github.com/ibelick/ui-skills.git@fff1d1a
 - vercel-deploy: https://github.com/vercel-labs/agent-skills/tree/main/skills/vercel-deploy
 - agent-browser: https://github.com/vercel-labs/agent-browser/tree/main/skills/agent-browser
+- react-best-practices: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
