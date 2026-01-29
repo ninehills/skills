@@ -10,3 +10,4 @@ My LLM skills
 - vercel-deploy: https://github.com/vercel-labs/agent-skills/tree/main/skills/vercel-deploy
 - agent-browser: https://github.com/vercel-labs/agent-browser/tree/main/skills/agent-browser
 - react-best-practices: https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices
+- news-aggregator-skill: https://github.com/cclank/news-aggregator-skill.git@9874519
