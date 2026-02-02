@@ -4,7 +4,7 @@ set -euo pipefail
 CURRENT_DIR="$PWD"
 ALMA_SKILLS="$HOME/.config/alma/skills"
 CLAUDE_SKILLS="$HOME/.claude/skills"
-MOLTBOT_JSON="$HOME/.moltbot/moltbot.json"
+MOLTBOT_JSON="$HOME/.openclaw/openclaw.json"
 
 # 1. Create symlinks if not exist
 if [[ -L "$ALMA_SKILLS" ]] && [[ -L "$CLAUDE_SKILLS" ]]; then
