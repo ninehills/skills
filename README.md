@@ -14,3 +14,4 @@ My LLM skills
 - qmd-skill: https://github.com/levineam/qmd-skill.git@main
 - humanizer-zh: https://github.com/op7418/Humanizer-zh.git@main
 - pretty-mermaid: https://github.com/imxv/Pretty-mermaid-skills.git@main
+- firecrawl: https://github.com/firecrawl/cli/tree/main/skills/firecrawl-cli@main
