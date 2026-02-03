@@ -13,3 +13,4 @@ My LLM skills
 - news-aggregator-skill: https://github.com/cclank/news-aggregator-skill.git@9874519
 - qmd-skill: https://github.com/levineam/qmd-skill.git@main
 - humanizer-zh: https://github.com/op7418/Humanizer-zh.git@main
+- pretty-mermaid: https://github.com/imxv/Pretty-mermaid-skills.git@main
