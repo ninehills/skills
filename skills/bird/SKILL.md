@@ -10,10 +10,6 @@ allowed-tools:
   - Bash
   - Read
   - Write
-metadata:
-  source: https://github.com/steipete/bird
-  auth: Cookie-based (Safari/Chrome/Firefox)
-  package: @steipete/bird
 ---
 
 # bird 🐦 — fast X CLI for tweeting, replying, and reading
