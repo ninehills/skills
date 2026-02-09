@@ -17,21 +17,21 @@ Python must be `>=3.10`.
 
 ## Quick commands (run from skill root)
 
-> Use Python 3.10+ (recommended: conda `workshop` env in this workspace).
+> Use Python 3.10+ in your preferred environment (venv/pyenv/system Python).
 
 ```bash
 # Preset single-symbol output (recommended)
-conda run -n workshop python scripts/query_symbol.py --symbol HKEX:700 --market HONGKONG
+python3 scripts/query_symbol.py --symbol HKEX:700 --market HONGKONG
 
 # Custom query (fields + filters)
-conda run -n workshop bash scripts/run_query.sh \
+bash scripts/run_query.sh \
   --market CHINA \
   --symbol SHSE:600519 \
   --fields 'NAME,PRICE,CHANGE_PERCENT,VOLUME,RELATIVE_STRENGTH_INDEX_14,MACD_LEVEL_12_26,MACD_SIGNAL_12_26,MACD_HIST,SIMPLE_MOVING_AVERAGE_20,SIMPLE_MOVING_AVERAGE_50,SIMPLE_MOVING_AVERAGE_200,EXPONENTIAL_MOVING_AVERAGE_20,EXPONENTIAL_MOVING_AVERAGE_50,EXPONENTIAL_MOVING_AVERAGE_200,BOLLINGER_UPPER_BAND_20,BOLLINGER_LOWER_BAND_20,STOCHASTIC_PERCENTK_14_3_3,STOCHASTIC_PERCENTD_14_3_3,AVERAGE_TRUE_RANGE_14,MOVING_AVERAGES_RATING' \
   --filter 'NAME=600519'
 
 # Field discovery
-conda run -n workshop python scripts/discover_fields.py --keyword macd --limit 20
+python3 scripts/discover_fields.py --keyword macd --limit 20
 ```
 
 ### Shell quoting notes
@@ -51,9 +51,9 @@ conda run -n workshop python scripts/discover_fields.py --keyword macd --limit 2
 ## Troubleshooting
 
 - `ImportError: cannot import name 'Market' from 'tvscreener'`
-  - Usually caused by mismatched Python/site-packages (e.g., system Python 3.9).
-  - Fix: run all commands with `conda run -n workshop ...` (Python 3.10+), and reinstall in that env if needed:
-    - `conda run -n workshop python -m pip install -U tvscreener`
+  - Usually caused by mismatched Python/site-packages or multiple Python environments.
+  - Fix: ensure commands and installation use the same Python (3.10+), then reinstall:
+    - `python3 -m pip install -U tvscreener`
 - `zsh: command not found: 60,...`
   - Cause: unquoted `FIELD|60` interpreted as shell pipes.
   - Fix: single-quote the full `--fields` string.
