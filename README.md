@@ -15,3 +15,4 @@ My LLM skills
 - humanizer-zh: https://github.com/op7418/Humanizer-zh.git@main
 - pretty-mermaid: https://github.com/imxv/Pretty-mermaid-skills.git@main
 - firecrawl: https://github.com/firecrawl/cli/tree/main/skills/firecrawl-cli@main
+- frontend-design: https://github.com/anthropics/skills/tree/main/skills/frontend-design@main
