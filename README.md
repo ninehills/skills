@@ -16,3 +16,4 @@ My LLM skills
 - pretty-mermaid: https://github.com/imxv/Pretty-mermaid-skills.git@main
 - firecrawl: https://github.com/firecrawl/cli/tree/main/skills/firecrawl-cli@main
 - frontend-design: https://github.com/anthropics/skills/tree/main/skills/frontend-design@main
+- pua-debugging: https://github.com/tanweai/pua/tree/main/skills/pua-debugging@main
