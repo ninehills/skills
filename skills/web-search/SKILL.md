@@ -55,13 +55,20 @@ curl -sL "https://example.com/article" | head -200
 - For complex queries, try multiple search approaches
 - Always summarize findings for the user rather than dumping raw results
 - If DuckDuckGo doesn't have good results, try fetching specific known sources directly
+<<<<<<< Updated upstream
 - For freshness queries (`today`, `latest`, `今天`, `最新`), use the **current year** from runtime context instead of hardcoding a fixed year
+=======
+>>>>>>> Stashed changes
 
 ## Examples
 
 **"Latest AI news":**
 ```bash
+<<<<<<< Updated upstream
 curl -s "https://html.duckduckgo.com/html/?q=latest+AI+news+<current_year>" | grep -o 'href="https\{0,1\}://[^"]*' | grep -v duckduckgo | head -5
+=======
+curl -s "https://html.duckduckgo.com/html/?q=latest+AI+news+2026" | grep -o 'href="https\{0,1\}://[^"]*' | grep -v duckduckgo | head -5
+>>>>>>> Stashed changes
 ```
 
 **"Python 3.13 new features":**

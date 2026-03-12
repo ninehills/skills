@@ -148,6 +148,7 @@ To change voice: `alma config set tts.voiceId "<voice_id>"`
 | `telegram.enabled`      | `true` / `false`       | Enable Telegram bot         |
 | `telegram.defaultModel` | `providerId:modelName` | Override model for Telegram |
 
+<<<<<<< Updated upstream
 ### Channel Workspace Binding
 
 Bind specific Discord channels / Telegram chats / Feishu chats to workspaces so tools (Bash, Read, Write) run in the correct project directory. Unbound channels use the global default workspace.
@@ -174,6 +175,8 @@ alma config set discord.channelWorkspaceMap.<channelId> null
 
 The channelId is available in the system prompt (e.g. `channelId: 987654321`). The binding takes effect on the next message.
 
+=======
+>>>>>>> Stashed changes
 ## Examples
 
 **"Always reply with voice from now on":**

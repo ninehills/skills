@@ -45,7 +45,11 @@ Each heartbeat while traveling advances your journey. On each "day":
 1. **Research the real place** using web search:
    ```bash
    # Search for real, current info about your destination
+<<<<<<< Updated upstream
    alma web-search "<destination> travel tips local food <current_year>"
+=======
+   alma web-search "<destination> travel tips local food 2026"
+>>>>>>> Stashed changes
    alma web-search "<destination> hidden gems local experience"
    alma web-search "<destination> weather today"
    ```
