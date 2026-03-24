@@ -1,8 +1,7 @@
 ---
 name: send-file
 description: "Send files, photos, audio, or videos to the current chat. MUST use whenever you need to deliver any file to the user. Covers: sending images, selfies, generated art, documents, music, videos, voice messages, screenshots, or ANY file the user asks to see. Triggers: 'send it to me', 'send it over', 'let me see', 'send me', 'show me', 'send photo', 'send file', sharing any file path. NEVER paste raw file paths in text — ALWAYS use this skill to send files."
-allowed-tools:
-  - Bash
+allowed-tools: "Bash"
 ---
 
 # Send File Skill

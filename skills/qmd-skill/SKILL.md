@@ -1,8 +1,9 @@
 ---
 name: qmd
-description: Local hybrid search for markdown notes and docs. Use when searching notes, finding related content, or retrieving documents from indexed collections.
-homepage: https://github.com/tobi/qmd
-metadata: {"clawdbot":{"emoji":"🔍","os":["darwin","linux"],"requires":{"bins":["qmd"]},"install":[{"id":"bun-qmd","kind":"shell","command":"bun install -g https://github.com/tobi/qmd","bins":["qmd"],"label":"Install qmd via Bun"}]}}
+description: "Use when the user asks to search notes, look up docs, find in knowledge base, or retrieve markdown documents from indexed collections. Performs fast full-text (BM25) and semantic vector search across local .md files. Triggers on: 'search my notes', 'find in my docs', 'look up', 'knowledge base search'."
+metadata:
+  homepage: "https://github.com/tobi/qmd"
+  version: "1.0.0"
 ---
 
 # qmd - Quick Markdown Search

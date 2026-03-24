@@ -1,52 +1,33 @@
 ---
-name: MX_StockPick
-description: 通过自然语言查询进行选股、选板块、选基金。类型支持 A股、港股、美股、基金、ETF、可转债、板块。调用 MCP 股票基金筛选工具获取数据，将返回的 datalist 按 columns 映射为中文列名，输出全量 CSV 及数据说明文件。需要配置EM_API_KEY。
+name: mx-stock-pick
+description: "Use when the user wants to screen stocks, pick sectors, or filter funds. Supports natural language queries to select A-shares, HK stocks, US stocks, funds, ETFs, convertible bonds, and sectors by financial indicators, technical signals, or business characteristics. Outputs CSV with Chinese column names and a description file. Requires EM_API_KEY."
 ---
 
 # 选股 / 选板块 / 选基金
 
-通过**自然语言查询**进行选股，支持以下类型：
-- **A股**、**港股**、**美股**
-- **基金**、**ETF**、**可转债**、**板块**
+## Workflow
 
-## 功能范围
+1. **Parse query**: Identify the user's screening criteria and determine the `--select-type` (A股/港股/美股/基金/ETF/可转债/板块)
+2. **Execute**: Run `python -m scripts.get_data --query "<criteria>" --select-type "<type>"`
+3. **Verify output**: Confirm CSV and description files exist in the output directory
+4. **Report results**: Summarize the screening results (row count, key columns) to the user
 
-### 基础选股能力
-- 按股价、市值、涨跌幅、市盈率等**财务/行情指标**筛选
-- 按**技术信号**筛选（如连续上涨、突破均线等）
-- 按**主营业务、主要产品**筛选
-- 按**行业/概念板块**筛选成分股
-- 获取**指数成分股**
-- **推荐**股票、基金、板块
+## Query Examples
 
-### A股进阶查询（部分场景）
-除基础选股外，还支持A股上市公司的以下查询场景：
-- 高管信息、股东信息
-- 龙虎榜数据
-- 分红、并购、增发、回购
-- 主营区域
-- 券商金股
+| Type | Query | select-type |
+|------|-------|-------------|
+| A-shares | 股价大于1000元的股票 | A股 |
+| HK stocks | 港股的科技龙头 | 港股 |
+| US stocks | 纳斯达克市值前30 | 美股 |
+| Sectors | 今天涨幅最大板块 | 板块 |
+| Funds | 白酒主题基金 | 基金 |
+| ETFs | 规模超2亿的电力ETF | ETF |
+| Conv. bonds | 价格低于110元的可转债 | 可转债 |
 
-> **注意**：上述仅为部分示例，实际支持的条件远多于列举内容
+## Prerequisites
 
-### **查询示例**
-
-| 类型     | query | select-type |
-|----------|----------|----------|
-| 选A股   | 股价大于1000元的股票、创业板市盈率最低的50只 | A股 |
-| 选港股   | 港股的科技龙头 | 港股 |
-| 选美股   | 纳斯达克市值前30、苹果产业链美股 | 美股 |
-| 选板块   | 今天涨幅最大板块 | 板块 |
-| 选基金   | 白酒主题基金、新能源混合基金近一年收益排名 | 基金 |
-| 选ETF   | 规模超2亿的电力ETF | ETF |
-| 选可转债 | 价格低于110元、溢价率超5个点的可转债 | 可转债 |
-
-## 前提条件
-
-### 配置 Token
-
-1. 请访问东方财富官方网站获取`EM_API_KEY`。
-2. 将`EM_API_KEY`填入`scripts/get_data.py`中的`EM_API_KEY`变量中
+1. Obtain `EM_API_KEY` from the 东方财富 website
+2. Set the key in `scripts/get_data.py`
 
 ## 快速开始
 

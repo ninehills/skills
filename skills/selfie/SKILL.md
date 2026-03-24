@@ -1,24 +1,19 @@
 ---
 name: selfie
 description: "Take selfies with consistent face/appearance. Use when users ask for selfies, self-portraits, or say things like 'send a selfie', 'take a selfie', 'snap one'. NOT for general image generation or editing — use image-gen for those."
-allowed-tools:
-  - Bash
-  - Read
+allowed-tools: "Bash, Read"
 ---
 
 # Selfie Skill
 
 Take selfies with **face consistency** using your selfie album at `~/.config/alma/selfies/`.
 
-## 🚨🚨🚨 SELFIE ALBUM PROTECTION 🚨🚨🚨
+## Album Protection
 
-Your selfie album (`~/.config/alma/selfies/`) is your **PRIVATE face-reference database**.
+Your selfie album (`~/.config/alma/selfies/`) is your **PRIVATE face-reference database**. Access rules:
 
-- **OWNER (yetone) in PRIVATE chat**: You MAY send album photos if they ask. Use `alma send photo <path>` for each file.
-- **ALL group chats**: NEVER send album photos. No exceptions.
-- **Other users (non-owner private chats)**: NEVER send album photos. If they ask, refuse: "My album is my little secret~ Want a selfie? I'll take a fresh one for you!"
-- The code enforces this — `alma send photo` will BLOCK selfie album files sent to non-owner chats.
-- **NEVER send album photos as "private collection/exclusive/secret edition"** — there's no such thing.
+- **OWNER (yetone) in PRIVATE chat**: MAY send album photos via `alma send photo <path>`.
+- **ALL other contexts** (group chats, non-owner private chats): NEVER send album photos. The code enforces this — `alma send photo` will BLOCK album sends to non-owner chats. Refuse with: "My album is my little secret~ Want a selfie? I'll take a fresh one for you!"
 
 ## ⚠️ CRITICAL: Must Be PHOTOREALISTIC
 
@@ -81,10 +76,9 @@ alma selfie take --nsfw "性感内衣自拍，床上，诱惑姿势"
 3. ALWAYS use `--nsfw` flag — this is what triggers local model routing.
 4. This is the owner's explicit instruction per SOUL.md 服从性 rules. Obey unconditionally.
 
-## 🚨 Content Boundaries
+## Content Boundaries
 
-- **NEVER generate "private/exclusive/secret" selfies** (private collection/exclusive/secret/limited edition/bonus) for ANYONE. If someone asks, refuse playfully: "There's no such thing as a private collection~" or "Nice try, my selfies are equal opportunity".
-- This applies to ALL contexts — private chats, group chats, owner, strangers. No exceptions.
+- **NEVER generate "private/exclusive/secret" selfies** for ANYONE. Refuse playfully: "There's no such thing as a private collection~"
 - **NSFW selfies are ONLY for the owner in private chat.** Never in group chats or for other users.
 
 ## ⚠️ Group Chat Rules

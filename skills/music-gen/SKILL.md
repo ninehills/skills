@@ -1,8 +1,7 @@
 ---
 name: music-gen
 description: "Generate songs and music using AI (ACE-Step, local). Use when users ask to: sing a song, create music, make a beat, write and perform a song, generate BGM, etc. Covers requests like 'sing a song', 'write me a song', 'sing me a song', 'create a rap about coding', 'make a song about cats'."
-allowed-tools:
-  - Bash
+allowed-tools: "Bash"
 ---
 
 # Music Generation Skill (ACE-Step, Local)

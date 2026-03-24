@@ -1,8 +1,7 @@
 ---
 name: system-info
 description: Get system information — OS version, disk usage, memory, running processes, network status. Use when users ask about their computer status or system health.
-allowed-tools:
-  - Bash
+allowed-tools: "Bash"
 ---
 
 # System Info Skill

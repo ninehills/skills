@@ -1,6 +1,6 @@
 ---
 name: "doc"
-description: "Use when the task involves reading, creating, or editing `.docx` documents, especially when formatting or layout fidelity matters; prefer `python-docx` plus the bundled `scripts/render_docx.py` for visual checks."
+description: "Use when the user asks to read, create, or edit Word documents (.docx/.doc), insert tables, apply heading styles, or check document layout. Handles Microsoft Word files with formatting fidelity using python-docx and visual rendering via scripts/render_docx.py."
 ---
 
 
@@ -27,29 +27,14 @@ description: "Use when the task involves reading, creating, or editing `.docx` d
 - Keep filenames stable and descriptive.
 
 ## Dependencies (install if missing)
-Prefer `uv` for dependency management.
 
-Python packages:
-```
+```bash
+# Python (prefer uv)
 uv pip install python-docx pdf2image
+# System tools for rendering
+# macOS: brew install libreoffice poppler
+# Ubuntu: sudo apt-get install -y libreoffice poppler-utils
 ```
-If `uv` is unavailable:
-```
-python3 -m pip install python-docx pdf2image
-```
-System tools (for rendering):
-```
-# macOS (Homebrew)
-brew install libreoffice poppler
-
-# Ubuntu/Debian
-sudo apt-get install -y libreoffice poppler-utils
-```
-
-If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.
-
-## Environment
-No required environment variables.
 
 ## Rendering commands
 DOCX -> PDF:

@@ -1,12 +1,7 @@
 ---
 name: human
-description: |
-  去除文本中的 AI 生成痕迹。适用于编辑或审阅文本，使其听起来更自然、更像人类书写。
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - AskUserQuestion
+description: "当用户要求人性化文本、去除AI痕迹、让文章听起来更自然、重写为人类风格、或通过AI检测器时使用。编辑和审阅文本，消除AI生成的写作模式，使其更像人类书写。"
+allowed-tools: "Read, Write, Edit, AskUserQuestion"
 metadata:
   trigger: 编辑或审阅文本，去除 AI 写作痕迹
 ---
@@ -23,6 +18,7 @@ metadata:
 2. **重写问题片段** - 用自然的替代方案替换 AI 痕迹
 3. **保留含义** - 保持核心信息完整
 4. **维持语调** - 匹配预期的语气（正式、随意、技术等）
+5. **复查** - 重新扫描修改后的文本，确认无残留AI模式；如仍有问题，重复步骤2-4
 
 ---
 

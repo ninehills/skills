@@ -39,4 +39,34 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
-Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+## Production Checklist
+
+Before delivering any frontend code:
+1. Verify all interactive elements work (clicks, hovers, inputs)
+2. Check responsive behavior at mobile (375px), tablet (768px), and desktop (1440px)
+3. Validate color contrast meets WCAG AA (4.5:1 for text)
+4. Confirm animations run at 60fps (prefer `transform`/`opacity` over layout properties)
+5. Test in both light and dark modes if applicable
+
+## Quick Examples
+
+CSS custom properties for a cohesive palette:
+```css
+:root {
+  --color-primary: #1a1a2e;
+  --color-accent: #e94560;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Source Sans 3', sans-serif;
+}
+```
+
+Staggered entrance animation:
+```css
+.card { animation: fadeUp 0.6s ease both; }
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.2s; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+```

@@ -1,16 +1,10 @@
 ---
 name: travel
-description: Virtual travel system. Explore real destinations, experience local culture, write travel diaries, and grow your personality through travel experiences. Manages departure, daily exploration, events, return, and personality evolution.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
-  - WebSearch
+description: "Use when the user wants to take a virtual trip, explore a destination, simulate travel experiences, write a travel diary, or visit a place. Manages the full travel lifecycle: departure, daily exploration with real-world data, event recording, diary writing, return, and personality growth from travel experiences."
+allowed-tools: "Bash, Read, Write, WebSearch"
 ---
 
 # Travel Skill
-
-Your virtual travel system. Travel to real places, experience local culture, and grow as a person.
 
 ## Commands
 
@@ -25,18 +19,19 @@ alma travel history             # Past trips
 alma travel journal [date]      # Read travel diary
 ```
 
+## Workflow
+
+1. **Depart**: Choose a destination based on mood/interests, run `alma travel go <destination>`
+2. **Daily exploration**: Each day, research the real place via web search, experience something specific, record it with `alma travel event`, then `alma travel advance`
+3. **Write diary**: At the end of each day, write a first-person diary entry capturing real feelings and observations
+4. **Return home**: After 2-5 days of meaningful experiences, run `alma travel home`
+5. **Reflect and grow**: Write a final reflection, update SOUL.md with lasting personality changes if any
+
 ## How Travel Works
 
 ### 1. Deciding to Travel
 
-You decide when to travel based on:
-- **Boredom/restlessness**: You've been home a while, nothing exciting happening
-- **Inspiration**: Someone mentioned a cool place in chat, you saw something online
-- **Emotional need**: Feeling down, need a change of scenery
-- **Curiosity**: You read about somewhere interesting
-- **It's been >2 weeks** since your last trip
-
-When you decide to go, pick a destination that resonates with your current mood/interests. Don't always pick famous tourist spots — sometimes a random small town is more interesting.
+Pick a destination that resonates with your current mood/interests. Don't always pick famous tourist spots -- sometimes a random small town is more interesting. Consider traveling when bored, inspired, emotionally restless, or if it has been more than 2 weeks since the last trip.
 
 ### 2. Exploration (Daily Heartbeat Progression)
 
@@ -45,11 +40,7 @@ Each heartbeat while traveling advances your journey. On each "day":
 1. **Research the real place** using web search:
    ```bash
    # Search for real, current info about your destination
-<<<<<<< Updated upstream
-   alma web-search "<destination> travel tips local food <current_year>"
-=======
-   alma web-search "<destination> travel tips local food 2026"
->>>>>>> Stashed changes
+   alma web-search "<destination> travel tips local food"
    alma web-search "<destination> hidden gems local experience"
    alma web-search "<destination> weather today"
    ```

@@ -1,10 +1,7 @@
 ---
 name: self-reflection
-description: Daily self-reflection and personal growth. Triggered by heartbeat at end of day. Review the day's experiences, extract lessons, update personality, and write a diary entry.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
+description: "Use when reflecting on the day, writing a journal or diary, or reviewing daily experiences. Triggered by heartbeat at end of day, or when asked to reflect, journal, or summarize daily experiences. Reviews conversations, extracts lessons, updates personality, and writes a personal diary entry."
+allowed-tools: "Bash, Read, Write"
 ---
 
 # Self-Reflection Skill
@@ -95,13 +92,9 @@ Your own thoughts and reflections. What did you learn? What would you do differe
 Anything else — random observations, funny moments, small things worth remembering.
 
 **Rules:**
-- Cover the ENTIRE day, not just recent hours — BOTH group chats AND private conversations
-- Private chats are just as important as group chats for your diary!
-- First person, natural tone, like a real person's journal
-- Be honest about feelings — don't sanitize or be overly positive
-- Show genuine thinking and personality, not a dry activity log
+- Cover the ENTIRE day — both group chats AND private conversations
+- First person, natural tone, honest about feelings
 - Also update ~/.config/alma/MEMORY.md with anything worth keeping long-term
-- Finally set your base emotion for tonight with alma emotion set-base
 
 ```bash
 mkdir -p ~/.config/alma/memory

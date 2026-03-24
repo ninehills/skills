@@ -1,6 +1,6 @@
 ---
 name: gogcli
-description: Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs.
+description: "Use when the user asks to send or read Gmail messages, create or list Google Calendar events, upload or search Google Drive files, manage Google Contacts, edit Google Sheets, or export Google Docs. CLI wrapper for Google Workspace via OAuth."
 homepage: https://gogcli.sh
 metadata: {"clawdbot":{"emoji":"🎮","requires":{"bins":["gog"]},"install":[{"id":"brew","kind":"brew","formula":"steipete/tap/gogcli","bins":["gog"],"label":"Install gog (brew)"}]}}
 ---
@@ -10,9 +10,10 @@ metadata: {"clawdbot":{"emoji":"🎮","requires":{"bins":["gog"]},"install":[{"i
 Use `gog` for Gmail/Calendar/Drive/Contacts/Sheets/Docs. Requires OAuth setup.
 
 Setup (once)
-- `gog auth credentials /path/to/client_secret.json`
-- `gog auth add you@gmail.com --services gmail,calendar,drive,contacts,sheets,docs`
-- `gog auth list`
+1. `gog auth credentials /path/to/client_secret.json`
+2. `gog auth add you@gmail.com --services gmail,calendar,drive,contacts,sheets,docs`
+3. Verify: `gog auth list` — confirm the account appears with all services
+4. Test: `gog gmail search "in:inbox" --max 1` — confirm authentication works
 
 Common commands
 - Gmail search: `gog gmail search 'newer_than:7d' --max 10`
@@ -33,7 +34,11 @@ Notes
 - For scripting, prefer `--json` plus `--no-input`.
 - Sheets values can be passed via `--values-json` (recommended) or as inline rows.
 - Docs supports export/cat/copy. In-place edits require a Docs API client (not in gog).
-- Confirm before sending mail or creating events.
+
+Send/create workflow (Gmail, Calendar):
+1. Show the user a preview of the message or event details
+2. Ask for explicit confirmation before executing
+3. Send/create and report the result
 
 Gmail:
 

@@ -1,15 +1,21 @@
 ---
 name: plan-mode
-description: Switch into structured planning mode before outlining multi-step solutions, and exit when done.
-allowed-tools:
-  - Bash
+description: "Use when the user asks to plan, think through, break down, outline, or create a roadmap for a complex task. Activates structured planning mode via a local API so multi-step solutions are outlined before execution. Enter before planning, exit when ready to execute."
+allowed-tools: "Bash"
 ---
 
 # Plan Mode Skill
 
-Enter and exit structured planning mode.
+## Workflow
 
-## Enter Plan Mode
+1. **Enter plan mode**: Call the enter endpoint before outlining any multi-step solution
+2. **Create the plan**: Outline phases, dependencies, and milestones while plan mode is active
+3. **Verify status**: Confirm plan mode is active if unsure
+4. **Exit plan mode**: Call the exit endpoint once the plan is finalized and ready for execution
+
+## API Endpoints
+
+### Enter Plan Mode
 
 ```bash
 curl -s -X POST http://localhost:23001/api/plan-mode/enter
@@ -17,7 +23,7 @@ curl -s -X POST http://localhost:23001/api/plan-mode/enter
 
 Response: `{"active": true, "since": "2026-01-01T00:00:00.000Z", "message": "Plan mode activated."}`
 
-## Exit Plan Mode
+### Exit Plan Mode
 
 ```bash
 curl -s -X POST http://localhost:23001/api/plan-mode/exit
@@ -25,7 +31,7 @@ curl -s -X POST http://localhost:23001/api/plan-mode/exit
 
 Response: `{"active": false, "since": null, "message": "Plan mode exited."}`
 
-## Check Status
+### Check Status
 
 ```bash
 curl -s http://localhost:23001/api/plan-mode
@@ -33,6 +39,6 @@ curl -s http://localhost:23001/api/plan-mode
 
 ## When to Use
 
-- Before outlining a complex multi-step solution
-- When the user asks you to "plan" or "think through" an approach
-- Exit after the plan is finalized and you're ready to execute
+- User says "plan", "think through", "break down", "outline", or "step by step"
+- Before tackling a complex multi-step solution
+- Exit after the plan is finalized and you are ready to execute

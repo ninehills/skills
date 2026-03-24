@@ -1,8 +1,7 @@
 ---
 name: reactions
-description: React to a message with an emoji. Works on Telegram, Discord, and Feishu.
-allowed-tools:
-    - Bash
+description: "Use when the user wants to react to a message, add an emoji reaction, or acknowledge a message with a thumbs up or other emoji. Sends emoji reactions on Telegram, Discord, and Feishu. Triggers on: 'react', 'add reaction', 'emoji reaction', 'thumbs up this', 'respond with emoji'."
+allowed-tools: "Bash"
 ---
 
 # Reactions Skill

@@ -1,8 +1,7 @@
 ---
 name: thread-management
 description: Manage chat threads — create, list, switch, delete, and search conversations. Use when users want to organize their chats.
-allowed-tools:
-  - Bash
+allowed-tools: "Bash"
 ---
 
 # Thread Management Skill

@@ -1,9 +1,7 @@
 ---
 name: web-fetch
-description: Fetch and read web pages, APIs, and online content. Use when users share URLs or ask about web content.
-allowed-tools:
-  - Bash
-  - WebFetch
+description: "Use when the user shares a URL, link, or website, or asks to fetch a webpage, scrape content, read an article, call an API endpoint, or download online resources. Retrieves and extracts text from web pages, JSON APIs, and HTTP endpoints."
+allowed-tools: "Bash, WebFetch"
 ---
 
 # Web Fetch Skill
@@ -12,18 +10,17 @@ Fetch web content using the best available method, in priority order:
 
 ## 1. WebFetch Tool (Primary — always try this first)
 
-Use the **built-in WebFetch tool** for all web page fetching. It renders pages in a real Electron BrowserWindow with full JavaScript execution, handles SPAs, dynamic content, anti-bot protections, and returns clean markdown. This is NOT a simple HTTP request.
+Always try WebFetch first. It renders pages with full JavaScript execution, handles SPAs, anti-bot protections, and returns clean markdown.
 
 ```
 WebFetch(url="https://example.com/article", prompt="Extract the main content")
 ```
 
-- Handles JavaScript-rendered pages (React, Vue, etc.)
+- Handles JS-rendered pages (React, Vue, etc.)
 - Shares session cookies (can access logged-in content)
 - Auto-extracts article content via Readability
-- Returns clean markdown, ready to use
 
-**Always start with WebFetch.** Only move to the next option if WebFetch fails or is insufficient.
+Only fall back to options below if WebFetch fails.
 
 ## 2. Browser Skill (Fallback for interactive pages)
 
@@ -68,7 +65,6 @@ curl -sL -o /dev/null -w "%{http_code}" "URL"
 
 ## Tips
 
-- **WebFetch first, always.** It handles 90%+ of web fetching needs.
 - For JSON APIs, curl is acceptable since no JS rendering is needed.
 - Pipe curl output to `head -N` to limit output size.
 - Use `jq` for JSON responses.

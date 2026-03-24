@@ -1,6 +1,6 @@
 ---
 name: tvscreener
-description: Query TradingView screener data for HK, A-share, A-share ETF, and US symbols with deepentropy/tvscreener. Use for stock lookup, technical indicators (price/change/RSI/MACD/volume), symbol filtering, and custom field/filter-based market queries.
+description: "Use when the user asks about stock screeners, market data for HK/A-share/US stocks, or needs technical indicator lookups. Query TradingView screener data for HK, A-share, A-share ETF, and US symbols via deepentropy/tvscreener. Supports stock lookup, technical indicators (price/change/RSI/MACD/volume), symbol filtering, and custom field/filter-based market queries."
 ---
 
 # tvscreener
@@ -57,6 +57,13 @@ python3 scripts/discover_fields.py --keyword macd --limit 20
 - `zsh: command not found: 60,...`
   - Cause: unquoted `FIELD|60` interpreted as shell pipes.
   - Fix: single-quote the full `--fields` string.
+
+## Verify Results
+
+After running a query, check that:
+- Output contains expected symbol(s) and is not empty
+- Numeric fields (PRICE, RSI, MACD) are within reasonable ranges
+- If no results returned, verify the symbol format (e.g., `HKEX:700`, `SHSE:600519`, `NASDAQ:BIDU`)
 
 ## References
 

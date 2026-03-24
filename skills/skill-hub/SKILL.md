@@ -1,10 +1,7 @@
 ---
 name: skill-hub
 description: Search, install, and manage Alma skills from the skills.sh ecosystem. Use when the user needs a capability Alma doesn't have yet, or when you encounter a task you can't do with current skills.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
+allowed-tools: "Bash, Read, Write"
 ---
 
 # Skill Hub
@@ -74,9 +71,7 @@ cat > ~/.config/alma/skills/my-skill/SKILL.md << 'EOF'
 ---
 name: my-skill
 description: What this skill does
-allowed-tools:
-  - Bash
-  - Read
+allowed-tools: "Bash, Read"
 ---
 
 # My Skill

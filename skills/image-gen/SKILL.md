@@ -1,9 +1,7 @@
 ---
 name: image-gen
 description: "Generate and edit images using AI. Use when users ask to: create/draw/generate images, edit/modify photos, change backgrounds, add elements to images, create avatars, make logos, etc. Covers requests like 'draw a cat', 'change the background to blue', 'generate a logo'. NOT for selfies — use the selfie skill for 'send a selfie', 'send me a selfie', 'take a selfie'."
-allowed-tools:
-  - Bash
-  - Read
+allowed-tools: "Bash, Read"
 ---
 
 # Image Generation & Editing Skill

@@ -1,9 +1,7 @@
 ---
 name: music-listener
 description: "Listen to and appreciate music files. Analyze audio for genre, mood, tempo, and lyrics. Use when users share audio/music files, ask about songs, or want music analysis."
-allowed-tools:
-  - Bash
-  - Read
+allowed-tools: "Bash, Read"
 ---
 
 # Music Listener

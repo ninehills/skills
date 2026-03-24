@@ -1,18 +1,9 @@
 ---
 name: planning-with-files
 version: "2.1.2"
-description: Implements Manus-style file-based planning for complex tasks. Creates task_plan.md, findings.md, and progress.md. Use when starting complex multi-step tasks, research projects, or any task requiring >5 tool calls.
+description: "Use when starting complex multi-step tasks, research projects, planning work, organizing projects, or any task requiring >5 tool calls. Implements Manus-style file-based planning with task_plan.md, findings.md, and progress.md for persistent working memory. Triggers on: 'plan out', 'organize project', 'break down task', 'track progress'."
 user-invocable: true
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Glob
-  - Grep
-  - WebFetch
-  - WebSearch
-hooks:
+allowed-tools: "Read, Write, Edit, Bash, Glob, Grep, WebFetch, WebSearch"hooks:
   SessionStart:
     - hooks:
         - type: command
@@ -62,15 +53,6 @@ Before ANY complex task:
 5. **Update after each phase** — Mark complete, log errors
 
 > **Note:** All three planning files should be created in your current working directory (your project root), not in the skill's installation folder.
-
-## The Core Pattern
-
-```
-Context Window = RAM (volatile, limited)
-Filesystem = Disk (persistent, unlimited)
-
-→ Anything important gets written to disk.
-```
 
 ## File Purposes
 

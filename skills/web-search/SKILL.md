@@ -1,10 +1,7 @@
 ---
 name: web-search
 description: Search the web for information using DuckDuckGo or other search engines via curl. Use when users ask questions requiring up-to-date information, research, or fact-checking.
-allowed-tools:
-  - Bash
-  - WebSearch
-  - WebFetch
+allowed-tools: "Bash, WebSearch, WebFetch"
 ---
 
 # Web Search Skill

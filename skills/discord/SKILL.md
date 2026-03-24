@@ -1,8 +1,7 @@
 ---
 name: discord
-description: 'Interact with Discord: send messages, photos, files to any channel. Manage Discord bot integration with Alma.'
-allowed-tools:
-    - Bash
+description: "Use when the user wants to send messages, photos, or files to Discord channels, DM users, manage stickers, or interact with a Discord bot. Supports posting to channels, sharing attachments, sending direct messages, deleting messages, and handling Discord server integration via Alma."
+allowed-tools: "Bash"
 ---
 
 # Discord Bot Skill
@@ -93,6 +92,22 @@ Users can use these commands in Discord:
 - `/new [title]` — Start a new conversation
 - `/stop` — Stop current generation
 - `/model` — Show current model
+
+## Verify Setup
+
+After configuring the bot, verify the connection:
+
+```bash
+# Check bot status
+curl -s http://localhost:23001/api/discord/status | jq '.'
+
+# Send a test message
+curl -s http://localhost:23001/api/discord/send \
+  -H "Content-Type: application/json" \
+  -d '{"channelId": "CHANNEL_ID", "message": "Bot connected successfully."}'
+```
+
+If sending fails, check: bot token is valid, MESSAGE_CONTENT intent is enabled, bot has been added to the server with correct permissions.
 
 ## Notes
 

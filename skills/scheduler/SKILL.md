@@ -1,10 +1,7 @@
 ---
 name: scheduler
 description: Create, manage, and delete scheduled tasks (cron jobs) and configure heartbeat. Use when users ask for reminders, recurring tasks, daily summaries, periodic checks, or anything time-based. Also manages HEARTBEAT.md for periodic awareness checks.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
+allowed-tools: "Bash, Read, Write"
 ---
 
 # Scheduler Skill

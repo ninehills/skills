@@ -1,10 +1,7 @@
 ---
 name: memory-management
 description: Search and manage Alma's memory and conversation history. Use when the user asks about past conversations, personal facts, preferences, or anything that requires recalling information ("do you know my...", "we talked about before...", "do you remember...", "help me find what we said about..."). Also used to store new memories and search through archived chat threads.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
+allowed-tools: "Bash, Read, Write"
 ---
 
 # Memory Management Skill

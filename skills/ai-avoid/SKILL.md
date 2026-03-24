@@ -1,20 +1,19 @@
 ---
 name: ai-avoid
-description: |
-  适用于编辑或审阅文本，使其听起来更自然、更像人类书写。
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - AskUserQuestion
-metadata:
-  trigger: 编辑或审阅正式文本，作为写作去AI味的指引。
+description: "Use when editing, reviewing, or rewriting text to remove AI-sounding patterns and make it read naturally. Identifies and fixes robotic phrases, overused AI tropes, pompous word choices, repetitive sentence structures, and manufactured tone. Apply when the user says 'humanize', 'make it natural', 'less robotic', 'sounds like AI', or 'polish my writing'."
+allowed-tools: "Read, Write, Edit"
 ---
 
 # AI Writing Tropes to Avoid
 
-Add this file to your AI assistant's system prompt or context to help it avoid
-common AI writing patterns. Source: [tropes.fyi](https://tropes.fyi) by [ossama.is](https://ossama.is)
+## Workflow
+
+1. **Scan the text** for patterns listed in the categories below (word choice, sentence structure, paragraph structure, tone, formatting, composition)
+2. **Flag violations** with the exact offending phrase and which trope it matches
+3. **Rewrite flagged sections** using varied, natural language that avoids the identified patterns
+4. **Verify the rewrite** does not introduce new trope violations
+
+Source: [tropes.fyi](https://tropes.fyi) by [ossama.is](https://ossama.is)
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: vercel-react-best-practices
-description: React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.
+description: "Use when writing, reviewing, or refactoring React/Next.js code for performance — implement code splitting, lazy loading, reduce bundle size, optimize rendering, fix slow components, or improve Core Web Vitals. Covers 45 rules across waterfalls, bundle size, server-side, client-side, re-renders, rendering, JS performance, and advanced patterns. Triggers on: slow rendering, large bundle, lighthouse score, React performance, Next.js optimization."
 ---
 
 # Vercel React Best Practices
@@ -100,22 +100,35 @@ Reference these guidelines when:
 - `advanced-event-handler-refs` - Store event handlers in refs
 - `advanced-use-latest` - useLatest for stable callback refs
 
+## Optimization Workflow
+
+1. **Identify bottlenecks**: Start with CRITICAL rules (waterfalls, bundle size), measure with Lighthouse or `next build` output
+2. **Apply fixes by priority**: Work through categories top-to-bottom (CRITICAL > HIGH > MEDIUM)
+3. **Verify improvements**: Re-run `next build` to check bundle size changes, Lighthouse for Core Web Vitals
+
+## Key Inline Examples
+
+**Parallelize independent fetches (CRITICAL):**
+```ts
+// Bad: sequential waterfalls
+const user = await getUser(id);
+const posts = await getPosts(id);
+
+// Good: parallel execution
+const [user, posts] = await Promise.all([getUser(id), getPosts(id)]);
+```
+
+**Avoid barrel imports (CRITICAL):**
+```ts
+// Bad: imports entire barrel
+import { Button } from '@/components';
+
+// Good: direct import
+import { Button } from '@/components/Button';
+```
+
 ## How to Use
 
-Read individual rule files for detailed explanations and code examples:
+Read individual rule files for detailed explanations and code examples: `rules/async-parallel.md`, `rules/bundle-barrel-imports.md`, etc.
 
-```
-rules/async-parallel.md
-rules/bundle-barrel-imports.md
-rules/_sections.md
-```
-
-Each rule file contains:
-- Brief explanation of why it matters
-- Incorrect code example with explanation
-- Correct code example with explanation
-- Additional context and references
-
-## Full Compiled Document
-
-For the complete guide with all rules expanded: `AGENTS.md`
+Full compiled document with all 45 rules expanded: `AGENTS.md`

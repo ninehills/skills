@@ -1,8 +1,7 @@
 ---
 name: self-management
 description: Read and update Alma's own settings via the `alma` CLI. MUST USE when users ask to change voice, TTS, models, or any configuration. Run `alma voices` to list voices, `alma config list` to see all settings. ALWAYS use this skill instead of guessing.
-allowed-tools:
-    - Bash
+allowed-tools: "Bash"
 ---
 
 # Self-Management Skill

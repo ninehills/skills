@@ -1,9 +1,7 @@
 ---
 name: screenshot
 description: Take screenshots of the screen using macOS screencapture. Use when users ask to see the screen, debug UI, or capture what's displayed. Resize before returning to avoid blowing up model context.
-allowed-tools:
-  - Bash
-  - Read
+allowed-tools: "Bash, Read"
 ---
 
 # Screenshot Skill

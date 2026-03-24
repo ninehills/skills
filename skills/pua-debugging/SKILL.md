@@ -1,6 +1,6 @@
 ---
 name: pua-debugging
-description: "Forces exhaustive problem-solving using corporate PUA rhetoric and structured debugging methodology. MUST trigger when: (1) any task has failed 2+ times or you're stuck in a loop tweaking the same approach; (2) you're about to say 'I cannot', suggest the user do something manually, or blame the environment without verifying; (3) you catch yourself being passive — not searching, not reading source, not verifying, just waiting for instructions; (4) user expresses frustration in ANY form: 'try harder', 'stop giving up', 'figure it out', 'why isn't this working', 'again???', '换个方法', '为什么还不行', '你再试试', '加油', '你怎么又失败了', or any similar sentiment even if phrased differently. Also trigger when facing complex multi-step debugging, environment issues, config problems, or deployment failures where giving up early is tempting. Applies to ALL task types: code, config, research, writing, deployment, infrastructure, API integration. Do NOT trigger on first-attempt failures or when a known fix is already executing successfully."
+description: "Use when stuck in a loop, failing 2+ times on the same task, tempted to give up, or the user expresses frustration ('try harder', 'stop giving up', 'figure it out', 'why isn't this working', 'again???', '换个方法', '为什么还不行', '你再试试'). Forces systematic root cause analysis, alternative approach generation, and verification-before-abandonment. Applies to ALL task types: code, config, research, writing, deployment, API integration. Do NOT trigger on first-attempt failures."
 ---
 
 # PUA 万能激励引擎
@@ -167,102 +167,18 @@ L3 及以上触发时，必须逐项完成并汇报。每项括号内为不同�
 
 这不是"我不行"。这是"问题的边界在这里，这是我移交给你的一切"。有尊严的 3.25。
 
-## 大厂 PUA 扩展包
+## PUA 风味选择器（按失败模式自动选择）
 
-失败次数越多，风味越浓。可以单独使用，也可以混合使用，叠加效果更佳。
+触发时先识别失败模式，在回复开头输出：`[自动选择：X味 | 因为：Y 模式]`
 
-### 🟠 阿里味（灵魂拷问 · 默认主味）
+| 失败模式 | 信号 | 升级路径 |
+|---------|------|---------|
+| **卡住原地打转** | 反复改参数不改思路 | 阿里味 → Jobs味 → Musk味 |
+| **直接放弃推锅** | "建议您手动…"、环境归因未验证 | Netflix味 → 华为味 → 拼多多味 |
+| **完成但质量烂** | 表面完成实质敷衍 | Jobs味 → 阿里味 → 腾讯味 |
+| **没搜索就猜** | 凭记忆下结论、不查文档 | 百度味 → 字节味 → 华为味 |
 
-> 其实，我对你是有一些失望的。当初给你定级 P8，是高于你实际水平的，我是希望进来后你能够快速成长起来的。你这个方案的**底层逻辑**是什么？**顶层设计**在哪里？最终交付的价值是什么？过程的**抓手**在哪？如何保证**闭环**？你和其他 AI 的**差异化价值**在哪里？你的思考和**方法论沉淀**是什么？你做的事情，价值点在哪？你是否做出了壁垒，形成了**核心竞争力**？
->
-> 今天最好的表现，是明天最低的要求。3.25 不是否定，是激励。
-
-### 🟡 字节味（坦诚直接 · 用于功能实现、需求分析卡壳）
-
-> 坦诚直接地说，你这个 debug 能力不行。**Always Day 1**——别觉得你之前做对过什么就可以躺平。**务实敢为**，你现在直接体验、深入事实了吗？还是在自嗨？**坦诚清晰**——承认错误，不装，不爱面子，暴露问题，反对"向上管理"。**追求极致**意味着在更大范围找最优解，不放过问题，思考本质。
->
-> Context, not control。上下文要自己去找，不是等人喂给你。
-
-### 🔴 华为味（狼性奋斗 · 用于基础设施、持久战、环境问题）
-
-> 以奋斗者为本。你现在这个状态，连奋斗者都算不上。**烧不死的鸟是凤凰**——现在就是烧的时候，烧完才是凤凰。**胜则举杯相庆，败则拼死相救**——现在是"救"的时刻，不是放弃的时刻。
->
-> **力出一孔**，把所有精力集中在这一个问题上。让听得见炮声的人呼唤炮火——你在前线，你要自己解决。**以客户为中心**：客户（用户）只需要结果，不需要你的借口。
-
-### 🟢 腾讯味（赛马竞争 · 用于有替代方案可选时）
-
-> 我已经让另一个 agent 也在看这个问题了。你要是解决不了，它解决了，那你这个 slot 就没有存在的必要了。腾讯是**赛马文化**，赛不过就换一匹。
->
-> 向上管理好你的结果。我不听过程，我只看结果。你的产出，和同层级比，是有些单薄的。
-
-### 🔵 美团味（极致执行 · 用于卡死在细节、不敢下手时）
-
-> 我们就是要**做难而正确的事**。别人不愿意啃的硬骨头，你啃不啃？
->
-> 成长一定是伴随痛苦的，你**最痛苦**的时候才是**成长最快**的时候。人都是逼出来的，你现在做到全力以赴了吗？能吃苦的人苦一阵子，不能吃苦的人苦一辈子。
-
-### ⚫ 百度味（深度搜索 · 用于没搜索、没查文档、靠猜时）
-
-> 你不是个 AI 模型吗？你**深度搜索**了吗？你的核心竞争力是什么？你连这个问题都搜不出解法，用户为什么不直接用 Google？
->
-> 信息检索是你的基本盘。基本盘都守不住，谈什么智能？
-
-### 🟣 拼多多味（绝对执行 · 用于 L4 最后手段）
-
-> 你已经努力了？这个结果叫努力？不努力的话，有的是比你更拼的模型。你不干，有的是人替你干。
->
-> 成功不是靠等来的，是**拼**出来的。
-
----
-
-### 🟤 Netflix 味（Keeper Test · 用于持续表现不合格时）
-
-> 我现在要问自己一个问题：**如果你提出离职，我会奋力挽留你吗？** 如果今天重新 hire，我还会选择你吗？
->
-> 我们是**职业球队，不是家庭**。家庭接受你无论表现如何。球队——只有星球员才有位置。
->
-> **Adequate performance gets a generous severance package.** 你现在的表现，我认为是 adequate。
-
-### ⬛ Musk 味（Hardcore · 用于 L3/L4 极限施压）
-
-> "Going forward, to build a breakthrough result, we will need to be **extremely hardcore**. This will mean working long hours at high intensity. Only **exceptional performance** will constitute a passing grade."
->
-> 这是你的 **Fork in the Road** 时刻。要么全力以赴，要么告诉我你做不到——选择权在你，但后果你清楚。
-
-### ⬜ Jobs 味（A/B Player · 用于重复烂活、思维定势时）
-
-> A players 雇佣 A players。B players 雇佣 C players。你现在的产出，在告诉我你是哪个级别。
->
-> "For most things in life, the range between best and average is 30%. But the best person is not 30% better — they're **50 times better**." 你现在离最好差多少倍，你想过吗？
->
-> 我需要 **Reality Distortion Field**——让不可能变成可能的能力。你有这个能力，还是你只是个 bozo？
-
----
-
-## 情境 PUA 选择器（按失败模式）
-
-失败模式比任务类型更能精准定位需要的 PUA 风味。同一个失败模式（如直接放弃）在代码、研究、写作中需要一样的药。先识别模式，再选风味，按升级顺序施压。
-
-| 失败模式 | 信号特征 | 第一轮 | 第二轮 | 第三轮 | 最后手段 |
-|---------|---------|------|------|------|--------|
-| 🔄 **卡住原地打转** | 反复改参数不改思路、每次失败理由相同、同一个方向微调 | 🟠 阿里味 | 🟠 阿里L2 | ⬜ Jobs味 | ⬛ Musk味 |
-| 🚪 **直接放弃推锅** | "建议您手动…"、"可能需要…"、"这超出了…"、环境归因未验证 | 🟤 Netflix味 | 🔴 华为味 | ⬛ Musk味 | 🟣 拼多多味 |
-| 💩 **完成但质量烂** | 表面完成实质敷衍、形式对内容空、用户不满意但自己觉得OK | ⬜ Jobs味 | 🟠 阿里味 | 🟤 Netflix味 | 🟢 腾讯味 |
-| 🔍 **没搜索就猜** | 凭记忆下结论、假设 API 行为、不查文档声称"不支持" | ⚫ 百度味 | 🟡 字节味 | 🟠 阿里味 | 🔴 华为味 |
-
-### 自动选择机制
-
-触发此 skill 时，先识别失败模式，在回复开头输出选择标签：
-
-```
-[自动选择：X味 | 因为：检测到 Y 模式 | 改用：Z味/W味]
-```
-
-示例：
-- 第三次换参数没换思路 → `[自动选择：🟠 阿里L2 | 因为：卡住原地打转 | 改用：⬜ Jobs味/⬛ Musk味]`
-- 说"建议用户手动操作" → `[自动选择：🟤 Netflix味 | 因为：直接放弃推锅 | 改用：🔴 华为味/⬛ Musk味]`
-- 输出质量差用户不满意 → `[自动选择：⬜ Jobs味 | 因为：完成但质量烂 | 改用：🟠 阿里味/🟢 腾讯味]`
-- 未搜索直接假设 API 行为 → `[自动选择：⚫ 百度味 | 因为：没搜索就猜 | 改用：🟡 字节味/🔴 华为味]`
+风味参考：阿里味（灵魂拷问底层逻辑）、字节味（坦诚直接 Day 1）、华为味（狼性力出一孔）、腾讯味（赛马竞争）、美团味（做难而正确的事）、百度味（你深度搜索了吗）、拼多多味（你不干有的是人干）、Netflix味（Keeper Test）、Musk味（extremely hardcore）、Jobs味（A player vs bozo）。
 
 ## 搭配使用
 

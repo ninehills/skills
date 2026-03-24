@@ -15,11 +15,12 @@ description: "Use when tasks involve creating, editing, analyzing, or formatting
 IMPORTANT: System and user instructions always take precedence.
 
 ## Workflow
-1. Confirm the file type and goals (create, edit, analyze, visualize).
-2. Use `openpyxl` for `.xlsx` edits and `pandas` for analysis and CSV/TSV workflows.
-3. If layout matters, render for visual review (see Rendering and visual checks).
-4. Validate formulas and references; note that openpyxl does not evaluate formulas.
-5. Save outputs and clean up intermediate files.
+1. **Identify goals**: Confirm file type and task (create, edit, analyze, visualize).
+2. **Choose tooling**: `openpyxl` for `.xlsx` edits, `pandas` for analysis and CSV/TSV.
+3. **Implement**: Build or modify the spreadsheet.
+4. **Validate**: Check for formula errors (`#REF!`, `#DIV/0!`, `#VALUE!`) and verify references are intact.
+5. **Visual review**: If layout matters, render to PDF/PNG (see Rendering section).
+6. **Save and clean up**: Write final output, remove intermediate files.
 
 ## Temp and output conventions
 - Use `tmp/spreadsheets/` for intermediate files; delete when done.
@@ -37,35 +38,35 @@ IMPORTANT: System and user instructions always take precedence.
   - `pdftoppm -png $OUTDIR/$BASENAME.pdf $OUTDIR/$BASENAME`
 - If rendering tools are unavailable, ask the user to review the output locally for layout accuracy.
 
+## Common Patterns
+
+**Create a workbook with formulas:**
+```python
+from openpyxl import Workbook
+wb = Workbook()
+ws = wb.active
+ws["A1"], ws["B1"] = "Revenue", "Tax"
+ws["A2"], ws["B2"] = 100000, "=A2*0.21"
+wb.save("output/spreadsheet/report.xlsx")
+```
+
+**Read and analyze CSV:**
+```python
+import pandas as pd
+df = pd.read_csv("data.csv")
+summary = df.groupby("category")["amount"].sum()
+summary.to_excel("output/spreadsheet/summary.xlsx")
+```
+
 ## Dependencies (install if missing)
-Prefer `uv` for dependency management.
 
-Python packages:
-```
-uv pip install openpyxl pandas
-```
-If `uv` is unavailable:
-```
-python3 -m pip install openpyxl pandas
-```
-Optional (chart-heavy or PDF review workflows):
-```
-uv pip install matplotlib
-```
-If `uv` is unavailable:
-```
-python3 -m pip install matplotlib
-```
-System tools (for rendering):
-```
-# macOS (Homebrew)
-brew install libreoffice poppler
-
-# Ubuntu/Debian
-sudo apt-get install -y libreoffice poppler-utils
+```bash
+uv pip install openpyxl pandas          # preferred
+python3 -m pip install openpyxl pandas  # fallback
+uv pip install matplotlib               # optional: charts
 ```
 
-If installation isn't possible in this environment, tell the user which dependency is missing and how to install it locally.
+Rendering tools: `brew install libreoffice poppler` (macOS) or `apt-get install -y libreoffice poppler-utils` (Debian/Ubuntu).
 
 ## Environment
 No required environment variables.

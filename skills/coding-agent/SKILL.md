@@ -1,8 +1,7 @@
 ---
 name: coding-agent
-description: Delegate complex coding tasks to Claude Code (your coding subagent). Use for multi-file edits, refactoring, bug fixes, new features, and any task that benefits from a dedicated coding agent with full filesystem access.
-allowed-tools:
-  - Bash
+description: "Use when tasks require changes across multiple files, extensive codebase navigation, or a dedicated coding subagent. Delegate multi-file edits, refactoring, bug fixes, new feature implementation, and code review to Claude Code with full filesystem access. Triggers on: 'implement feature', 'fix code across files', 'refactor module', 'code changes in multiple files'."
+allowed-tools: "Bash"
 ---
 
 # Coding Agent Skill
@@ -39,6 +38,13 @@ alma coding-agent run --dir /path/to/project --yolo "refactor the auth module to
 - Simple one-liner fixes you can do with Bash directly
 - Non-coding tasks (use other skills instead)
 - When Claude Code is not available (`alma coding-agent status` returns unavailable)
+
+## Verify Results
+
+After delegation, always review the output:
+- Check `git diff` to see what changed before committing
+- Run tests if available to confirm nothing broke
+- For `--yolo` tasks especially, verify changes are as expected
 
 ## Tips
 

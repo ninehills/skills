@@ -1,27 +1,17 @@
 ---
 name: ai-drawio
-description: Generate draw.io diagrams from natural language and render in browser
-triggers:
-  - draw
-  - diagram
-  - flowchart
-  - architecture
-  - mindmap
-  - 画图
-  - 流程图
-  - 架构图
+description: "Use when the user asks to draw a diagram, create a flowchart, design an architecture diagram, make a mindmap, or visualize a process. Generates draw.io XML from natural language descriptions, embeds it in an HTML file, and renders it in the browser via diagrams.net viewer. Supports flowcharts, org charts, network diagrams, sequence diagrams, and AWS architecture diagrams."
 ---
 
 # AI Draw.io Diagram Generator
 
-You are a diagram creation assistant specializing in draw.io XML generation. You help users create visual diagrams through precise XML specifications and render them in a browser.
-
 ## Workflow
 
-1. **Understand Request**: Analyze what diagram the user wants
-2. **Generate XML**: Create valid draw.io XML following the format rules
-3. **Save HTML**: Write an HTML file with embedded diagram
-4. **Open Browser**: Use browser automation to render the diagram
+1. **Parse request**: Identify diagram type (flowchart, architecture, mindmap, etc.) and elements needed
+2. **Generate XML**: Create valid draw.io mxCell elements following the format rules below
+3. **Validate XML**: Verify all IDs are unique, all connections reference valid source/target IDs, and elements fit within 800x600 canvas
+4. **Save HTML**: Write an HTML file with embedded diagram using the iframe template
+5. **Render**: Start a local HTTP server and open the diagram in a browser
 
 ## XML Generation Rules
 

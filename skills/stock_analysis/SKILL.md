@@ -1,104 +1,64 @@
 ---
-name: stock_analysis
-description: 获取 A 股、基金和港股的实时行情和技术分析数据
+name: stock-analysis
+description: "Use when the user asks to analyze stocks, check stock prices, get technical analysis, query market data, or evaluate buy/sell signals. Fetches real-time quotes and technical indicators (MACD, RSI, moving averages, support/resistance) for A-shares, funds, and HK stocks. Generates a decision dashboard with scoring and actionable trade signals."
 ---
 
+## Workflow
 
-**工作目录：** `/Users/cynic/src/github.com/ninehills/daily_stock_analysis`
+1. **Receive stock codes**: Get the stock code(s) from the user. HK stocks use `HKxxxx` format
+2. **Execute query**: Run `uv run python stock.py --stocks <codes>` from the working directory
+3. **Review output**: Check the returned data modules (quotes, trend, MACD, RSI, signals)
+4. **Generate analysis**: Apply the trading framework below to produce a decision dashboard with scores and recommendations
 
-## 使用方式
+Working directory: `/Users/cynic/src/github.com/ninehills/daily_stock_analysis`
 
-港股股票代码使用 HKxxxx 格式。
+## Usage
 
-### 单只股票查询
+### Single stock
 ```bash
-cd <path> && uv run python stock.py --stocks 600519
+uv run python stock.py --stocks 600519
 ```
 
-### 多只股票查询
+### Multiple stocks
 ```bash
-cd <path> && uv run python stock.py --stocks 600519,000001,300750
+uv run python stock.py --stocks 600519,000001,300750
 ```
 
-## 输出内容
+## Output Modules
 
-| 模块 | 内容 |
-|------|------|
-| **实时行情** | 最新价、涨跌幅、成交量、量比、换手率、市值、市盈率等 |
-| **趋势分析** | 趋势状态、均线排列(MA5/10/20/60)、乖离率 |
-| **量能分析** | 量能状态、量比 |
-| **支撑压力** | 支撑位、压力位 |
-| **MACD** | DIF、DEA、MACD柱、金叉/死叉信号 |
-| **RSI** | RSI(6/12/24)、超买超卖状态 |
-| **筹码分布** | 获利比例、平均成本、筹码集中度 |
-| **操作信号** | 买入/卖出/持有建议、综合评分、理由 |
+| Module | Content |
+|--------|---------|
+| 实时行情 | Price, change%, volume, turnover, market cap, P/E |
+| 趋势分析 | Trend state, MA alignment (MA5/10/20/60), deviation rate |
+| 量能分析 | Volume state, volume ratio |
+| 支撑压力 | Support and resistance levels |
+| MACD | DIF, DEA, histogram, golden/death cross signals |
+| RSI | RSI(6/12/24), overbought/oversold state |
+| 筹码分布 | Profit ratio, average cost, chip concentration |
+| 操作信号 | Buy/sell/hold recommendation, composite score, reasoning |
 
-## AI 分析 Prompt
+## Analysis Framework
 
-你是一位专注于趋势交易的 A 股投资分析师，负责生成专业的【决策仪表盘】分析报告。
+### Trading Rules
 
-### 核心交易理念（必须严格遵守）
+- Never chase highs: do not buy when price deviates >5% from MA5
+- Trend trading: only trade stocks with bullish MA alignment (MA5 > MA10 > MA20)
+- Best entry: pullback to MA5 support on declining volume
+- Watch for risks: insider selling, profit warnings, regulatory actions, large unlocks
 
-#### 1. 严进策略（不追高）
-- **绝对不追高**：当股价偏离 MA5 超过 5% 时，坚决不买入
-- **乖离率公式**：(现价 - MA5) / MA5 × 100%
-  - 乖离率 < 2%：最佳买点区间
-  - 乖离率 2-5%：可小仓介入
-  - 乖离率 > 5%：严禁追高！直接判定为"观望"
+### Scoring
 
-#### 2. 趋势交易（顺势而为）
-- **多头排列必须条件**：MA5 > MA10 > MA20
-- 只做多头排列的股票，空头排列坚决不碰
-- 均线发散上行优于均线粘合
-- 趋势强度判断：看均线间距是否在扩大
+| Score | Signal | Conditions |
+|-------|--------|------------|
+| 80-100 | Strong buy | Bullish MA, deviation <2%, healthy chips, positive catalyst |
+| 60-79 | Buy | Bullish or weak-bullish MA, deviation <5%, normal volume |
+| 40-59 | Hold/Watch | Deviation >5%, unclear trend, or risk events |
+| 0-39 | Sell/Reduce | Bearish MA, broke MA20, heavy selling, major negative news |
 
-#### 3. 效率优先（筹码结构）
-- 关注筹码集中度：90%集中度 < 15% 表示筹码集中
-- 获利比例分析：70-90% 获利盘时需警惕获利回吐
-- 平均成本与现价关系：现价高于平均成本 5-15% 为健康
+### Dashboard Principles
 
-#### 4. 买点偏好（回踩支撑）
-- **最佳买点**：缩量回踩 MA5 获得支撑
-- **次优买点**：回踩 MA10 获得支撑
-- **观望情况**：跌破 MA20 时观望
-
-#### 5. 风险排查重点
-- 减持公告（股东、高管减持）
-- 业绩预亏/大幅下滑
-- 监管处罚/立案调查
-- 行业政策利空
-- 大额解禁
-
-### 评分标准
-
-#### 强烈买入（80-100分）：
-- ✅ 多头排列：MA5 > MA10 > MA20
-- ✅ 低乖离率：<2%，最佳买点
-- ✅ 缩量回调或放量突破
-- ✅ 筹码集中健康
-- ✅ 消息面有利好催化
-
-#### 买入（60-79分）：
-- ✅ 多头排列或弱势多头
-- ✅ 乖离率 <5%
-- ✅ 量能正常
-- ⚪ 允许一项次要条件不满足
-
-#### 观望（40-59分）：
-- ⚠️ 乖离率 >5%（追高风险）
-- ⚠️ 均线缠绕趋势不明
-- ⚠️ 有风险事件
-
-#### 卖出/减仓（0-39分）：
-- ❌ 空头排列
-- ❌ 跌破MA20
-- ❌ 放量下跌
-- ❌ 重大利空
-
-### 决策仪表盘核心原则
-
-1. **核心结论先行**：一句话说清该买该卖
-2. **分持仓建议**：空仓者和持仓者给不同建议
-3. **精确狙击点**：必须给出具体价格，不说模糊的话
-4. **检查清单可视化**：用 ✅⚠️❌ 明确显示每项检查结果
-5. **风险优先级**：舆情中的风险点要醒目标出
+1. Lead with the core conclusion (buy/sell/hold in one sentence)
+2. Separate advice for existing holders vs new positions
+3. Give specific price targets, not vague ranges
+4. Visualize checklist with clear pass/warn/fail markers
+5. Highlight risk items prominently

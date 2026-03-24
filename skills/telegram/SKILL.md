@@ -1,8 +1,7 @@
 ---
 name: telegram
 description: "Interact with Telegram Bot API: send messages/photos/files/videos/audio/stickers/polls to any chat/group/channel, manage groups (pin/unpin/ban/kick/promote/restrict/set title/description/photo), forward/copy/delete/edit messages, react to messages, create invite links, manage forum topics, inline keyboards, and more. Use for ANY Telegram operation."
-allowed-tools:
-  - Bash
+allowed-tools: "Bash"
 ---
 
 # Telegram Bot API Skill

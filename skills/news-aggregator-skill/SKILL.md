@@ -1,6 +1,6 @@
 ---
 name: news-aggregator-skill
-description: "Comprehensive news aggregator that fetches, filters, and deeply analyzes real-time content from 8 major sources: Hacker News, GitHub Trending, Product Hunt, 36Kr, Tencent News, WallStreetCN, V2EX, and Weibo. Best for 'daily scans', 'tech news briefings', 'finance updates', and 'deep interpretations' of hot topics."
+description: "Use when the user asks for a daily news scan, tech briefing, finance update, or trending topic analysis. Fetches, filters, and analyzes real-time content from 8 sources: Hacker News, GitHub Trending, Product Hunt, 36Kr, Tencent News, WallStreetCN, V2EX, and Weibo."
 ---
 
 # News Aggregator Skill
@@ -28,7 +28,7 @@ python3 scripts/fetch_news.py --source all --limit 15 --deep
 ```
 
 ### Single Source & Combinations (Smart Keyword Expansion)
-**CRITICAL**: You MUST automatically expand the user's simple keywords to cover the entire domain field.
+Always expand the user's simple keywords to cover the entire domain field.
 *   User: "AI" -> Agent uses: `--keyword "AI,LLM,GPT,Claude,Generative,Machine Learning,RAG,Agent"`
 *   User: "Android" -> Agent uses: `--keyword "Android,Kotlin,Google,Mobile,App"`
 *   User: "Finance" -> Agent uses: `--keyword "Finance,Stock,Market,Economy,Crypto,Gold"`
@@ -54,6 +54,8 @@ python3 scripts/fetch_news.py --source all --limit 10 --keyword "DeepSeek" --dee
 **Output:**
 JSON array. If `--deep` is used, items will contain a `content` field associated with the article text.
 
+**Error handling:** If `fetch_news.py` returns an empty array or fails, retry once with `--limit` doubled. If still empty, report to the user which sources returned no results and suggest broadening the keyword or time range.
+
 ## Interactive Menu
 
 When the user says **"news-aggregator-skill 如意如意"** (or similar "menu/help" triggers):
@@ -61,7 +63,7 @@ When the user says **"news-aggregator-skill 如意如意"** (or similar "menu/he
 2.  **DISPLAY** the list of available commands to the user exactly as they appear in the file.
 3.  **GUIDE** the user to select a number or copy the command to execute.
 
-### Smart Time Filtering & Reporting (CRITICAL)
+### Smart Time Filtering & Reporting
 If the user requests a specific time window (e.g., "past X hours") and the results are sparse (< 5 items):
 1.  **Prioritize User Window**: First, list all items that strictly fall within the user's requested time (Time < X).
 2.  **Smart Fill**: If the list is short, you MUST include high-value/high-heat items from a wider range (e.g. past 24h) to ensure the report provides at least 5 meaningful insights.
@@ -73,7 +75,7 @@ If the user requests a specific time window (e.g., "past X hours") and the resul
         *   **Inspiration (启发思考)**: What technical or product insights can be drawn?
         *   **Scenarios (场景标签)**: 3-5 keywords (e.g. `#RAG #LocalFirst #Rust`).
 
-### 6. Response Guidelines (CRITICAL)
+### 6. Response Guidelines
 
 **Format & Style:**
 - **Language**: Simplified Chinese (简体中文).

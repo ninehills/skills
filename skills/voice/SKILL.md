@@ -1,8 +1,7 @@
 ---
 name: voice
 description: Generate voice messages using local Qwen3-TTS (offline, Apple Silicon). Convert text to speech with customizable voices, emotions, and speed. Use when user asks for voice reply, audio, or TTS.
-allowed-tools:
-  - Bash
+allowed-tools: "Bash"
 ---
 
 # Voice Skill — Local TTS via Qwen3-TTS

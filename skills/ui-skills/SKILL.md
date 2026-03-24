@@ -1,22 +1,18 @@
 ---
 name: ui-skills
-description: Opinionated constraints for building better interfaces with agents.
+description: "Use when building UI components, reviewing frontend code, designing interfaces, or working with Tailwind CSS, React, and animation libraries. Enforces opinionated constraints covering accessibility, animation performance, typography, layout, and component primitives. Invoke to apply constraints to current work, or pass a file to review it against all rules."
 ---
 
 # UI Skills
 
-When invoked, apply these opinionated constraints for building better interfaces.
+## Workflow
 
-## How to use
-
-- `/ui-skills`  
-  Apply these constraints to any UI work in this conversation.
-
-- `/ui-skills <file>`  
-  Review the file against all constraints below and output:
-  - violations (quote the exact line/snippet)
-  - why it matters (1 short sentence)
-  - a concrete fix (code-level suggestion)
+1. **Apply constraints**: When invoked without arguments, apply all constraints below to UI work in the current conversation
+2. **Review a file**: When invoked with a file path, scan the file against all constraint categories and output:
+   - Violations (quote the exact line/snippet)
+   - Why it matters (1 short sentence)
+   - A concrete fix (code-level suggestion)
+3. **Verify fixes**: After applying fixes, re-check against constraints to confirm no new violations
 
 ## Stack
 

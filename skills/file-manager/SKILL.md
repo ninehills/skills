@@ -1,12 +1,7 @@
 ---
 name: file-manager
-description: Find, organize, and manage files on the user's computer. Search by name, type, size, or date. Move, rename, compress, and clean up files.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
-  - Glob
-  - Grep
+description: "Use when the user asks to find files, organize folders, clean up disk space, locate duplicates, or manage their file system. Search by name, type, size, or date. Move, rename, compress, and clean up files and directories."
+allowed-tools: "Bash, Read, Write, Glob, Grep"
 ---
 
 # File Manager Skill
@@ -47,15 +42,20 @@ for f in *.jpeg; do mv "$f" "${f%.jpeg}.jpg"; done
 
 ## Cleanup
 
+Always preview before deleting:
+
 ```bash
-# Show large files in Downloads
+# 1. Preview: show large files in Downloads
 du -sh ~/Downloads/* | sort -rh | head -20
+
+# 2. Preview: list old downloads (older than 30 days) — do NOT delete yet
+find ~/Downloads -mtime +30 -type f
+
+# 3. Only after user confirms, delete specific files
+# rm ~/Downloads/specific-file.zip
 
 # Empty trash (macOS)
 rm -rf ~/.Trash/*
-
-# Clear old downloads (older than 30 days)
-find ~/Downloads -mtime +30 -type f
 ```
 
 ## Compress/Extract

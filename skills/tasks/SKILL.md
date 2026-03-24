@@ -1,8 +1,7 @@
 ---
 name: tasks
-description: Global multi-step task tracking. Create, update, and monitor long-running tasks across threads. Tasks persist across restarts and are visible in all conversations.
-allowed-tools:
-  - Bash
+description: "Use when starting multi-step work, tracking progress, managing todos, or resuming interrupted work. Create, update, and monitor long-running tasks across threads. Tasks persist across restarts and are visible in all conversations. Triggers on: 'track progress', 'todo', 'checklist', 'pick up where I left off', 'what was I working on'."
+allowed-tools: "Bash"
 ---
 
 # Tasks Skill

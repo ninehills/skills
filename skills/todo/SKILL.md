@@ -1,9 +1,7 @@
 ---
 name: todo
-description: Manage a structured task list using a Markdown file in the workspace. Track progress on complex multi-step tasks. File-based — just Read and Write the todo file.
-allowed-tools:
-  - Read
-  - Write
+description: "Use when the user asks to track tasks, manage a todo list, create a checklist, or organize multi-step work. Maintains a structured Markdown task file in the workspace using Read and Write tools."
+allowed-tools: "Read, Write"
 ---
 
 # Todo Skill

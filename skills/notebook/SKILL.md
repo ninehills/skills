@@ -1,10 +1,7 @@
 ---
 name: notebook
 description: Edit Jupyter notebook (.ipynb) cells — insert, replace, or delete cells. Use when working with notebooks.
-allowed-tools:
-  - Bash
-  - Read
-  - Write
+allowed-tools: "Bash, Read, Write"
 ---
 
 # Notebook Edit Skill

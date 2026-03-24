@@ -1,9 +1,7 @@
 ---
 name: browser
-description: Control the user's real Chrome browser with existing sessions, cookies, and logins via Chrome Relay. Use for form filling, clicking buttons, navigating multi-step flows, logging in, and any task requiring web interaction.
-allowed-tools:
-  - Bash
-  - Read
+description: "Use when the user asks to automate browser tasks, fill out web forms, interact with websites using their logged-in session, or navigate multi-step web flows. Controls the real Chrome browser with existing sessions, cookies, and logins via Chrome Relay. Triggers on: 'open website', 'fill form', 'click button', 'browse the web', 'web automation', 'browser automation'."
+allowed-tools: "Bash, Read"
 ---
 
 # Browser Skill
