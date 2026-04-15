@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+test-output/
+scripts/__pycache__/
+*.py[cod]
+*.backup
+*.bak
+*~
+agentloop-core.png
+agentloop-core.svg
+SKILL.md.backup
