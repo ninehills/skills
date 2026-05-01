@@ -1,0 +1,9 @@
+/* Global styles with anti-patterns */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #000000;
+}
+
+.highlight {
+  animation: bounce 0.5s ease-in-out;
+}

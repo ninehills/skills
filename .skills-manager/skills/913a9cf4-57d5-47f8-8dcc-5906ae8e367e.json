@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "913a9cf4-57d5-47f8-8dcc-5906ae8e367e",
+  "path": "harden",
+  "path_key": "harden",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/pbakaus/impeccable/tree/main/.agents/skills",
+    "subpath": null,
+    "branch": "main"
+  }
+}

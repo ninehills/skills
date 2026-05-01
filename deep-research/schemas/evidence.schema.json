@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Evidence",
+  "description": "A piece of evidence extracted from a source. evidence_id = sha256(source_id + normalized_quote + locator)[:16].",
+  "type": "object",
+  "required": ["evidence_id", "source_id", "quote", "evidence_type", "captured_at"],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$",
+      "description": "sha256(source_id + normalized_quote + locator)[:16]"
+    },
+    "source_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$",
+      "description": "References a source in sources.jsonl"
+    },
+    "retrieval_query": {
+      "type": ["string", "null"],
+      "description": "The search query or prompt that led to this evidence",
+      "default": null
+    },
+    "locator": {
+      "type": ["string", "null"],
+      "description": "Page number, section heading, URL fragment, or timestamp within the source",
+      "default": null
+    },
+    "quote": {
+      "type": "string",
+      "description": "Exact or near-exact text extracted from the source"
+    },
+    "evidence_type": {
+      "type": "string",
+      "enum": ["direct_quote", "paraphrase", "data_point", "figure_reference", "methodology"],
+      "description": "How the evidence was captured"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

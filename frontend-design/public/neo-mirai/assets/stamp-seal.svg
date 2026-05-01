@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <filter id="rough" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="42"/>
+      <feDisplacementMap in="SourceGraphic" scale="1.6"/>
+    </filter>
+    <mask id="ink">
+      <rect width="64" height="64" fill="white"/>
+      <g fill="black" opacity="0.22">
+        <circle cx="11" cy="18" r="1.4"/>
+        <circle cx="49" cy="13" r="1"/>
+        <circle cx="19" cy="48" r="1.2"/>
+        <circle cx="43" cy="44" r="1.5"/>
+        <path d="M8 55h18v2H8zM37 8h15v2H37z"/>
+      </g>
+    </mask>
+  </defs>
+  <g filter="url(#rough)" mask="url(#ink)" fill="none" stroke="#d95a35" stroke-width="3.2" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M10 10h44v44H10z"/>
+    <path d="M23 18v28M41 18v28M23 31h18M17 24h12M35 40h12"/>
+  </g>
+</svg>

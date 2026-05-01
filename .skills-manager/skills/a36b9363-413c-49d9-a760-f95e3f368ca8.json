@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "a36b9363-413c-49d9-a760-f95e3f368ca8",
+  "path": "arrange",
+  "path_key": "arrange",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/pbakaus/impeccable/tree/main/.agents/skills",
+    "subpath": null,
+    "branch": "main"
+  }
+}

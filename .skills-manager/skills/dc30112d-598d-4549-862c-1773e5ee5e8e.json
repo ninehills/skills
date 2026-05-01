@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "dc30112d-598d-4549-862c-1773e5ee5e8e",
+  "path": "infographic-creator",
+  "path_key": "infographic-creator",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "skillssh",
+    "ref": "antvis/infographic/infographic-creator",
+    "subpath": "skills/infographic-creator",
+    "branch": null
+  }
+}

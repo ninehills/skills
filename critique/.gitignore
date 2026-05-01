@@ -1,0 +1,75 @@
+# Dependencies
+node_modules/
+
+# npm lockfile (project uses bun.lock; npm may regenerate this as a side
+# effect of npm subprocesses, but it should not be tracked)
+package-lock.json
+
+# Generated files
+dist/
+build/
+
+# Test fixtures simulate "generated dist" trees; keep them tracked so tests
+# can copy them into tmp git repos and assert is-generated behavior.
+!tests/framework-fixtures/**/dist/
+!tests/framework-fixtures/**/dist/**
+
+# Build artifacts
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code local state
+.claude/projects/
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
+
+# Environment
+.env
+.env.local
+
+# Cloudflare
+.wrangler/
+
+# Live mode session file + annotation screenshots (cleaned up on server stop)
+.impeccable-live.json
+.impeccable-live/
+
+# Per-project live mode injection config (generated once per project by the
+# skill; wiped on skill update, regenerated on next live run)
+**/skills/impeccable/scripts/config.json
+
+# Extension build artifacts
+extension/detector/
+
+# Legacy design context (pre-v3.1, auto-migrated to PRODUCT.md by load-context.mjs)
+.impeccable.md
+# Note: PRODUCT.md and DESIGN.md are INTENTIONALLY tracked in this repo —
+# they serve as reference implementations for users installing impeccable.
+# Users of impeccable in their own projects can choose whether to track them.
+
+# Evals (private, commercial)
+evals/
+tests/evals-v2/
+
+# Generated sub-pages (built from source/skills + content/site at build time)
+public/docs/
+public/anti-patterns/
+public/tutorials/
+public/visual-mode/
+public/slop/
+
+# Note: harness skill directories (.claude/skills/, .cursor/skills/, etc.)
+# are intentionally tracked. npx skills reads them from this repo at install
+# time, and they enable clean submodule use. Run `bun run build` to refresh
+# them after editing source/skills/.
+#
+# Codex CLI consumes `.agents/skills/`; `.codex/` is not used. Ignore it so
+# local artifacts or old trees are never committed.
+.codex/

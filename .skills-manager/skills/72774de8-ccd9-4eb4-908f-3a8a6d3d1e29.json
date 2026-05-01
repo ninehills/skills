@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "72774de8-ccd9-4eb4-908f-3a8a6d3d1e29",
+  "path": "animate",
+  "path_key": "animate",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/pbakaus/impeccable/tree/main/.agents/skills",
+    "subpath": null,
+    "branch": "main"
+  }
+}

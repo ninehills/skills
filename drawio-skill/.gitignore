@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Tooling artifacts
+.playwright-mcp/
+logs/
+
+# Auto-update timestamp (written by SKILL.md step 0)
+.last_update
+
+# Superpowers skill files (local-only)
+docs/superpowers

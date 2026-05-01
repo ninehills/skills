@@ -1,0 +1,28 @@
+{
+  "name": "Vite 8 + React + TypeScript",
+  "config": {
+    "files": ["index.html"],
+    "insertBefore": "</body>",
+    "commentSyntax": "html"
+  },
+  "sourceFiles": ["index.html", "src/App.tsx", "src/main.tsx", "src/styles.css", "vite.config.ts", "tsconfig.json"],
+  "generatedFiles": [],
+  "wrapCases": [
+    {
+      "name": "wraps hero title in source TSX",
+      "args": { "classes": "hero-title", "tag": "h1" },
+      "expectedFile": "src/App.tsx"
+    }
+  ],
+  "runtime": {
+    "styling": "plain-css-ts",
+    "install": ["npm", "install", "--no-audit", "--no-fund", "--loglevel=error"],
+    "devCommand": ["npx", "vite", "--host", "127.0.0.1"],
+    "readyPattern": "Local:\\s+https?://[^:]+:(\\d+)",
+    "readyTimeoutMs": 120000,
+    "probe": {
+      "expectLiveInit": true,
+      "expectConsoleClean": true
+    }
+  }
+}

@@ -94,6 +94,14 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 8. **Validate**: Run `rsvg-convert file.svg -o /dev/null 2>&1` to check syntax
 9. **Export PNG**: `rsvg-convert -w 1920 file.svg -o file.png`
 10. **Report** the generated file paths
+11. **(Optional) Visual self-review** — if your runtime can read images, load the exported PNG back and inspect it. Syntactic validity does not guarantee visual correctness: arrows may cross through component interiors, labels may collide with lifelines or other labels, boxes may overlap, alt-frame text may sit on top of a message, or a legend may cover content. If you see any of these, revise the SVG and re-export; repeat until the rendered image is clean. Common fixes:
+    - Route arrows through gaps between boxes, not through box interiors
+    - Add background rects behind arrow labels (opacity 0.95, matching canvas color)
+    - Widen inter-row/inter-column gutters so same-layer arrows have clear corridors
+    - Collapse repeated cross-layer arrows into a single "delegates down" rail outside the content area
+    - Move legend/notes out of any region where arrows or labels land
+    - Increase viewBox height/width rather than packing elements tighter
+  Skip this step silently if image reading is unavailable — do not guess.
 
 ## Diagram Types & Layout Rules
 
@@ -323,6 +331,13 @@ Always include a **legend** when 2+ arrow types are used.
 - Anchor arrows on component edges, not geometric centers
 - Route around dense node clusters, use different y-offsets for parallel arrows
 - Jump-over arcs (5px radius) for unavoidable crossings
+
+**Line Overlap Prevention** (CRITICAL - most common bug on Codex):
+When two arrows must cross each other, ALWAYS use jump-over arcs to prevent visual overlap:
+- Crossing horizontal arrows: add a small semicircle arc (radius 5px, stroke same color as arrow, fill none) that "jumps over" the other line
+- SVG pattern for jump-over: use a white/matching-background arc on the lower layer, then draw the upper arc on top
+- Multiple crossings: stagger arc radii (5px, 7px, 9px) so arcs don't overlap each other
+- Never let two arrows' straight-line segments cross without a jump-over arc
 
 **Validation Checklist** (run before finalizing):
 1. **Arrow-Component Collision**: Arrows MUST NOT pass through component interiors (route around with orthogonal paths)

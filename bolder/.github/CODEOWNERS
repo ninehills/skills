@@ -1,0 +1,8 @@
+# Global ownership — auto-request review from Paul on every PR
+* @pbakaus
+
+# Build system
+scripts/ @pbakaus
+
+# Source content (skills & commands)
+source/ @pbakaus

@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-23T00:00:00Z",
+  "title": "Design System: Impeccable",
+  "extensions": {
+    "colorMeta": {
+      "editorial-magenta": {
+        "role": "primary",
+        "displayName": "Editorial Magenta",
+        "description": "The one vibrant voice. Primary CTAs, active navigation, live-state indicators. Rarity is the design choice.",
+        "tonalRamp": [
+          "oklch(22% 0.12 350)",
+          "oklch(32% 0.18 350)",
+          "oklch(42% 0.22 350)",
+          "oklch(52% 0.25 350)",
+          "oklch(60% 0.25 350)",
+          "oklch(72% 0.18 350)",
+          "oklch(84% 0.10 350)",
+          "oklch(94% 0.04 350)"
+        ]
+      },
+      "editorial-magenta-deep": {
+        "role": "accent",
+        "displayName": "Editorial Magenta Deep",
+        "description": "Hover/active state for Editorial Magenta. Small darkening, confirms interaction without shouting."
+      },
+      "warm-ash-cream": {
+        "role": "neutral",
+        "displayName": "Warm Ash Cream",
+        "description": "Primary page background. Almost-imperceptible magenta tint that creates subconscious cohesion with the accent.",
+        "tonalRamp": [
+          "oklch(15% 0.005 350)",
+          "oklch(25% 0.005 350)",
+          "oklch(40% 0.005 350)",
+          "oklch(55% 0.005 350)",
+          "oklch(70% 0.005 350)",
+          "oklch(82% 0.005 350)",
+          "oklch(92% 0.005 350)",
+          "oklch(96% 0.005 350)"
+        ]
+      },
+      "crisp-paper-white": {
+        "role": "neutral",
+        "displayName": "Crisp Paper White",
+        "description": "Pure background for inverted text moments (white-on-dark CTAs) and maximum-contrast surfaces."
+      },
+      "deep-graphite": {
+        "role": "neutral",
+        "displayName": "Deep Graphite",
+        "description": "Primary text and primary-CTA background. Softer than pure black, reads as confident-but-not-aggressive on warm paper.",
+        "tonalRamp": [
+          "oklch(10% 0 0)",
+          "oklch(25% 0 0)",
+          "oklch(40% 0 0)",
+          "oklch(55% 0 0)",
+          "oklch(70% 0 0)",
+          "oklch(85% 0 0)",
+          "oklch(92% 0 0)",
+          "oklch(98% 0 0)"
+        ]
+      },
+      "soft-charcoal": {
+        "role": "neutral",
+        "displayName": "Soft Charcoal",
+        "description": "Secondary text — taglines, hook paragraphs, supporting copy."
+      },
+      "mid-ash": {
+        "role": "neutral",
+        "displayName": "Mid Ash",
+        "description": "Tertiary text — micro-labels, captions, meta lines. Reads as intentionally recessed metadata."
+      },
+      "paper-mist": {
+        "role": "neutral",
+        "displayName": "Paper Mist",
+        "description": "Hairline borders, section dividers, barely-visible structural seams."
+      },
+      "magenta-whisper": {
+        "role": "accent",
+        "displayName": "Magenta Whisper",
+        "description": "Diffuse glow backdrop under accent elements on hover; subtle selection highlights."
+      },
+      "magenta-veil": {
+        "role": "accent",
+        "displayName": "Magenta Veil",
+        "description": "Stronger translucent tint for focus rings and emphasis shells."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero title only. Light italic for an author-signature feel.",
+        "style": "italic"
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings. Larger editorial moments."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Hero tagline / section leads. A quieter second display voice.",
+        "style": "italic"
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraph copy. Capped at 65–75ch for readability."
+      },
+      "body-lead": {
+        "displayName": "Body Lead",
+        "purpose": "The one or two lead paragraphs on each page. Slightly relaxed leading."
+      },
+      "supporting": {
+        "displayName": "Supporting",
+        "purpose": "Captions, footnotes, supporting context."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "CTA labels. Short, declarative. Uppercase, letter-tracked."
+      },
+      "micro-label": {
+        "displayName": "Micro-Label",
+        "purpose": "\"Works with\", \"What's included\", \"v3.0 Changelog\"."
+      },
+      "mono": {
+        "displayName": "Monospace Meta",
+        "purpose": "Command names in inline prose, periodic-table tile labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "Soft Hover Lift",
+        "value": "0 4px 24px -4px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06)",
+        "purpose": "Default hover response on cards and interactive surfaces."
+      },
+      {
+        "name": "Lifted Card",
+        "value": "0 20px 40px rgba(0,0,0,0.08)",
+        "purpose": "Deliberately elevated content (featured cards, install blocks)."
+      },
+      {
+        "name": "Accent Glow",
+        "value": "0 20px 60px oklch(60% 0.25 350 / 0.15)",
+        "purpose": "Magenta-tinted ambient shadow under the rare magnetic moment. Used sparingly."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Primary curve. Expo-out feel — objects decelerate smoothly."
+      },
+      {
+        "name": "ease-out-quint",
+        "value": "cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Slightly sharper alternative. Use for transforms on compact elements."
+      },
+      {
+        "name": "duration-fast",
+        "value": "0.15s",
+        "purpose": "State transitions (color, opacity)."
+      },
+      {
+        "name": "duration-base",
+        "value": "0.3s",
+        "purpose": "Default for transforms and non-color changes."
+      },
+      {
+        "name": "duration-slow",
+        "value": "0.6s",
+        "purpose": "Orchestrated entrances."
+      }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary CTA",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Sharp, squared, uppercase. The editorial signature.",
+      "html": "<button class=\"ds-btn-primary\">GET STARTED</button>",
+      "css": ".ds-btn-primary { display: inline-block; padding: 16px 48px; font-family: 'Instrument Sans', system-ui, sans-serif; font-size: 0.9rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; color: oklch(98% 0 0); background: oklch(10% 0 0); border: none; border-radius: 0; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; } .ds-btn-primary:hover { transform: translateY(-2px); background: oklch(60% 0.25 350); }"
+    },
+    {
+      "name": "Inline Text Link",
+      "kind": "button",
+      "description": "Secondary action. No boxed secondary button exists in the system.",
+      "html": "<a href=\"#\" class=\"ds-link\">Read the docs</a>",
+      "css": ".ds-link { color: oklch(10% 0 0); font-family: 'Instrument Sans', system-ui, sans-serif; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; transition: color 0.2s ease; } .ds-link:hover { color: oklch(60% 0.25 350); }"
+    },
+    {
+      "name": "Email Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Hairline border, transparent background, magenta focus glow.",
+      "html": "<input type=\"email\" class=\"ds-input-email\" placeholder=\"you@example.com\">",
+      "css": ".ds-input-email { width: 100%; padding: 10px 14px; font-family: 'Instrument Sans', system-ui, sans-serif; font-size: 0.9rem; color: oklch(10% 0 0); background: transparent; border: 1px solid oklch(92% 0 0); border-radius: 6px; outline: none; transition: border-color 0.15s ease, box-shadow 0.15s ease; } .ds-input-email::placeholder { color: oklch(55% 0 0); } .ds-input-email:focus { border-color: oklch(60% 0.25 350); box-shadow: 0 0 0 3px oklch(60% 0.25 350 / 0.15); }"
+    },
+    {
+      "name": "Micro-Label",
+      "kind": "chip",
+      "description": "'What's included' style. Uppercase mono, wide tracking.",
+      "html": "<span class=\"ds-microlabel\">What's included</span>",
+      "css": ".ds-microlabel { display: inline-block; font-family: 'Space Grotesk', ui-monospace, monospace; font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(55% 0 0); }"
+    },
+    {
+      "name": "Site Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "62px compact bar. No underline at rest; accent underline on active.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-brand\">/ Impeccable</span><div class=\"ds-nav-links\"><a href=\"#\" class=\"ds-nav-link ds-nav-active\">Home</a><a href=\"#\" class=\"ds-nav-link\">Docs</a><a href=\"#\" class=\"ds-nav-link\">Anti-patterns</a></div></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 12px 20px; background: oklch(96% 0.005 350); font-family: 'Instrument Sans', system-ui, sans-serif; } .ds-nav-brand { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 1.05rem; color: oklch(10% 0 0); } .ds-nav-links { display: flex; gap: 16px; } .ds-nav-link { font-size: 0.85rem; font-weight: 500; color: oklch(10% 0 0); text-decoration: none; padding-bottom: 3px; border-bottom: 1px solid transparent; transition: color 0.2s ease, border-color 0.2s ease; } .ds-nav-link:hover { color: oklch(60% 0.25 350); } .ds-nav-active { border-bottom-color: oklch(60% 0.25 350); }"
+    },
+    {
+      "name": "Feature Card",
+      "kind": "card",
+      "refersTo": "card-feature",
+      "description": "Standard card: 12px radius, hairline border, hover lift with soft shadow.",
+      "html": "<article class=\"ds-card\"><h3 class=\"ds-card-title\">/impeccable polish</h3><p class=\"ds-card-body\">Sweep a site for AI-tool tells and refine typography, spacing, color in one pass.</p></article>",
+      "css": ".ds-card { padding: 20px 22px; background: oklch(98% 0 0); border: 1px solid oklch(92% 0 0); border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; font-family: 'Instrument Sans', system-ui, sans-serif; } .ds-card:hover { transform: translateY(-2px); box-shadow: 0 4px 24px -4px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.06); } .ds-card-title { font-family: 'Space Grotesk', ui-monospace, monospace; font-size: 0.85rem; font-weight: 500; color: oklch(10% 0 0); margin: 0 0 6px; } .ds-card-body { font-size: 0.85rem; line-height: 1.55; color: oklch(25% 0 0); margin: 0; }"
+    },
+    {
+      "name": "Command Category Tile",
+      "kind": "custom",
+      "description": "Signature component: periodic-table tile used in the commands visualization.",
+      "html": "<div class=\"ds-tile\"><span class=\"ds-tile-num\">07</span><span class=\"ds-tile-sym\">Po</span><span class=\"ds-tile-lbl\">polish</span></div>",
+      "css": ".ds-tile { display: grid; grid-template-rows: auto 1fr auto; align-items: center; justify-items: center; width: 56px; height: 64px; padding: 4px; background: #fdf2f8; border: 1px solid #ec4899; border-radius: 6px; color: #be185d; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; } .ds-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(236, 72, 153, 0.18); } .ds-tile-num { font-family: 'Space Grotesk', ui-monospace, monospace; font-size: 7px; font-weight: 500; letter-spacing: 0.05em; justify-self: start; } .ds-tile-sym { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 20px; font-weight: 500; line-height: 1; } .ds-tile-lbl { font-family: 'Space Grotesk', ui-monospace, monospace; font-size: 7px; font-weight: 500; letter-spacing: 0.05em; text-transform: lowercase; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Editorial Sanctuary",
+    "overview": "The Impeccable site reads more like a printed design publication than a SaaS landing page. Committed typography, generous breathing room, a single decisive accent. The aesthetic philosophy is restraint in service of craft. Every element earns its place.",
+    "keyCharacteristics": [
+      "Warm off-white paper tones with an almost-imperceptible magenta tint.",
+      "A single decisive magenta accent used on ≤10% of any screen.",
+      "Italic serif for display type; clean neutral sans for body at 1.6 line-height.",
+      "Sharp, uppercase, letter-tracked primary CTAs.",
+      "Flat surfaces at rest. Shadows appear only on state change.",
+      "Magazine-scale spacing (8 / 16 / 24 / 32 / 48 / 80 / 120px)."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "section": "colors", "body": "Editorial Magenta is the only vibrant color. No supporting accent, ever. If a second emphasis point is needed, use scale or weight, never a second hue." },
+      { "name": "The Paper-Not-White Rule", "section": "colors", "body": "Page background is Warm Ash Cream, never Crisp Paper White. Warmth is load-bearing." },
+      { "name": "The OKLCH-Only Rule", "section": "colors", "body": "All new colors declared in OKLCH. Hex is reserved for the fenced Command Category Tints." },
+      { "name": "The Italic-Is-Voice Rule", "section": "typography", "body": "Italic is a voice choice for display type, not emphasis inside body copy. Body emphasis is carried by weight." },
+      { "name": "The 1.6 Leading Rule", "section": "typography", "body": "Body line-height is 1.6 everywhere. Not 1.5, not 1.7. This is the load-bearing readability decision." },
+      { "name": "The Fluid-Headlines-Only Rule", "section": "typography", "body": "Headings use clamp() fluid sizing. Body copy uses fixed rem values." },
+      { "name": "The Flat-By-Default Rule", "section": "elevation", "body": "Surfaces are flat at rest. Reach for shadows only on hover or deliberate elevation." },
+      { "name": "The Low-Alpha Rule", "section": "elevation", "body": "Every shadow uses ≤0.15 alpha on its strongest blur. Higher alphas read as 2014 Material drop shadows." },
+      { "name": "The Tinted-Shadow-Only-For-Accent Rule", "section": "elevation", "body": "Neutral shadows for structure. Magenta-tinted shadows only for deliberate accent-glow moments." }
+    ],
+    "dos": [
+      "Do treat Warm Ash Cream as the default page background.",
+      "Do use Editorial Magenta on ≤10% of any given screen.",
+      "Do set all new colors in OKLCH.",
+      "Do use italic display type as a voice, not as emphasis inside paragraphs.",
+      "Do use clamp() fluid sizing for headings; use fixed rem for body.",
+      "Do keep the primary CTA sharp and squared. border-radius: 0, uppercase, letter-tracked.",
+      "Do use --ease-out (cubic-bezier(0.16, 1, 0.3, 1)) or --ease-out-quint on transitions.",
+      "Do leave surfaces flat at rest. Reach for shadows only on hover or deliberate elevation.",
+      "Do respect prefers-reduced-motion on every animation.",
+      "Do cap body line length at 65–75ch via max-width."
+    ],
+    "donts": [
+      "Don't use pure black (#000) or pure white (#fff).",
+      "Don't use border-left or border-right greater than 1px as a colored stripe. The AI-dashboard tell.",
+      "Don't use background-clip: text with a gradient. Gradient text is banned.",
+      "Don't default to dark mode.",
+      "Don't use glassmorphism.",
+      "Don't add a second accent color.",
+      "Don't use rounded rectangles with generic drop shadows.",
+      "Don't use bounce or elastic easing.",
+      "Don't animate layout properties (width, height, padding, margin). Use transform and opacity.",
+      "Don't nest cards inside cards.",
+      "Don't use identical card grids.",
+      "Don't use the hero-metric layout template.",
+      "Don't extend the Command Category Tints vocabulary.",
+      "Don't hedge in UI copy.",
+      "Don't introduce a new spacing token outside the 8/16/24/32/48/80/120 scale."
+    ]
+  }
+}

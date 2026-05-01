@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "1aee636f-ae68-4f81-83a6-5f936b2d6fa4",
+  "path": "cmux-terminal-multiplexer",
+  "path_key": "cmux-terminal-multiplexer",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "skillssh",
+    "ref": "aradotso/trending-skills/cmux-terminal-multiplexer",
+    "subpath": "skills/cmux-terminal-multiplexer",
+    "branch": null
+  }
+}

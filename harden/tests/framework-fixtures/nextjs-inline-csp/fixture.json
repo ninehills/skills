@@ -1,0 +1,21 @@
+{
+  "name": "Next.js (inline CSP headers)",
+  "config": {
+    "files": ["app/layout.tsx"],
+    "insertBefore": "</body>",
+    "commentSyntax": "jsx"
+  },
+  "sourceFiles": ["next.config.js", "app/layout.tsx"],
+  "generatedFiles": [],
+  "wrapCases": [],
+  "csp": {
+    "shape": "append-string",
+    "signals": [
+      "next.config.js:Content-Security-Policy",
+      "next.config.js:script-src",
+      "next.config.js:connect-src"
+    ],
+    "patchTarget": "next.config.js",
+    "expectedAfter": "expected-after-patch.js"
+  }
+}

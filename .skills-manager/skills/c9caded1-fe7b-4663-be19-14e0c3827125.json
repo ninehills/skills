@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "c9caded1-fe7b-4663-be19-14e0c3827125",
+  "path": "teach-impeccable",
+  "path_key": "teach-impeccable",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/pbakaus/impeccable/tree/main/.agents/skills",
+    "subpath": null,
+    "branch": "main"
+  }
+}

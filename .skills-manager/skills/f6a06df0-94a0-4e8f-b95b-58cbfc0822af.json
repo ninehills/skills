@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "f6a06df0-94a0-4e8f-b95b-58cbfc0822af",
+  "path": "hunt",
+  "path_key": "hunt",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/tw93/Waza",
+    "subpath": "skills/hunt",
+    "branch": null
+  }
+}

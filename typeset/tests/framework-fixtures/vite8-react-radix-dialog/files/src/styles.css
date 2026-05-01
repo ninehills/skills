@@ -1,0 +1,36 @@
+body { margin: 0; font-family: system-ui, sans-serif; }
+.page { padding: 2rem; }
+button { padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; }
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 50;
+}
+
+.dialog-content {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 51;
+}
+
+.dialog-content[role="dialog"] {
+  outline: none;
+}
+
+.lightbox {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  min-width: 360px;
+  max-width: 80vw;
+}
+
+.hero-title { font-size: 2rem; margin: 0; }
+.hero-hook { color: #555; }

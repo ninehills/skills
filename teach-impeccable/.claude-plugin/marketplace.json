@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "impeccable",
+  "metadata": {
+    "description": "Design fluency for AI harnesses. 1 skill, 23 commands, and curated anti-patterns for impeccable frontend design."
+  },
+  "owner": {
+    "name": "Paul Bakaus",
+    "email": "paul@paulbakaus.com"
+  },
+  "plugins": [
+    {
+      "name": "impeccable",
+      "description": "Design fluency for frontend development. 1 skill with 23 commands (/impeccable polish, /impeccable audit, /impeccable critique, etc.) and curated anti-pattern detection.",
+      "version": "3.0.6",
+      "author": {
+        "name": "Paul Bakaus",
+        "email": "paul@paulbakaus.com"
+      },
+      "source": "./plugin",
+      "category": "design",
+      "homepage": "https://impeccable.style",
+      "tags": ["design", "frontend", "ui", "ux", "skills", "commands"]
+    }
+  ]
+}

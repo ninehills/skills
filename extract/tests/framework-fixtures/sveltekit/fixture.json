@@ -1,0 +1,17 @@
+{
+  "name": "SvelteKit",
+  "config": {
+    "files": ["src/app.html"],
+    "insertBefore": "</body>",
+    "commentSyntax": "html"
+  },
+  "sourceFiles": ["src/app.html", "src/routes/+page.svelte"],
+  "generatedFiles": [],
+  "wrapCases": [
+    {
+      "name": "wraps hero title in route source",
+      "args": { "classes": "hero-title", "tag": "h1" },
+      "expectedFile": "src/routes/+page.svelte"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+body { margin: 0; font-family: system-ui, sans-serif; }
+.page { padding: 2rem; }
+.hero-title { font-size: 2rem; margin: 0; }
+.hero-hook { color: #555; }
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: grid; place-items: center; }
+.modal { background: white; padding: 2rem; border-radius: 1rem; min-width: 320px; }
+button { padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; }

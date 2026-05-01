@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claim",
+  "description": "An atomic claim extracted from the report. claim_id = sha256(section_id + sentence_text)[:16].",
+  "type": "object",
+  "required": ["claim_id", "section_id", "text", "claim_type", "support_status"],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$",
+      "description": "sha256(section_id + normalized_text)[:16]"
+    },
+    "section_id": {
+      "type": "string",
+      "description": "Section identifier (e.g. executive_summary, finding_1, synthesis)"
+    },
+    "text": {
+      "type": "string",
+      "description": "The atomic claim sentence"
+    },
+    "claim_type": {
+      "type": "string",
+      "enum": ["factual", "synthesis", "recommendation", "speculation"],
+      "description": "Only factual claims hard-fail on lack of support"
+    },
+    "cited_source_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+      "default": [],
+      "description": "Stable source_ids cited for this claim"
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+      "default": [],
+      "description": "Evidence rows that support this claim"
+    },
+    "support_status": {
+      "type": "string",
+      "enum": ["unverified", "supported", "partial", "unsupported", "needs_review"],
+      "description": "Set by verify_claim_support.py (PR5)"
+    },
+    "extracted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}

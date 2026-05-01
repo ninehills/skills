@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "d8757051-7634-4bbc-8240-d4d27b1c30a6",
+  "path": "frontend-design",
+  "path_key": "frontend-design",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/pbakaus/impeccable/tree/main/.agents/skills",
+    "subpath": null,
+    "branch": "main"
+  }
+}

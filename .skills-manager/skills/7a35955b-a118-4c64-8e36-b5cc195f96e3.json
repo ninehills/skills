@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "7a35955b-a118-4c64-8e36-b5cc195f96e3",
+  "path": "gpt-image2-ppt",
+  "path_key": "gpt-image2-ppt",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/JuneYaooo/gpt-image2-ppt-skills",
+    "subpath": null,
+    "branch": null
+  }
+}

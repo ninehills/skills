@@ -1,0 +1,5 @@
+body { margin: 0; font-family: system-ui, sans-serif; }
+.page { padding: 2rem; display: grid; gap: 1rem; }
+.card { padding: 1rem; border: 1px solid #ddd; border-radius: 0.5rem; }
+.hero-title { font-size: 1.5rem; margin: 0 0 0.5rem; }
+.hero-hook { color: #555; margin: 0; }

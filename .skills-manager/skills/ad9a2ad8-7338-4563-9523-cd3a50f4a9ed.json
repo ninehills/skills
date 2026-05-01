@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "ad9a2ad8-7338-4563-9523-cd3a50f4a9ed",
+  "path": "health",
+  "path_key": "health",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/tw93/Waza",
+    "subpath": "skills/health",
+    "branch": null
+  }
+}

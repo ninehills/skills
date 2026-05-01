@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "7f5724fb-ee95-4b9e-a029-f3c67d0cd905",
+  "path": "diagram-design",
+  "path_key": "diagram-design",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/cathrynlavery/diagram-design",
+    "subpath": "skills",
+    "branch": null
+  }
+}

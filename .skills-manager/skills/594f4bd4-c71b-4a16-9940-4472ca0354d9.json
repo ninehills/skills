@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "594f4bd4-c71b-4a16-9940-4472ca0354d9",
+  "path": "overdrive",
+  "path_key": "overdrive",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/pbakaus/impeccable/tree/main/.agents/skills",
+    "subpath": null,
+    "branch": "main"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "068c63d6-5fb9-4fe1-b0bd-86ec16341f8c",
+  "path": "ian-handdrawn-ppt",
+  "path_key": "ian-handdrawn-ppt",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/helloianneo/ian-handdrawn-ppt",
+    "subpath": "ian-handdrawn-ppt",
+    "branch": null
+  }
+}

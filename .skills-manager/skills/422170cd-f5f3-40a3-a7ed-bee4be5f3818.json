@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "422170cd-f5f3-40a3-a7ed-bee4be5f3818",
+  "path": "deep-research",
+  "path_key": "deep-research",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "skillssh",
+    "ref": "199-biotechnologies/claude-deep-research-skill/deep-research",
+    "subpath": null,
+    "branch": null
+  }
+}

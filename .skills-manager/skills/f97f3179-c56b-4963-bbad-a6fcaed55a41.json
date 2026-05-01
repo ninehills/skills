@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "f97f3179-c56b-4963-bbad-a6fcaed55a41",
+  "path": "design",
+  "path_key": "design",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/tw93/Waza",
+    "subpath": "skills/design",
+    "branch": null
+  }
+}
