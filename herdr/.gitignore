@@ -1,0 +1,12 @@
+/target
+__pycache__/
+*.pyc
+*.swp
+*.swo
+*~
+.DS_Store
+
+/docs
+
+/.pi/todos
+/.pi/issues
