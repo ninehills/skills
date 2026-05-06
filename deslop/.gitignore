@@ -1,0 +1,10 @@
+.DS_Store*
+._*
+.Trashes
+.private/
+.*.local
+.DS_Store
+*.skill
+*.zip
+*.tar.gz
+_*

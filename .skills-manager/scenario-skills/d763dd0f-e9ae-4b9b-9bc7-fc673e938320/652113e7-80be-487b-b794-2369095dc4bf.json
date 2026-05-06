@@ -16,6 +16,7 @@
     "github_copilot": true,
     "opencode": true,
     "pi": true,
+    "qwen_code": true,
     "trae": true
   }
 }

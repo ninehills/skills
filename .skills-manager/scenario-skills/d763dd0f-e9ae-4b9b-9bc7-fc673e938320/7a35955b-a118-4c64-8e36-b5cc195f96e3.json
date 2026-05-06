@@ -6,6 +6,7 @@
   "tools": {
     "antigravity": true,
     "claude_code": true,
+    "cline": true,
     "codex": true,
     "common": true,
     "continue": true,
@@ -15,6 +16,7 @@
     "github_copilot": true,
     "opencode": true,
     "pi": true,
+    "qwen_code": true,
     "trae": true
   }
 }

@@ -1,0 +1,23 @@
+{
+  "skill_name": "patent-draft-agent",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "根据 data/example_input.md 编写专利交底书",
+      "expected_output": "生成完整的专利交底书 output.md，包含发明目的、发明内容、现有技术检索三个章节，总篇幅≥3000字，包含 Mermaid 图表",
+      "files": ["data/example_input.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "根据 data/一种大模型驱动的基于浏览器的Agent系统.md 编写专利交底书",
+      "expected_output": "生成完整的专利交底书，标题符合专利规范（≤25字），包含专利检索报告和技术对比分析，总篇幅≥3000字",
+      "files": ["data/一种大模型驱动的基于浏览器的Agent系统.md"]
+    },
+    {
+      "id": 3,
+      "prompt": "帮我把这个技术方案写成专利交底书：一种基于强化学习的推荐系统冷启动方法，通过构建用户兴趣图谱和物品特征向量空间，利用多臂老虎机策略平衡探索与利用，解决新用户和新物品的冷启动问题。",
+      "expected_output": "生成完整的专利交底书，能基于简短输入进行合理创造性扩展，各章节篇幅达标，术语统一",
+      "files": []
+    }
+  ]
+}
