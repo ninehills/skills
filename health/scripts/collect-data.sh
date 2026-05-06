@@ -16,6 +16,14 @@ set -euo pipefail
 P=$(pwd)
 SETTINGS="$P/.claude/settings.local.json"
 TIER="${1:-auto}"
+MODE="${2:-${WAZA_HEALTH_MODE:-summary}}"
+if [ "${WAZA_HEALTH_DEEP:-0}" = "1" ]; then
+  MODE="deep"
+fi
+case "$MODE" in
+  summary|deep) ;;
+  *) MODE="summary" ;;
+esac
 PROJECT_KEY=$(printf '%s' "$P" | sed 's|[/_]|-|g; s|^-||')
 CONVO_DIR="$HOME/.claude/projects/-${PROJECT_KEY}"
 
@@ -276,7 +284,7 @@ print_conversation_signals() {
       echo "(unavailable: jq not installed or parse error)"
       return
     fi
-    chunk=$(printf '%s\n' "$chunk" | head -40 || true)
+    chunk=$(printf '%s\n' "$chunk" | head -20 || true)
     if [ -n "$chunk" ]; then
       found=1
       echo "--- file: $file ---"
@@ -350,6 +358,7 @@ echo "contributors: $CONTRIBUTORS"
 echo "ci_workflows:  $CI_WORKFLOWS"
 echo "skills:        $(count_local_skills)"
 echo "claude_md_lines: $(count_file_lines "$P/CLAUDE.md")"
+echo "collection_mode: $MODE"
 
 # Auto-detect tier if not passed as argument.
 # Matches SKILL.md definition: Simple = <500 files AND <=1 contributor AND no CI.
@@ -491,14 +500,14 @@ print_conversation_file_listing
 echo "=== CONVERSATION SIGNALS ==="
 print_conversation_signals
 
-if [ "$TIER" != "simple" ]; then
+if [ "$TIER" != "simple" ] && [ "$MODE" = "deep" ]; then
 echo "=== CONVERSATION EXTRACT ==="
 print_conversation_extract
 echo "=== MCP ACCESS DENIALS ==="
 print_mcp_access_denials
 else
-  echo "=== CONVERSATION EXTRACT ===" ; echo "(skipped: simple tier)"
-  echo "=== MCP ACCESS DENIALS ===" ; echo "(skipped: simple tier)"
+  echo "=== CONVERSATION EXTRACT ===" ; echo "(skipped: summary mode; ask for a deep health audit or run collect-data.sh auto deep for full conversation extracts)"
+  echo "=== MCP ACCESS DENIALS ===" ; echo "(skipped: summary mode; ask for a deep health audit or run collect-data.sh auto deep for access-denial scan)"
 fi
 
 echo "[9/10] Skill inventory + frontmatter + provenance..."
@@ -563,7 +572,7 @@ done | grep -q .; }; then
 fi
 
 echo "[10/10] Skill content sample + security scan..."
-if [ "$TIER" != "simple" ]; then
+if [ "$TIER" != "simple" ] && [ "$MODE" = "deep" ]; then
 echo "=== SKILL FULL CONTENT ==="
 _CONTENT_COUNT=0
 for DIR in "$P/.claude/skills" "$HOME/.claude/skills"; do
@@ -580,5 +589,5 @@ for DIR in "$P/.claude/skills" "$HOME/.claude/skills"; do
 done
 [ "$_CONTENT_COUNT" -gt 0 ] || echo "(none)"
 else
-  echo "=== SKILL FULL CONTENT ===" ; echo "(skipped: simple tier)"
+  echo "=== SKILL FULL CONTENT ===" ; echo "(skipped: summary mode; ask for a deep health audit or run collect-data.sh auto deep to sample skill bodies)"
 fi

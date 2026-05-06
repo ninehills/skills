@@ -1,9 +1,9 @@
 ---
 name: hunt
-description: "Finds root cause of errors, crashes, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
-when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, debug, why broken, not working, what's wrong, fix error, stack trace"
+description: "Finds root cause of errors, crashes, regressions, screenshot-reported defects, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
+when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, 以前是好的, 回归, 截图回归, 继续优化, 反复修不好, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace"
 metadata:
-  version: "3.17.0"
+  version: "3.19.0"
 ---
 
 # Hunt: Diagnose Before You Fix
@@ -41,9 +41,39 @@ Activate when the symptom is "used to work, now broken" or "broke after an updat
 
 Find the last-known-good tag (`git tag --sort=-version:refname | head -5`), define a non-interactive pass/fail test command, run `git bisect start / bad / good <tag>`, let bisect drive without jumping ahead, read large files once and reference from notes rather than re-reading at each step, and when bisect names the culprit commit read only that diff to identify the specific line that introduced the regression.
 
+## Repeated Regression / Screenshot Reference Mode
+
+Activate when the user says the same issue is still wrong after a fix, provides a "good" screenshot/version/file, or describes a visual result as previously correct.
+
+Treat the reference as evidence, not decoration:
+
+1. List every reported and visible symptom, preserving the user's concrete words where useful ("still slow", "not clear", "尖刺", "先显示上一个内容").
+2. Identify the reference oracle: last-good commit/tag, old build, fixture, screenshot, downloaded artifact, or expected state from the user's description.
+3. Define the pass/fail check before editing. For visual bugs, this may be a narrow screenshot checklist plus the command that renders the view; for behavioral bugs, prefer an automated regression test or deterministic repro.
+4. Compare current vs. reference and name the exact delta. Do not generalize a visual defect into "style polish" when the evidence points to a broken render, race, font pipeline, or state path.
+5. If the same symptom remains after one attempted fix, stop and rebuild the hypothesis from the evidence. Do not stack more patches onto a disproven explanation.
+
+If the issue is purely subjective UI taste, route to `/design`. If it is rendering, state, timing, build output, font generation, or a regression from a known-good version, stay in `/hunt`.
+
 ## Confirm or Discard
 
 Add one targeted instrument: a log line, a failing assertion, or the smallest test that would fail if the hypothesis is correct. Run it. If the evidence contradicts the hypothesis, discard it completely and re-orient with what was just learned. Do not preserve a hypothesis the evidence disproves.
+
+## Targeted Logging
+
+Use logs as a scalpel, not as noise. Before adding a log, write the question it answers:
+
+> "If this log prints X before Y, hypothesis A is still possible; if it does not, hypothesis A is wrong."
+
+Good logging flow:
+
+1. Place the first log at the boundary where the symptom should become explainable: request handler, state setter, cache read/write, render branch, async callback, build pass, or external tool boundary.
+2. Log the minimum discriminating facts: timestamp or sequence number, input key, selected branch, old/new state, error code, and correlation id. Do not dump whole objects, secrets, tokens, personal data, or huge payloads.
+3. If the expected log is missing, move upstream. If it appears with the wrong values, inspect that boundary. If it appears correctly, move downstream. This is binary search over the execution path.
+4. For timing bugs, log ordering and identity, not just values: event id, source, start/end, stale/current version, and thread/task/queue when available.
+5. Remove temporary logs before finishing, or gate useful diagnostics behind an existing debug flag/logger level. Do not leave `console.log`, `print`, or noisy tracing in shipped paths unless the project already keeps debug instrumentation there.
+
+If adding logs changes the behavior, treat that as evidence of a timing, lifecycle, buffering, or concurrency problem. Do not dismiss it as "just logging side effects."
 
 ## Gotchas
 
@@ -53,6 +83,7 @@ Add one targeted instrument: a log line, a failing assertion, or the smallest te
 | MCP not loading, switched tools instead of diagnosing | Check server status, API key, config before switching methods |
 | Orchestrator said RUNNING but TTS vendor was misconfigured | In multi-stage pipelines, test each stage in isolation |
 | Race condition diagnosed as a stale-state bug | For timing-sensitive issues, inspect event timestamps and ordering before state |
+| Added logs everywhere and still could not explain the bug | Rewrite each log as a yes/no question. Delete logs that do not rule a hypothesis in or out |
 | Reproduced locally but failed in CI | Align the environment first (runtime version, env vars, timezone), then chase the code |
 | Stack trace points deep into a library | Walk back 3 frames into your own code; the bug is almost always there, not in the dependency |
 | Worked when launched from app, broke when opened via file association / drag-drop / deep link / external proxy | Reproduce using the exact entry point the user described. App-internal init differs from cold-launch-with-file init; state may not be ready when the document arrives. |

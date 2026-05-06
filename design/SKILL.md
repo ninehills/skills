@@ -1,9 +1,9 @@
 ---
 name: design
 description: "Produces distinctive, production-grade UI for any component, page, or visual interface. Handles screenshot-driven iteration when the user sends an image with a visual complaint. Not for backend logic or data pipelines."
-when_to_use: "设计, 做页面, 做组件, 不好看, 不和谐, 样式, 前端, UI, build page, create component, make it look good, style, design, screenshot with visual complaint"
+when_to_use: "设计, 做页面, 做组件, 不好看, 不和谐, 不清晰, 很丑, 很怪, 样式, 前端, UI, 截图, build page, create component, make it look good, style, design, screenshot with visual complaint"
 metadata:
-  version: "3.18.0"
+  version: "3.19.0"
 ---
 
 # Design: Build It With a Point of View
@@ -18,12 +18,19 @@ Activate when the user sends a screenshot or image alongside a complaint ("这�
 
 **Flow:**
 
-1. Read the screenshot. State the problem in one sentence: what specifically looks wrong (spacing, contrast, alignment, typeface, color).
+1. Read the screenshot. State the problem in one sentence: what specifically looks wrong (spacing, contrast, alignment, typeface, color, density, hierarchy). Preserve the user's negative label when it is diagnostic; do not translate "丑", "乱", "不清晰", or "怪" into vague "make it modern" language.
 2. Wait for the user to confirm the diagnosis before touching code.
-3. If the diagnosis is a known UX problem (split-view sync, infinite scroll, virtualised list, sticky header), spend one round surveying how 2-3 mature products in the same category solve it before writing code. Cite what each does. Skip only if the fix is purely cosmetic (color, spacing, copy).
-4. Find the responsible code: grep for the component name or class, read the actual file. Do not rely on memory or assumptions about file location.
-5. Apply the minimal fix. One component, one issue.
-6. Ask the user to verify in the browser. Do not hand off without this step.
+3. If the user provides a reference screenshot, older version, or "this one is good" example, compare current vs. reference and name the visual deltas before choosing a fix.
+4. If the diagnosis is a known UX problem (split-view sync, infinite scroll, virtualised list, sticky header), spend one round surveying how 2-3 mature products in the same category solve it before writing code. Cite what each does. Skip only if the fix is purely cosmetic (color, spacing, copy).
+5. Find the responsible code: grep for the component name or class, read the actual file. Do not rely on memory or assumptions about file location.
+6. Apply the minimal fix. One component, one issue.
+7. Verify the result in a browser or screenshot tool at desktop width and 375px mobile width. If the host cannot render, say that explicitly and hand off the exact view the user should check.
+8. Ask the user to verify in the browser. Do not hand off without this step.
+
+**Calibration rules:**
+- The user's screenshot is the strongest design brief in the turn. Keep it visible in the reasoning until the fix is done.
+- Do not flatten specific taste feedback into generic UI adjectives. "More premium" is not a diagnosis; "caption baseline drifts above the Chinese line" is.
+- If the screenshot exposes a regression, broken render, timing issue, or generated asset defect rather than taste, route to `/hunt` and preserve the visual evidence.
 
 **Boundary**: if the fix requires changing 3 or more components, or if it reveals a direction problem rather than a specific bug, pause and run the full direction lock before continuing.
 
@@ -59,6 +66,10 @@ Only attach the target component folder or package. Exclude `.git`, `node_module
 ### App shell exception (sidebar + main workspace)
 
 If question 1 is an app shell (Slack, Linear, Notion class), load the "App shell rules" section in `references/design-reference.md` and apply those constraints before proceeding.
+
+### Data dashboard exception
+
+If the surface is a dashboard, analytics view, or chart-heavy interface, also load `references/design-data-viz.md` for chart selection, number alignment, and product-benchmark rules. Skip when building marketing pages, landing pages, or generic components.
 
 State the chosen direction in one sentence, then load `references/design-reference.md` and check the tech stack conflicts table. Name the single CSS strategy before writing the first component.
 

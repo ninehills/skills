@@ -1,8 +1,0 @@
-body { margin: 0; font-family: system-ui, sans-serif; }
-.page { padding: 2rem; }
-.tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-.tabs button { padding: 0.5rem 1rem; cursor: pointer; }
-.tabs button[aria-selected='true'] { background: #111; color: #fff; }
-.tab-panel { padding: 1rem; border: 1px solid #ddd; border-radius: 0.5rem; }
-.hero-title { font-size: 2rem; margin: 0 0 0.5rem; }
-.hero-hook { color: #555; }

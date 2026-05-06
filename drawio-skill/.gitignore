@@ -4,6 +4,8 @@
 # Tooling artifacts
 .playwright-mcp/
 logs/
+__pycache__/
+*.pyc
 
 # Auto-update timestamp (written by SKILL.md step 0)
 .last_update

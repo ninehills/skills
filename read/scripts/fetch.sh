@@ -10,6 +10,7 @@ set -euo pipefail
 URL="${1:?Usage: fetch.sh <url> [proxy_url]}"
 PROXY="${2:-}"
 
+# shellcheck disable=SC2329,SC2317  # called indirectly via _with_retry / _try_once
 _curl() {
   if [ -n "$PROXY" ]; then
     https_proxy="$PROXY" http_proxy="$PROXY" curl -sfL "$@"
@@ -19,7 +20,14 @@ _curl() {
 }
 
 _has_content() {
-  [ "$(echo "$1" | wc -l)" -gt 5 ] && echo "$1" | grep -qv "Don't miss what's happening"
+  local content="$1"
+  [ "$(printf '%s' "$content" | wc -l)" -gt 5 ] || return 1
+  # Reject pages dominated by login walls, captchas, or bot challenges that
+  # otherwise pass the line-count check. Add new markers here, not new branches.
+  if printf '%s' "$content" | grep -qE "Don't miss what's happening|Sign in to continue|Please sign in|Log in to continue|请登录|登录后查看|机器人验证|人机验证|Just a moment\.\.\.|Checking your browser" 2>/dev/null; then
+    return 1
+  fi
+  return 0
 }
 
 _try_once() {

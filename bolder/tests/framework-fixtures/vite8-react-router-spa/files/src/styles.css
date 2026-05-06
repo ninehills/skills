@@ -1,6 +1,0 @@
-body { margin: 0; font-family: system-ui, sans-serif; }
-.nav { display: flex; gap: 1rem; padding: 1rem; border-bottom: 1px solid #eee; }
-.nav a { color: #111; text-decoration: none; }
-.page { padding: 2rem; }
-.hero-title { font-size: 2rem; margin: 0 0 0.5rem; }
-.hero-hook { color: #555; }

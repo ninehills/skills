@@ -1,5 +1,0 @@
-.page { padding: 2rem; font-family: system-ui, sans-serif; }
-.heroTitle { font-size: 2rem; }
-.heroHook { color: #555; }
-.featureGrid { display: grid; gap: 1rem; grid-template-columns: repeat(2, 1fr); margin-top: 1rem; }
-.featureCard { padding: 1rem; border: 1px solid #ddd; border-radius: 0.5rem; }

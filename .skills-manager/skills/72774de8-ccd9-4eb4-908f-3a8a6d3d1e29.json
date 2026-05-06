@@ -8,7 +8,7 @@
   "source": {
     "type": "git",
     "ref": "https://github.com/pbakaus/impeccable/tree/main/.agents/skills",
-    "subpath": null,
+    "subpath": "skill",
     "branch": "main"
   }
 }

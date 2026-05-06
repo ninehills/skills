@@ -1,9 +1,9 @@
 ---
 name: think
-description: "Turns rough ideas into approved plans with validated structure before writing code. Covers new features, architecture decisions, and value judgments about whether to build, keep, or remove something. Not for bug fixes or small edits."
+description: "Turns rough ideas into approved, decision-complete plans with validated structure before writing code. Covers new features, architecture decisions, and value judgments about whether to build, keep, or remove something. Not for bug fixes or small edits."
 when_to_use: "出方案, 给方案, 深入分析, 怎么设计, 用什么方案, 判断一下, 有没有必要, 值不值得, what's the best approach, plan this, how should I, should we keep this"
 metadata:
-  version: "3.16.0"
+  version: "3.17.0"
 ---
 
 # Think: Design and Validate Before You Build
@@ -71,6 +71,19 @@ Get approval before proceeding. If the user rejects, ask specifically what did n
 
 **No placeholders in approved plans.** Every step must be concrete before approval. Forbidden patterns: TBD, TODO, "implement later," "similar to step N," "details to be determined." A plan with placeholders is a promise to plan later.
 
+## Implementation Handoff
+
+A finished plan must be executable by another engineer or agent without re-deciding the direction. Include:
+
+- Scope and non-scope.
+- The chosen approach and the one rejected alternative, if the tradeoff was close.
+- Public API, schema, command, config, or file-interface changes, if any.
+- Verification commands and manual acceptance checks.
+- Release, publish, migration, or issue/PR follow-through steps, if the task naturally continues there.
+- Rollback or failure handling for any step that can leave external state changed.
+
+When the user later says "Implement the plan", "可以干", "直接改", "整", or equivalent, treat that as approval of the written plan. Do not re-litigate the design. State which plan is being executed, check for obvious drift in the repo, and proceed. If the environment has changed enough that the plan is unsafe, name the specific drift and stop before editing.
+
 ## Gotchas
 
 | What happened | Rule |
@@ -81,6 +94,7 @@ Get approval before proceeding. If the user rejects, ask specifically what did n
 | Planned MCP workflow without checking if MCP was loaded | Verify tool availability before handing off, not mid-implementation |
 | Rejected design restarted from scratch | Ask what specifically failed, re-enter with narrowed constraints |
 | User said "just fix X" and skipped /think | If the fix touches 3+ files or needs a method choice, pause and run Lightweight Mode |
+| User approved a concrete plan and the agent debated the plan again | Execute the approved plan. Only stop for repo drift, missing permissions, or unsafe external state |
 | Picked a regional or locale-specific API variant without checking | List all regional or locale differences before writing integration code |
 | Introduced a second language or runtime into a single-stack project | Never add a new language or runtime without explicit approval |
 | User said "判断一下这个报错" and got Evaluation Mode | "判断一下" + error/bug context = debugging, route to `/hunt`. Evaluation Mode is for value/existence judgments only |
@@ -101,7 +115,7 @@ After the user approves the design, stop. Implementation starts only when reques
 When the plan is approved, output this guidance:
 
 ```
-Plan approved. To implement: describe what you want built, or say "implement this plan". After implementation, run `/check` to review before merging.
+Plan approved. To implement: say "implement this plan". After implementation, run `/check` to review before merging or release follow-through.
 ```
 
 Keep it concise (2-3 sentences max). The user decides when to start implementation.

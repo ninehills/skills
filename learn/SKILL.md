@@ -12,7 +12,7 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 
 Collect, organize, translate, explain, structure. Support the user's thinking; do not replace it.
 
-**Boundary**: single URL that only needs a summary (no cross-source synthesis, no new document) belongs in `/read`. `/learn` is for multi-source research that produces a new structured output.
+**Boundary**: single URL that only needs fetching belongs in `/read`. A single URL that needs summary or analysis can use `/read` as the fetch step, but the final answer should satisfy the user's requested summary or analysis. `/learn` is for multi-source research that produces a new structured output.
 
 ## Pre-check
 
@@ -40,7 +40,7 @@ Three ordered steps per source -- no shortcuts, no merging:
 
 1. **Discover** -- use an installed search plugin (e.g., PipeLLM) to map the landscape, then deep-search the 2-3 most promising sub-topics. No plugin: use the environment's native web search. Output is a URL list; do not fetch content here.
 2. **Fetch** -- every URL goes through `/read`. `/read` already owns the proxy cascade, paywall detection, and platform routing (WeChat, Feishu, PDF, GitHub). `WebFetch` and raw `curl` silently fail on JS-heavy or paywalled sites and skip all of that. If `/read` is missing (Pre-check warned), fall back to native fetch and accept reduced coverage.
-3. **File** -- `/read` saves to `~/Downloads/{title}.md`. Move each file into a sub-topic directory under the research project after the fetch returns. Move, don't refetch.
+3. **File** -- `/read` saves to `~/Downloads/{title}.md` when called from `/learn`. Move each file into a sub-topic directory under the research project after the fetch returns. Move, don't refetch.
 
 Target: 5-10 sources for a blog post, 15-20 for a deep technical survey.
 

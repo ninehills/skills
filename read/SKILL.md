@@ -1,7 +1,7 @@
 ---
 name: read
-description: "Fetches any URL or PDF as clean Markdown. Handles paywalls, JS-heavy pages, X/Twitter, and Chinese platforms via proxy cascade. Always prefer this over WebFetch for any URL. Not for local text files or source code already in the repo."
-when_to_use: "any URL in message, 看这个链接, 总结一下, 读一下, 看看这个网页, read this, check this URL, summarize this"
+description: "Fetches any URL or PDF as clean Markdown for reading, quoting, citation, or downstream work. Handles paywalls, JS-heavy pages, X/Twitter, and Chinese platforms via proxy cascade. Not for local text files already in the repo."
+when_to_use: "any URL or PDF to fetch, 看这个链接, 读一下, 看看这个网页, 抓取网页, read this, check this URL, fetch this page"
 metadata:
   version: "3.14.0"
 ---
@@ -10,7 +10,7 @@ metadata:
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
-Convert any URL or local PDF to clean Markdown and save it. No analysis, no summary, no discussion of the content unless explicitly asked.
+Convert any URL or local PDF to clean Markdown. No analysis, no summary, no discussion of the content unless explicitly asked after the fetch.
 
 ## Routing
 
@@ -39,10 +39,19 @@ Content
 
 ## Saving
 
-Save to `~/Downloads/{title}.md` with YAML frontmatter by default.
-Skip only if user says "just preview" or "don't save". Tell the user the saved path.
+**Default: display only.** Show the converted Markdown inline. Do not create a file.
 
-If `~/Downloads/{title}.md` already exists, append `-1`, `-2`, etc., to the filename. Never overwrite an existing file without explicit confirmation.
+**Save to `~/Downloads/{title}.md`** with YAML frontmatter when any of these are true:
+- User explicitly asks: "save", "download", "保存", "下载", "keep this"
+- Called from within `/learn` (Phase 1 expects a file to move)
+- User says "save" or "保存" after seeing the output (use conversation content, do not re-fetch)
+
+When saving:
+- If the file already exists, append `-1`, `-2`, etc. Never overwrite without confirmation.
+- Tell the user the saved path.
+
+When not saving:
+- Do not mention that a file was not saved. Just show the content.
 
 ## Images
 
@@ -65,7 +74,7 @@ When asked, after saving the Markdown:
 | What happened | Rule |
 |---------------|------|
 | Fetched a paywalled article and returned a login page as Markdown | Inspect the first 10 lines for paywall signals ("Subscribe", "Sign in", "Continue reading"). If found, stop and warn the user. Do not save the login page. |
-| User said "read this" but meant "summarize and act on it" | Deliver the Markdown first, then ask what to do next. Do not skip the save step. |
+| User said "read this" but meant "summarize and act on it" | Deliver the Markdown first, then ask what to do next. Do not save unless asked. |
 | URL returned empty page or paywall with no content | Report the failure clearly: what was tried, what failed. Do not fabricate or guess the content. |
 | r.jina.ai or defuddle.md returned empty for a JS-heavy site | Try the local fallback (`agent-fetch` or `defuddle parse`) before giving up. |
 | Network failures | Prepend local proxy env vars if available and retry once. |
