@@ -1,16 +1,34 @@
 ---
 name: check
-description: "Reviews code diffs and release-ready changes after implementation, extracts project-specific constraints from repository context, auto-fixes safe issues, and drives approved release, publish, push, release-reaction, and issue/PR follow-through. Also triages issues and PRs when the user mentions them. Not for exploring ideas or debugging."
-when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review"
+description: "Reviews code diffs and release-ready changes after implementation, executes approved implementation plans, extracts project-specific constraints from repository context, auto-fixes safe issues, and drives approved release, publish, push, release-reaction, and issue/PR follow-through. Also triages issues and PRs when the user mentions them. Not for exploring ideas, debugging, or document prose review."
+when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review"
 metadata:
-  version: "3.21.0"
+  version: "3.23.0"
 ---
 
 # Check: Review Before You Ship
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
+> Note: `/review` is a built-in Anthropic plugin command for PR review. Waza uses `/check` (or the alias `code-review`) instead. Do not re-trigger `/review` from within this skill.
+
 Read the diff, find the problems, fix what can be fixed safely, ask about the rest. Done means verification ran in this session and passed.
+
+## Plan Execution Mode
+
+Activate when the user's message starts with "Implement the following plan", "按计划实施", "按照计划", "整", "可以干", "直接改" followed by a plan body, or links to a `/think` output.
+
+In this mode, do not run a code review. Instead:
+
+1. State which plan is being executed (first heading or summary line).
+2. Check for obvious repo drift: run `git status` and skim any changed files that contradict the plan. If drift makes the plan unsafe, name the specific conflict and stop.
+3. Work through each plan item as a to-do. Mark each complete as you go.
+4. After all items are done, run the project's verification command.
+5. Transition automatically into Ship mode if the project context or current thread indicates review-then-ship.
+
+## Default Continuation (review-then-ship)
+
+When the project's `AGENTS.md` or the current thread explicitly asks to "commit after review", "ship if green", or equivalent, transition directly from review to the Ship flow after a clean review. Do not ask again. State "proceeding to ship" before acting.
 
 ## Project Context Extraction
 
@@ -25,6 +43,16 @@ Before reviewing, extract project constraints from repository context:
 5. If project docs or CI name a verification command, prefer that over auto-detection.
 
 For the context shape, see `references/project-context.md`.
+
+## Durable Context Preflight
+
+Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+
+Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
+
+Map memory types before using them: `decision`, `preference`, and `principle` are private task constraints; `pattern` and `learning` are review checklists; `fact` must be verified against current state before it affects the review. Current code, diff, public docs, CI, tests, and remote state override memory.
+
+For `/check`, durable memory can explain user intent and preferred follow-through, but public project rules still come from README files, manifests, CI workflows, release docs, the diff, and explicit instructions in the current thread. Never cite private memory as a public project requirement.
 
 ## Get the Diff
 
@@ -55,6 +83,19 @@ Default to this shape unless `AGENTS.md` or `CLAUDE.md` in the repo contradicts 
 ```
 triage:           N reviewed, N closed, N deferred
 ```
+
+## Release Worthiness Analysis
+
+Activate when the user asks "深入分析 X 是不是值得发新版本", "is this worth a new release", "值不值得发版", or similar.
+
+1. Run `git log <last-tag>..HEAD --oneline` (find last tag with `git tag --sort=-version:refname | head -1`).
+2. Count and classify commits: feat (new feature), fix (bug fix), chore/docs/refactor (internal).
+3. Output:
+   - **Commit summary**: N feat, N fix, N chore since last release
+   - **Verdict**: release / skip (one line)
+   - **Recommended version bump**: patch (fixes only), minor (feat present), major (breaking change)
+   - **Key risk**: one sentence on the biggest risk in this batch
+4. If verdict is "release", offer to transition into Ship mode.
 
 ## Ship / Release Follow-through
 
@@ -151,17 +192,9 @@ For bug fixes: a regression test that fails on the old code must exist before th
 | Deployed without env vars set | Run `vercel env ls` before deploying; diff against local keys |
 | Push failed from auth mismatch | Run `git remote -v` before the first push in a new project |
 
-## Document Review Mode
+## Document Review
 
-Activate when: PDF, document, release notes, white paper, final version, or "check this document"
-
-Review checklist:
-- **Privacy scan**: Detect PII (names, companies, employment dates, salary hints, location details). Hard stop if any text implies job seeking, competitor info, or personal data leakage.
-- **Tone consistency**: Flag voice shifts, register mismatches, formulaic phrasing. Check for AI patterns (see `/write` skill for detection rules).
-- **Bilingual validation**: For CN/EN pairs, confirm translation accuracy and terminology consistency. Use `/write` skill's bilingual rules.
-- **Rendering check**: Placeholder text remaining (`Lorem ipsum`, `TODO`, `[TBD]`), style violations, font fallbacks, broken image links.
-
-Output format: same as code review sign-off, but replace `verification:` with `privacy: clear / N issues found`.
+For document, PDF, white paper, or prose review, route to `/write` (Document Review Mode). `/check` handles code diffs and release artifacts only.
 
 ## Sign-off
 

@@ -8,7 +8,7 @@
   "source": {
     "type": "skillssh",
     "ref": "agents365-ai/drawio-skill/drawio-skill",
-    "subpath": null,
+    "subpath": "skills/drawio-skill",
     "branch": null
   }
 }

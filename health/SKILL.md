@@ -3,7 +3,7 @@ name: health
 description: "Runs a budget-aware audit of the Claude Code config stack when Claude ignores instructions, behaves inconsistently, hooks malfunction, MCP servers need auditing, or users ask why /health used many tokens. Flags issues by severity. Not for debugging code or reviewing PRs."
 when_to_use: "检查claude, 健康度, 配置检查, 配置对不对, Claude ignoring instructions, check config, settings not working, audit config"
 metadata:
-  version: "3.17.0"
+  version: "3.18.0"
 ---
 
 # Health: Audit the Six-Layer Stack
@@ -18,6 +18,16 @@ Find violations. Identify the misaligned layer. Calibrate to project complexity 
 **Output language:** Check in order: (1) CLAUDE.md `## Communication` rule (global over local); (2) user's recent language; (3) English.
 
 **Budget posture:** Start with the summary audit. Escalate automatically when the user asks for a deep, full, complete, thorough, "深入", "完整", "彻底", or "继续跑完" audit, when current project instructions or remembered user preference says to run deep health checks by default, when the project is Complex, or when the summary pass exposes a critical ambiguity that cannot be resolved locally. Otherwise do not read full conversation extracts or launch inspector subagents. Tell the user before escalating because deep health audits can consume significant token quota.
+
+## Durable Context Preflight
+
+Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+
+Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
+
+Map memory types before using them: `decision`, `preference`, and `principle` are audit expectations; `pattern` and `learning` are checks for repeated failures; `fact` must be verified against current state before it becomes a finding. CLAUDE.md, installed skills, hooks, MCP config, command output, and live probes override memory.
+
+For `/health`, also flag durable memory problems when they affect behavior: oversized injected summaries, stale or contradictory entries, missing project entrypoint references, or private paths copied into public instructions. Keep these as context findings, not code-review findings.
 
 ## Step 0: Assess project tier
 
@@ -36,18 +46,17 @@ Pick one. Apply only that tier's requirements.
 Run the collection script in summary mode first. Do not interpret yet.
 
 ```bash
+# Resolve collect-data.sh from canonical locations (no personal home-dir paths).
 HEALTH_SCRIPT="${CLAUDE_SKILL_DIR:+$CLAUDE_SKILL_DIR/scripts/collect-data.sh}"
 if [ ! -f "${HEALTH_SCRIPT:-}" ]; then
   for candidate in \
     "./skills/health/scripts/collect-data.sh" \
-    "$HOME/.claude/skills/waza/skills/health/scripts/collect-data.sh" \
-    "$HOME/.agents/skills/waza/skills/health/scripts/collect-data.sh" \
-    "$HOME/.agents/skills/health/scripts/collect-data.sh"; do
+    "$(npx skills path tw93/Waza 2>/dev/null)/skills/health/scripts/collect-data.sh"; do
     [ -f "$candidate" ] && HEALTH_SCRIPT="$candidate" && break
   done
 fi
 if [ ! -f "${HEALTH_SCRIPT:-}" ]; then
-  echo "health collect-data.sh not found"
+  echo "health collect-data.sh not found; set CLAUDE_SKILL_DIR or reinstall: npx skills add tw93/Waza -a claude-code -g -y"
   exit 1
 fi
 bash "$HEALTH_SCRIPT"

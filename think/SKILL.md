@@ -3,7 +3,7 @@ name: think
 description: "Turns rough ideas into approved, decision-complete plans with validated structure before writing code. Covers new features, architecture decisions, and value judgments about whether to build, keep, or remove something. Not for bug fixes or small edits."
 when_to_use: "出方案, 给方案, 深入分析, 怎么设计, 用什么方案, 判断一下, 有没有必要, 值不值得, what's the best approach, plan this, how should I, should we keep this"
 metadata:
-  version: "3.17.0"
+  version: "3.18.0"
 ---
 
 # Think: Design and Validate Before You Build
@@ -24,9 +24,21 @@ Upgrade to full mode if you find 3 or more genuinely different approaches with m
 
 ## Evaluation Mode
 
-Activate when the user wants to judge whether something should exist, be kept, exposed, or removed. Typical triggers: "判断一下", "有没有必要", "值不值得", "should we keep this", "is this worth it".
+Activate when the user wants to judge whether something should exist, be kept, exposed, or removed. Typical triggers: "判断一下", "有没有必要", "值不值得", "should we keep this", "is this worth it", "我不想做", "商业前景", "有没有必要继续".
 
-State the evaluation target and what kind of judgment is needed (value, risk, or tradeoff). Take a current-state snapshot: what it does, who uses it, what depends on it; grep and read before opining. Give one recommended conclusion with rationale; no options list. If the conclusion is "remove" or "major rework", list impact scope: files, dependents, migration cost. Wait for confirmation before acting.
+State the evaluation target and what kind of judgment is needed (value, risk, or tradeoff). Take a current-state snapshot: what it does, who uses it, what depends on it; grep and read before opining.
+
+**Output format (Kill/Keep/Pivot):**
+
+Line 1: one of **Kill** / **Keep** / **Pivot** as the verdict. No preamble.
+
+Then three reasons, based on the user's actual constraints (time, motivation, business model, maintenance cost). Not generic tradeoffs.
+
+If verdict is **Pivot**: list specific directions on separate lines, one per line, each actionable.
+
+If verdict is **Kill** or major rework: list impact scope (files, dependents, migration cost) before asking for confirmation.
+
+Do not use a build-plan template here. Do not list options. Give one verdict.
 
 Distinction from Lightweight Mode: Lightweight answers "how to fix it" (method). Evaluation answers "should it exist" (value judgment).
 
@@ -35,6 +47,16 @@ Distinction from Lightweight Mode: Lightweight answers "how to fix it" (method).
 - Confirm the working path: `pwd` or `git rev-parse --show-toplevel`. Never assume `~/project` and `~/www/project` are the same.
 - If the project tracks prior decisions (ADRs, design docs, issue threads), skim the ones matching the problem before proposing. Skip if none exist.
 - If the plan involves a default value, env var, or config field, open the project's actual config file (e.g. `pake.json`, `tauri.conf.json`, `package.json`, `.env`) and lift the live value. Never quote a default from memory or docs.
+
+## Durable Context Preflight
+
+Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+
+Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
+
+Map memory types before using them: `decision`, `preference`, and `principle` are planning constraints; `pattern` and `learning` are design checks; `fact` must be verified against current state before it affects the plan. Current repo state, live docs, logs, tests, and remote state override memory; if they conflict, name the conflict and follow current state.
+
+For `/think`, lock durable decisions and preferences before asking questions. Do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
 
 ## Check for Official Solutions First
 

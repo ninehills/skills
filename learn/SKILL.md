@@ -1,7 +1,7 @@
 ---
 name: learn
 description: "Runs a six-phase research workflow to turn unfamiliar domains or collected sources into publish-ready output. Not for quick lookups or single-file reads."
-when_to_use: "学习一下, 深入研究, 研究一下, 整理成文章, research, deep dive, help me understand, compile sources, unfamiliar domain"
+when_to_use: "学习一下, 深入研究, 研究一下, 整理成文章, 把这批材料整理, 一站式参考, 一篇就够, 整理成长文, research, deep dive, help me understand, compile sources, unfamiliar domain"
 metadata:
   version: "3.15.0"
 ---
@@ -29,8 +29,22 @@ Ask the user to confirm the mode, using the environment's native question or app
 | **Deep Research** | Understand a domain well enough to write about it | Phase 1 | Phase 6: publish-ready draft |
 | **Quick Reference** | Build a working mental model fast, no article planned | Phase 2 | Phase 2: notes only |
 | **Write to Learn** | Already have materials, force understanding through writing | Phase 3 | Phase 6: publish-ready draft |
+| **Canonical Article** | One article that covers a topic so thoroughly readers need nothing else | Phase 1 | Phase 6: single authoritative reference |
 
 If unsure, suggest Quick Reference.
+
+## Canonical Article Mode
+
+Activate when: "一篇就够", "一站式参考", "整理成长文", "目的是大家只需要看这篇就好了", or the user wants a single authoritative reference on a topic.
+
+Goal: after reading the article, no one should need to search for anything else on this topic.
+
+Additional requirements on top of standard Deep Research:
+- Every major sub-topic must have its own section; nothing left as a footnote
+- Include worked examples, not just principles
+- Cover common mistakes and how to avoid them
+- Add a "Further Reading" section with the 3-5 sources that go deepest; flag which ones are the best starting points
+- Phase 6 self-review must confirm: "Could a reader implement/understand this from this article alone?"
 
 ## Phase 1: Collect
 

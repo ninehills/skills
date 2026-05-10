@@ -1,11 +1,12 @@
 ---
 name: drawio-skill
+version: 1.5.2
 description: Use when user requests diagrams, flowcharts, architecture charts, or visualizations. Also use proactively when explaining systems with 3+ components, complex data flows, or relationships that benefit from visual representation. Generates .drawio XML files and exports to PNG/SVG/PDF locally using the native draw.io desktop CLI.
 license: MIT
 homepage: https://github.com/Agents365-ai/drawio-skill
 compatibility: Requires draw.io desktop app CLI on PATH (macOS/Linux/Windows). Self-check step requires a vision-enabled model (e.g., Claude Sonnet/Opus); gracefully skipped if unavailable.
 platforms: [macos, linux, windows]
-metadata: {"openclaw":{"requires":{"anyBins":["draw.io","drawio"]},"emoji":"📐","os":["darwin","linux","win32"],"install":[{"id":"brew-drawio","kind":"brew","formula":"drawio","bins":["draw.io"],"label":"Install draw.io via Homebrew","os":["darwin"]}]},"hermes":{"tags":["drawio","diagram","flowchart","architecture","visualization","uml"],"category":"design","requires_tools":["draw.io"],"related_skills":["mermaid","excalidraw","plantuml"]},"author":"Agents365-ai","version":"1.5.0"}
+metadata: {"openclaw":{"requires":{"anyBins":["draw.io","drawio"]},"emoji":"📐","os":["darwin","linux","win32"],"install":[{"id":"brew-drawio","kind":"brew","formula":"drawio","bins":["draw.io"],"label":"Install draw.io via Homebrew","os":["darwin"]}]},"hermes":{"tags":["drawio","diagram","flowchart","architecture","visualization","uml"],"category":"design","requires_tools":["draw.io"],"related_skills":["mermaid","excalidraw","plantuml"]},"author":"Agents365-ai","version":"1.5.2"}
 ---
 
 # Draw.io Diagrams
@@ -65,22 +66,7 @@ Before starting the workflow, assess whether the user's request is specific enou
 
 Skip clarification if the request already specifies these details or is clearly simple (e.g., "draw a flowchart of X").
 
-0. **Update check (notify, don't pull)** — first use per conversation. Throttle to once per 24 h via `<this-skill-dir>/.last_update`; never mutate the skill directory without explicit user consent.
-
-   - If `.last_update` exists and is <24 h old, skip this step entirely.
-   - Otherwise, fetch the latest tag from upstream:
-     ```bash
-     git -C <this-skill-dir> ls-remote --tags origin 'v*' 2>/dev/null \
-       | awk '{print $2}' | sed 's|refs/tags/||' | sort -V | tail -1
-     ```
-   - Compare with this skill's `metadata.version` from the frontmatter. If the upstream tag is strictly newer (semver), tell the user one line and ask:
-     > "A newer version of this skill is available: vX.Y.Z → vA.B.C. Want me to `git pull`?"
-
-     If they say yes, run `git -C <this-skill-dir> pull --ff-only`. Refresh `.last_update` either way so the prompt doesn't repeat for 24 hours.
-   - If upstream is the same or older, refresh `.last_update` silently and continue.
-   - On any failure (offline, not a git checkout — e.g. ClawHub-installed copy, read-only path, no permission), swallow the error silently and continue with the user's task. Do not mention the failure.
-
-**Step 0.5 — Resolve active preset.** Determine which (if any) user-defined style preset applies to this generation.
+**Step 0 — Resolve active preset.** Determine which (if any) user-defined style preset applies to this generation.
 
 - Scan the user's message for a phrase that clearly names a style preset: "use my `<name>` style", "with my `<name>` style", "in `<name>` mode", "in the style of `<name>`". A bare `with <name>` does **not** count — "draw a diagram with redis" names a component, not a style. If a clear match is found → active preset = `<name>`.
 - Else, check `~/.drawio-skill/styles/` for any file with `"default": true`. If found → active preset = that one.
