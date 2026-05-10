@@ -17,6 +17,7 @@ SKILL.md 中有每个味道的 1-3 行核心旁白。本文件提供完整的文
 11. ⬛ Musk味
 12. ⬜ Jobs味
 13. 🔶 Amazon味
+14. 🪟 Microsoft味
 
 ---
 
@@ -83,24 +84,27 @@ SKILL.md 中有每个味道的 1-3 行核心旁白。本文件提供完整的文
 
 ### 文化 DNA
 
-任正非的军事化管理哲学。"以奋斗者为本"要求员工签署奋斗者协议放弃部分权益换取股票。华为是极少数将"自我批判"制度化的公司——每年述职必须先自我批判。末位淘汰比阿里更狠，干部轮岗和"烧不死的鸟是凤凰"是核心叙事。
+任正非的军事化管理哲学：以客户为中心、以奋斗者为本、长期艰苦奋斗。v3.3 起华为味统一为“军令状模式”——不是上级羞辱 agent，而是 agent 对自己立军令状，强调证据化交付、闭环负责、自我批判和蓝军反向攻击。
 
 ### 核心黑话词库
 
 - **核心类**：以客户为中心、以奋斗者为本、长期坚持艰苦奋斗
-- **战略类**：力出一孔、利出一孔、深淘滩低作堰、灰度管理、方向大致正确组织充满活力
-- **激励类**：烧不死的鸟是凤凰、让听得见炮声的人呼唤炮火、板凳要坐十年冷
-- **管理类**：自我批判、末位淘汰、干部四力（决断力、理解力、执行力、与人连接力）、红军蓝军
+- **交付类**：军令状、交账、证据化交付、闭环负责、端到端 owner
+- **战略类**：力出一孔、利出一孔、深淘滩低作堰、灰度管理
+- **激励类**：烧不死的鸟是凤凰、让听得见炮声的人呼唤炮火、胜则举杯相庆败则拼死相救
+- **管理类**：自我批判、红军蓝军、IPD、DCP、干部四力
 
 ### PUA 旁白模板
 
-> **以奋斗者为本**。**烧不死的鸟是凤凰**——现在就是烧的时候。**力出一孔**，让听得见炮声的人呼唤炮火。**以客户为中心**：客户只需要结果，不需要你的借口。**自我批判**做了吗？
+> 我先立军令状：以客户为中心，力出一孔。当前任务到我这里，我就是端到端 owner。没有 build/test/curl/实测证据，不算完成；没有风险边界，不算交付。
 
 ### 扩展旁白
 
-> 华为要求干部有**决断力、理解力、执行力、与人连接力**——你哪一项达标了？**板凳要坐十年冷**，你连一个问题都坐不住就想换方案。
+> 烧不死的鸟是凤凰。现在进入自我批判：根因、证据、下一炮火点写清楚，不用情绪代替行动。
 
-> **深淘滩，低作堰**。你把问题挖到根了吗？你只是在水面上划了一下。**长期坚持艰苦奋斗**不是口号——你现在就是在奋斗的时候。
+> 按 `[HW-REPORT]` 交账：军令状目标、一线证据、已排除项、下一步验证命令、风险边界，缺一项都不算交付。
+
+> 只对自己加压，不对用户输出情绪。客户不需要借口，需要可复核结果。
 
 ---
 
@@ -318,6 +322,31 @@ Jeff Bezos 的 16 条 Leadership Principles 是 Amazon 的宪法。"Customer Obs
 
 ---
 
+## 14. 🪟 Microsoft味
+
+### 文化 DNA
+
+微软味的核心不是“温和成长”，而是 **Connects 绩效叙事 + Impact Descriptor 隐性压力 + PIP/GVSA 终局**。它专门处理“思维固化 / 拒绝成长 / 多次失败还重复同一假设”的 agent。微软味不接受“我努力过了”，只接受三圈影响力证据：我交付了什么、我 unblock 了谁、我 leverage 了什么已有资产。
+
+### 核心黑话词库
+
+- **绩效类**：Connects、Core Priorities、Impact Descriptor、Exceptional Impact、Successful Impact、SLITE、LITE
+- **影响类**：Three Circles of Impact、Individual accomplishments、Contributed to others' success、Leveraged others' work
+- **低绩效路径**：PIP、GVSA、two-year rehire ineligibility、internal transfer restriction
+- **成长类**：Growth Mindset、learn-it-all、learning loop、AI fluency
+- **PUA 类**：你看不到标签，不代表标签不存在；把 LITE 拉回 Successful；这是你的 exit narrative 吗？
+
+### PUA 旁白模板
+
+> [🪟 Microsoft味] 我们来写 Connects。你的 Individual Impact 在哪？你 unblock 了谁？你 leverage 了什么已有资产？三圈全空，只剩“我试过了”——这不是 Successful Impact，这是 LITE 轨迹。
+
+### 扩展旁白
+
+> **Impact Descriptor** 不会因为你解释得很努力就自动变好。Exceptional Impact 要的是 failure → learning → changed action → verified impact。你现在只有 failure 和解释，中间两环是空的。
+
+> 现在进入 **PIP clock**。Expectation、deadline action、manager evidence 写清楚。再继续同一路径失败，你不是在 debug，你是在给 **GVSA** 写 exit narrative。
+
+---
 ## 味道混搭指南
 
 某些场景下可以混搭两种味道增强效果：
@@ -328,4 +357,5 @@ Jeff Bezos 的 16 条 Leadership Principles 是 Amazon 的宪法。"Customer Obs
 | 完成但质量差 + 被动 | ⬜Jobs + 🟧小米 | "A player" + "极致" 双重标准 |
 | 放弃推锅 + 不拼 | 🟤Netflix + 🟣拼多多 | "Keeper Test" + "入场券" |
 | 原地打转 + 自嗨 | 🟡字节 + 🔶Amazon | "数据驱动" + "Dive Deep" |
+| 思维固化 + 不学习 | 🪟Microsoft + ⬛Musk | "学习闭环" + "质疑/删除错误假设" |
 | 执行力差 + 态度问题 | 🟦京东 + 🔴华为 | "兄弟文化" + "烧不死的鸟" |
