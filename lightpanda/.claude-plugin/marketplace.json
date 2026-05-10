@@ -1,0 +1,47 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "lightpanda",
+  "owner": {
+    "name": "Lightpanda",
+    "email": "hello@lightpanda.io"
+  },
+  "metadata": {
+    "description": "Lightpanda browser for AI agents",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "lightpanda",
+      "source": "./",
+      "description": "Fast headless browser for AI agents - drop-in replacement for Chrome/Chromium for data extraction and web automation",
+      "version": "2.0.0",
+      "author": {
+        "name": "Lightpanda"
+      },
+      "category": "automation",
+      "keywords": [
+        "browser",
+        "headless",
+        "web-scraping",
+        "mcp",
+        "automation",
+        "lightpanda"
+      ],
+      "homepage": "https://lightpanda.io/docs",
+      "strict": false,
+      "skills": [
+        "./SKILL.md"
+      ],
+      "mcpServers": [
+        {
+          "lightpanda": {
+            "command": "$HOME/.local/bin/lightpanda",
+            "args": [
+              "mcp"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

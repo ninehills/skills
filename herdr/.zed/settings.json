@@ -1,0 +1,49 @@
+{
+  // Project-local Rust tuning for herdr
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/.jj",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    "**/target",
+  ],
+
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "checkOnSave": false,
+        "cargo": {
+          "targetDir": true,
+          "allTargets": false,
+          "buildScripts": {
+            "enable": false
+          }
+        },
+        "check": {
+          "workspace": false
+        },
+        "files": {
+          "exclude": [
+            "target",
+            "vendor",
+            "src/ghostty/bindings.rs"
+          ]
+        },
+        "lru": {
+          "capacity": 48
+        },
+        "cachePriming": {
+          "enable": false
+        },
+        "procMacro": {
+          "enable": false
+        }
+      }
+    }
+  },
+}
