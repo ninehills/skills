@@ -51,7 +51,7 @@ class CodexImageBackend:
         }.get(aspect_ratio, "1536x1024")
 
         # Sanity check: codex binary reachable?
-        exe = shlex.split(self.codex_cmd)[0]
+        exe = shlex.split(self.codex_cmd, posix=os.name != "nt")[0]
         from shutil import which
         if which(exe) is None:
             raise RuntimeError(

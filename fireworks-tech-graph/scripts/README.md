@@ -19,7 +19,7 @@ SVG 验证脚本，检查 SVG 语法并报告详细错误。
 - 特殊字符转义
 - Marker 引用完整性
 - 闭合标签 `</svg>`
-- rsvg-convert 验证
+- 渲染验证（cairosvg 优先，rsvg-convert 兜底）
 
 **示例：**
 ```bash
@@ -122,12 +122,25 @@ python3 ./generate-from-template.py memory ./output/mem0.svg '{
 
 ## 依赖
 
-所有脚本需要以下工具：
+所有脚本需要至少一个 PNG 渲染器（推荐 cairosvg）：
 
-- **rsvg-convert** - SVG 转 PNG
+- **cairosvg**（推荐）- SVG 转 PNG，CSS 支持最好
   ```bash
-  brew install librsvg
+  pip install cairosvg
   ```
+
+- **rsvg-convert**（备选）- 系统包；复杂 SVG 可能丢失 CSS / `<foreignObject>`
+  ```bash
+  brew install librsvg                # macOS
+  sudo apt install librsvg2-bin       # Ubuntu/Debian
+  ```
+
+- **puppeteer**（最高保真）- 真实 Chromium 渲染
+  ```bash
+  npm install puppeteer
+  ```
+
+`generate-diagram.sh` 会优先调用 cairosvg，缺失时自动回退到 rsvg-convert。完整对比与 puppeteer 脚本见 [SKILL.md → SVG → PNG Conversion](../SKILL.md)。
 
 - **grep, sed, awk** - 文本处理（macOS 自带）
 
@@ -190,12 +203,24 @@ ls -lh ../test-output/
 
 ## 故障排除
 
-### 问题：rsvg-convert 未找到
+### 问题：找不到 PNG 渲染器
 
-**解决方案：**
+**解决方案（任选其一，推荐 cairosvg）：**
 ```bash
-brew install librsvg
+pip install cairosvg                   # 推荐
+brew install librsvg                   # macOS 系统包
+sudo apt install librsvg2-bin          # Ubuntu/Debian
 ```
+
+### 问题：rsvg-convert 渲染缺框/缺文字
+
+**原因：** rsvg-convert 对 `<foreignObject>`、CSS `filter`、复杂 `<style>` 块支持有限。
+
+**解决方案：** 切换到 cairosvg：
+```bash
+pip install cairosvg
+```
+脚本会自动优先使用 cairosvg。如果仍需要像素级还原（例如浏览器生成的 SVG），改用 puppeteer（见 SKILL.md）。
 
 ### 问题：权限被拒绝
 

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "3ef7c76f-a210-4181-a073-aba1474f68f3",
+  "path": "zoom-out",
+  "path_key": "zoom-out",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/mattpocock/skills/tree/main/skills/engineering",
+    "subpath": "skills/engineering/zoom-out",
+    "branch": "main"
+  }
+}

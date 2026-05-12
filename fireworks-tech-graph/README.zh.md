@@ -12,7 +12,7 @@
 
 ## 概述
 
-`fireworks-tech-graph` 将自然语言描述转化为精美的 SVG 技术图，并通过 `rsvg-convert` 导出高分辨率 PNG。内置 **7 种视觉风格**，深度覆盖 AI/Agent 领域常见图类型（RAG、Agentic Search、Mem0、Multi-Agent、Tool Call 流程等），并完整支持全部 14 种 UML 图类型。
+`fireworks-tech-graph` 将自然语言描述转化为精美的 SVG 技术图，并通过 `cairosvg`（推荐）导出高分辨率 PNG，同时支持 `rsvg-convert` 与 `puppeteer` 作为备选方案。内置 **7 种视觉风格**，深度覆盖 AI/Agent 领域常见图类型（RAG、Agentic Search、Mem0、Multi-Agent、Tool Call 流程等），并完整支持全部 14 种 UML 图类型。
 
 ```
 用户: "画一张 Mem0 的架构图，暗黑风格"
@@ -26,7 +26,7 @@
 
 ## 效果展示
 
-> 所有示例图均以 1920px 宽度（2× 视网膜分辨率）通过 `rsvg-convert` 导出为 **PNG 格式**。技术图应选 PNG（无损），JPG 有损压缩会在文字和线条边缘产生噪点。
+> 所有示例图均以 1920px 宽度（2× 视网膜分辨率）通过 `cairosvg` 导出为 **PNG 格式**。技术图应选 PNG（无损），JPG 有损压缩会在文字和线条边缘产生噪点。
 
 ### 风格 1 — 扁平图标风（默认）
 *Mem0 记忆架构图 — 白底，语义箭头，分层记忆系统*
@@ -129,7 +129,7 @@
 - **产品图标库** — 40+ 产品品牌色：OpenAI、Anthropic、Pinecone、Weaviate、Kafka、PostgreSQL……
 - **泳道分组** — 自动为复杂架构添加层级标签
 - **SVG + PNG 双输出** — SVG 可编辑，1920px PNG 可直接嵌入文章
-- **rsvg-convert 兼容** — 纯内联 SVG，不依赖外部字体，渲染稳定
+- **渲染器友好** — 纯内联 SVG，不依赖外部字体；在 cairosvg、rsvg-convert、headless Chrome 下都能稳定渲染
 
 ---
 
@@ -165,16 +165,31 @@ git clone https://github.com/yizhiyanhua-ai/fireworks-tech-graph.git ~/.claude/s
 
 ## 安装依赖
 
+任选 **一种** PNG 渲染器（推荐 cairosvg）：
+
 ```bash
-# macOS
-brew install librsvg
+# 推荐：cairosvg（CSS 支持最好）
+pip install cairosvg
 
-# Ubuntu/Debian
-sudo apt install librsvg2-bin
+# 备选：rsvg-convert（系统包，可能丢失 CSS / <foreignObject>）
+brew install librsvg                   # macOS
+sudo apt install librsvg2-bin          # Ubuntu/Debian
 
-# 验证安装
+# 最高保真：puppeteer（真实 Chromium，体积较大）
+npm install puppeteer
+
+# 验证安装（任一即可）
+python3 -c "import cairosvg; print(cairosvg.__version__)"
 rsvg-convert --version
 ```
+
+| 渲染器 | 渲染质量 | 安装成本 | 适用场景 |
+|--------|---------|---------|---------|
+| **cairosvg** | ✅ 好 | 一行 `pip install` | 默认推荐，平衡最佳 |
+| rsvg-convert | ⚠️ 一般 | 系统包 | 没有 Python 环境，简单图形够用 |
+| puppeteer | ✅✅ 最佳 | Node + 约 150MB Chromium | 浏览器生成的 SVG（D3、Mermaid）或像素级还原 |
+
+> 详细的对比、批量脚本与 puppeteer 完整脚本见 [SKILL.md → SVG → PNG Conversion](SKILL.md)。
 
 ---
 

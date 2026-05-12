@@ -115,6 +115,21 @@ GPT_IMAGE_QUALITY=high                    # low / medium / high / auto
 >
 > 🪄 模板克隆模式额外需要本机 `libreoffice` 或 docker `linuxserver/libreoffice` 镜像（用来把 `.pptx` 渲染成 PNG）。
 
+### 模板克隆的 Vision 分析（可选）
+
+模板克隆模式下，skill 需要先"看懂"你的 `.pptx` 模板的视觉风格。**如果你的 AI 助手本身就是多模态的**（Claude Code 走 Claude Opus/Sonnet，Codex 走 GPT 多模态等），agent 会直接自己看图抽取风格，**不需要额外配置**。
+
+只有当你用的 agent 是纯文本模型时，才需要配下面这组环境变量，走一个独立的多模态模型来分析模板：
+
+```bash
+# 可选：模板克隆的 vision 分析（仅纯文本 agent 需要，多模态 agent 不用配）
+VISION_BASE_URL=https://your-openai-compatible-relay.example.com/v1
+VISION_API_KEY=sk-...
+VISION_MODEL_NAME=gemini-3.1-pro-preview   # 或 gpt-4o / claude-3.5-sonnet 等任意多模态 SKU
+```
+
+> 支持任意兼容 OpenAI `/v1/chat/completions` 格式的多模态模型（Gemini / GPT-4o / Claude 等），与图片生成的 `gpt-image-2` 完全解耦——换 vision provider 不影响出图。
+
 ---
 
 ## 🛠 在 Claude Code 里怎么用

@@ -99,8 +99,16 @@ PY
 
         if python3 "${SKILL_DIR}/scripts/generate-from-template.py" "$TEMPLATE_TYPE" "$SVG_FILE" "$(cat "$FIXTURE")" > /dev/null 2>&1 \
             && "${SKILL_DIR}/scripts/validate-svg.sh" "$SVG_FILE" > /dev/null 2>&1; then
-            if command -v rsvg-convert &> /dev/null \
+            PNG_OK=false
+            # Prefer cairosvg (best CSS support); fall back to rsvg-convert
+            if python3 -c "import cairosvg" 2>/dev/null \
+                && python3 -c "import cairosvg; cairosvg.svg2png(url='${SVG_FILE}', write_to='${PNG_FILE}', scale=2)" 2>/dev/null; then
+                PNG_OK=true
+            elif command -v rsvg-convert &> /dev/null \
                 && rsvg-convert -w 1920 "$SVG_FILE" -o "$PNG_FILE" 2>/dev/null; then
+                PNG_OK=true
+            fi
+            if [ "$PNG_OK" = true ]; then
                 PNG_SIZE=$(du -h "$PNG_FILE" | cut -f1)
                 echo -e "${GREEN}✓ Pass${NC} (${PNG_SIZE})"
             else

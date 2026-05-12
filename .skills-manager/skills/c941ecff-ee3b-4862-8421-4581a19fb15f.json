@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "c941ecff-ee3b-4862-8421-4581a19fb15f",
+  "path": "diagnose",
+  "path_key": "diagnose",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/mattpocock/skills/tree/main/skills/engineering",
+    "subpath": "skills/engineering/diagnose",
+    "branch": "main"
+  }
+}

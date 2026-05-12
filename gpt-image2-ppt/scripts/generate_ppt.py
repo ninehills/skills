@@ -599,7 +599,8 @@ def main() -> None:
         print(f"PPTX file:   {pptx_path}")
     print()
     print("Open viewer in browser:")
-    print(f"  open {os.path.join(output_dir, 'index.html')}")
+    open_cmd = "start" if sys.platform == "win32" else "open"
+    print(f"  {open_cmd} {os.path.join(output_dir, 'index.html')}")
     print()
 
 

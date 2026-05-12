@@ -12,9 +12,11 @@ for inspection (gitignored under template_renders/).
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -64,8 +66,24 @@ def render_pptx_to_pngs(
     return out_dir
 
 
-def _convert_pptx_to_pdf(pptx_path: Path, out_pdf: Path) -> None:
+def _find_libreoffice() -> Optional[str]:
     cli = shutil.which("libreoffice") or shutil.which("soffice")
+    if cli:
+        return cli
+    if sys.platform == "win32":
+        for base in (
+            os.environ.get("ProgramFiles", r"C:\Program Files"),
+            os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
+        ):
+            for lo_dir in ("LibreOffice", "LibreOffice Fresh", "LibreOffice Still"):
+                candidate = os.path.join(base, lo_dir, "program", "soffice.exe")
+                if os.path.isfile(candidate):
+                    return candidate
+    return None
+
+
+def _convert_pptx_to_pdf(pptx_path: Path, out_pdf: Path) -> None:
+    cli = _find_libreoffice()
     if cli:
         subprocess.run(
             [cli, "--headless", "--convert-to", "pdf",
@@ -95,9 +113,10 @@ def _convert_pptx_to_pdf(pptx_path: Path, out_pdf: Path) -> None:
             shutil.copy2(pptx_path, staging)
             copied_for_run = True
         try:
+            mount_src = str(out_dir).replace("\\", "/") if sys.platform == "win32" else str(out_dir)
             subprocess.run(
                 ["docker", "run", "--rm",
-                 "-v", f"{out_dir}:/work",
+                 "-v", f"{mount_src}:/work",
                  "--entrypoint", "soffice",
                  DOCKER_IMAGE,
                  "--headless", "--convert-to", "pdf",

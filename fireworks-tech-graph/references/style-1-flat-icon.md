@@ -91,7 +91,7 @@ Always include a legend in the bottom-left if multiple arrow colors are used:
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" 
      width="960" height="600">
   <style>
-    /* NO @import — rsvg-convert cannot fetch external URLs */
+    /* NO @import — cairosvg / rsvg-convert cannot fetch external URLs */
     text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }
   </style>
   <defs>

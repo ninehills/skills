@@ -777,6 +777,20 @@ def route_uses_lane(points: Sequence[Point], value: float, axis: str, tolerance:
     return any(abs(y - value) <= tolerance for _, y in points)
 
 
+def collision_count(points: Sequence[Point], obstacles: Sequence[Bounds]) -> int:
+    """Count how many (segment, obstacle) pairs collide."""
+    return sum(
+        1
+        for p1, p2 in zip(points, points[1:])
+        for obs in obstacles
+        if segment_hits_bounds(p1, p2, obs)
+    )
+
+
+def route_is_orthogonal(points: Sequence[Point]) -> bool:
+    return all(segment_axis(p1, p2) != "other" for p1, p2 in zip(points, points[1:]))
+
+
 def route_score(
     points: Sequence[Point],
     hint_x: Sequence[float],
@@ -826,11 +840,7 @@ def simplify_points(points: Sequence[Point]) -> List[Point]:
 
 
 def route_collides(points: Sequence[Point], obstacles: Sequence[Bounds]) -> bool:
-    for p1, p2 in zip(points, points[1:]):
-        for obstacle in obstacles:
-            if segment_hits_bounds(p1, p2, obstacle):
-                return True
-    return False
+    return collision_count(points, obstacles) > 0
 
 
 def build_orthogonal_route(
@@ -888,20 +898,41 @@ def build_orthogonal_route(
         for y in hint_y:
             candidates.append([start, inner_start, (x, ssy), (x, y), (eex, y), inner_end, end])
 
+    default_route = simplify_points([start, inner_start, (eex, ssy), inner_end, end])
+    default_coll = collision_count(default_route, expanded)
+    default_raw_coll = collision_count(default_route, obstacles)
+    default_length = route_length(default_route)
     best_route: Optional[List[Point]] = None
     best_score = float("inf")
+    best_fallback: Optional[List[Point]] = None
+    best_fb_coll = float("inf")
+    best_fb_score = float("inf")
     for candidate in candidates:
         simplified = simplify_points(candidate)
-        if route_collides(simplified, expanded):
-            continue
+        coll = collision_count(simplified, expanded)
         score = route_score(simplified, hint_x, hint_y, source_port, target_port)
-        if score < best_score:
-            best_score = score
-            best_route = simplified
+        if coll == 0:
+            if score < best_score:
+                best_score = score
+                best_route = simplified
+        elif route_is_orthogonal(simplified):
+            length = route_length(simplified)
+            raw_coll = collision_count(simplified, obstacles)
+            if (
+                coll < default_coll
+                and raw_coll <= default_raw_coll
+                and length <= default_length
+                and (coll < best_fb_coll or (coll == best_fb_coll and score < best_fb_score))
+            ):
+                best_fb_coll = coll
+                best_fb_score = score
+                best_fallback = simplified
 
     if best_route is not None:
         return best_route
-    return simplify_points([start, inner_start, (eex, ssy), inner_end, end])
+    if best_fallback is not None:
+        return best_fallback
+    return default_route
 
 
 def choose_label_position(points: Sequence[Point]) -> Point:

@@ -1,6 +1,6 @@
 ---
 name: diagram-design
-description: Create technical and product diagrams — architecture, flowchart, sequence, state machine, ER / data model, timeline, swimlane, quadrant, nested, tree, layer stack, venn, pyramid — as standalone HTML files with inline SVG. Ships with a neutral editorial skin and a first-run gate that prompts users to customize the style guide (colors, fonts) from their own website before generating. Includes annotation-callout primitive and optional sketchy variant.
+description: Create technical and product diagrams — architecture, flowchart, sequence, state machine, ER / data model, timeline, swimlane, quadrant, nested, tree, org chart, layer stack, venn, pyramid — as standalone HTML files with inline SVG. Ships with a neutral editorial skin and a first-run gate that prompts users to customize the style guide (colors, fonts) from their own website before generating. Includes annotation-callout primitive and optional sketchy variant.
 license: MIT
 metadata:
   version: "1.0"
@@ -10,7 +10,7 @@ metadata:
 
 Create visual diagrams as self-contained HTML files with inline SVG and CSS, following an opinionated editorial design system.
 
-Thirteen diagram types. One shared design system, complexity budget, and taste gate. Type-specific conventions live in `references/` and are loaded only when you pick a type.
+Fourteen diagram types. One shared design system, complexity budget, and taste gate. Type-specific conventions live in `references/` and are loaded only when you pick a type.
 
 ---
 
@@ -51,7 +51,7 @@ Applied to schematics:
 
 ## 2. When to Use
 
-Use for any of the 13 diagram types (§3) when a reader will learn more from a visual than from prose, a table, or a bulleted list.
+Use for any of the 14 diagram types (§3) when a reader will learn more from a visual than from prose, a table, or a bulleted list.
 
 **Don't use for:**
 - Quick unicode diagrams → use **wiretext**.
@@ -79,6 +79,7 @@ Before drawing, ask: *Would the reader learn more from this than from a well-wri
 | Two-axis positioning / prioritization | **Quadrant** | [type-quadrant.md](references/type-quadrant.md) |
 | Hierarchy through containment / scope | **Nested** | [type-nested.md](references/type-nested.md) |
 | Parent → children relationships | **Tree** | [type-tree.md](references/type-tree.md) |
+| Human/agent/team ownership, reporting, routing, escalation | **Org chart** | [type-org-chart.md](references/type-org-chart.md) |
 | Stacked abstraction levels | **Layer stack** | [type-layers.md](references/type-layers.md) |
 | Overlap between sets | **Venn** | [type-venn.md](references/type-venn.md) |
 | Ranked hierarchy or conversion drop-off | **Pyramid / funnel** | [type-pyramid.md](references/type-pyramid.md) |
@@ -291,6 +292,8 @@ Quick check: if a coordinate ends in 1, 2, 3, 5, 6, 7, 9 — fix it.
 | Max entities (ER) | 8 |
 | Max nesting levels (nested) | 6 |
 | Max tree depth | 4 |
+| Max org chart depth | 4 |
+| Max org chart nodes | 12 |
 | Max layers (layer stack) | 6 |
 | Max circles (venn) | 3 |
 | Max layers (pyramid) | 6 |

@@ -120,7 +120,7 @@ Also regenerate the dark variant via the inversion rule (`rgba(11,13,11, X)` →
 Write the new tokens to `style-guide.md`. Suggest running the `/regenerate-examples` flow (if it exists) or rebuilding one example to verify the new skin reads cleanly.
 
 After onboarding, the user should:
-1. Open `assets/index.html` (gallery) and confirm the new palette feels coherent across all 13 types.
+1. Open `assets/index.html` (gallery) and confirm the new palette feels coherent across all 14 types.
 2. If any type looks off, they usually need to tune `muted` (often too dark or too light against the new `paper`).
 
 ---

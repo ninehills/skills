@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "c8d39afd-1785-4395-9f23-4dcad7fbfce6",
+  "path": "to-prd",
+  "path_key": "to-prd",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/mattpocock/skills/tree/main/skills/engineering",
+    "subpath": "skills/engineering/to-prd",
+    "branch": "main"
+  }
+}

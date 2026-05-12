@@ -88,7 +88,7 @@ Before exporting PNG, verify:
 - [ ] Arrow connection points avoid corners (≥20px from corner)
 - [ ] Multiple arrows between layers are staggered
 - [ ] Legend is readable and doesn't overlap content
-- [ ] SVG validates with `rsvg-convert`
+- [ ] SVG renders cleanly via `cairosvg` (or `rsvg-convert` as fallback)
 
 ## Common Anti-Patterns to Avoid
 

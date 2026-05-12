@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "02512a96-b764-43b7-a86a-6562ceff4f54",
+  "path": "improve-codebase-architecture",
+  "path_key": "improve-codebase-architecture",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/mattpocock/skills/tree/main/skills/engineering",
+    "subpath": "skills/engineering/improve-codebase-architecture",
+    "branch": "main"
+  }
+}

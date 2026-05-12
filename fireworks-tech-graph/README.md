@@ -14,7 +14,7 @@
 
 ## Overview
 
-`fireworks-tech-graph` turns natural language descriptions into polished SVG diagrams, then exports them as high-resolution PNG via `rsvg-convert`. It ships with **7 visual styles** and deep knowledge of AI/Agent domain patterns (RAG, Agentic Search, Mem0, Multi-Agent, Tool Call flows), plus full support for all 14 UML diagram types.
+`fireworks-tech-graph` turns natural language descriptions into polished SVG diagrams, then exports them as high-resolution PNG via `cairosvg` (recommended), with `rsvg-convert` and `puppeteer` available as alternatives. It ships with **7 visual styles** and deep knowledge of AI/Agent domain patterns (RAG, Agentic Search, Mem0, Multi-Agent, Tool Call flows), plus full support for all 14 UML diagram types.
 
 ```
 User: "Generate a Mem0 memory architecture diagram, dark style"
@@ -40,7 +40,7 @@ If you are building agent infrastructure, AI IDEs, internal copilots, developer 
 
 ## Showcase
 
-> All samples exported at 1920px width (2× retina) via `rsvg-convert`. PNG is lossless and the right choice for technical diagrams — sharp edges, no JPEG compression artifacts on text/lines.
+> All samples exported at 1920px width (2× retina) via `cairosvg`. PNG is lossless and the right choice for technical diagrams — sharp edges, no JPEG compression artifacts on text/lines.
 
 ### Style 1 — Flat Icon (default)
 *Mem0 Memory Architecture — white background, semantic arrows, layered memory system*
@@ -143,7 +143,7 @@ Keep the look minimal, white, precise, and modern with clean green-accented arro
 - **Product icons** — 40+ products with brand colors: OpenAI, Anthropic, Pinecone, Weaviate, Kafka, PostgreSQL…
 - **Swim lane grouping** — automatic layer labeling for complex architectures
 - **SVG + PNG output** — SVG for editing, 1920px PNG for embedding
-- **rsvg-convert compatible** — no external font fetching, pure inline SVG
+- **Renderer-friendly** — pure inline SVG, no external font fetching; renders cleanly in cairosvg, rsvg-convert, and headless Chrome
 
 ---
 
@@ -179,16 +179,29 @@ git clone https://github.com/yizhiyanhua-ai/fireworks-tech-graph.git ~/.claude/s
 
 ## Requirements
 
+Pick **one** PNG renderer (cairosvg recommended):
+
 ```bash
-# macOS
-brew install librsvg
+# Recommended: cairosvg (best CSS support)
+pip install cairosvg
 
-# Ubuntu/Debian
-sudo apt install librsvg2-bin
+# Fallback: rsvg-convert (system package; may drop CSS / <foreignObject>)
+brew install librsvg                   # macOS
+sudo apt install librsvg2-bin          # Ubuntu/Debian
 
-# Verify
+# Highest fidelity: puppeteer (real Chromium; heavy)
+npm install puppeteer
+
+# Verify (any one is enough)
+python3 -c "import cairosvg; print(cairosvg.__version__)"
 rsvg-convert --version
 ```
+
+| Renderer | Quality | Install Cost | Use When |
+|----------|---------|--------------|----------|
+| **cairosvg** | ✅ Good | Single `pip install` | Default — best balance |
+| rsvg-convert | ⚠️ Fair | System package | No Python available, simple flat diagrams |
+| puppeteer | ✅✅ Best | Node + ~150MB Chromium | Browser-generated SVG (D3, Mermaid) or pixel-perfect required |
 
 ---
 
@@ -527,11 +540,13 @@ fireworks-tech-graph/
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| PNG is blank or all-black | `@import url()` in SVG — rsvg-convert can't fetch fonts | Remove `@import`, use system font stack |
-| PNG not generated | `rsvg-convert` not installed | `brew install librsvg` (macOS) or `apt install librsvg2-bin` |
+| PNG is blank or all-black | `@import url()` in SVG — neither cairosvg nor rsvg-convert can fetch external fonts | Remove `@import`, use system font stack |
+| PNG not generated | No renderer installed | `pip install cairosvg` (recommended), or `brew install librsvg` / `apt install librsvg2-bin` |
+| Borders or text missing in PNG | Using `rsvg-convert` on SVG with CSS / `<foreignObject>` | Switch to `cairosvg` (`pip install cairosvg`) — much better CSS support |
 | Diagram cut off at bottom | ViewBox height too short | Increase `height` in `viewBox="0 0 960 <height>"` |
 | Text overflowing boxes | Labels too long | Add `text-anchor="middle"` + `<clipPath>` or shorten label |
-| Icons not rendering | External CDN URL in rsvg-convert context | Use inline SVG paths from `references/icons.md` |
+| Icons not rendering | External CDN URL | Use inline SVG paths from `references/icons.md` |
+| Browser-generated SVG renders incorrectly | cairosvg / rsvg can't replay all CSS/JS-injected styles | Use the puppeteer script in `SKILL.md` for 100% fidelity |
 
 ---
 

@@ -136,17 +136,41 @@ if [ -f "$SVG_FILE" ]; then
 
     # Export PNG
     echo -e "\n${BLUE}Exporting PNG (width: ${WIDTH}px)...${NC}"
-    if command -v rsvg-convert &> /dev/null; then
-        if rsvg-convert -w "$WIDTH" "$SVG_FILE" -o "$PNG_FILE" 2>/dev/null; then
-            PNG_SIZE=$(du -h "$PNG_FILE" | cut -f1)
-            echo -e "${GREEN}PNG exported: $PNG_FILE (${PNG_SIZE})${NC}"
+
+    # Compute scale for cairosvg (default scale=2 ≈ 1920px wide for 960 viewBox)
+    SCALE=$(python3 -c "print(round(${WIDTH}/960, 2))" 2>/dev/null || echo "2")
+
+    PNG_OK=false
+
+    # Method 1 (preferred): cairosvg — best CSS support, good fidelity
+    if python3 -c "import cairosvg" 2>/dev/null; then
+        echo -e "${BLUE}Using cairosvg (recommended)...${NC}"
+        if python3 -c "import cairosvg; cairosvg.svg2png(url='${SVG_FILE}', write_to='${PNG_FILE}', scale=${SCALE})" 2>/dev/null; then
+            PNG_OK=true
         else
-            echo -e "${RED}PNG export failed${NC}"
-            exit 1
+            echo -e "${YELLOW}cairosvg failed, falling back...${NC}"
         fi
+    fi
+
+    # Method 2 (fallback): rsvg-convert — may drop CSS / foreignObject
+    if [ "$PNG_OK" = false ] && command -v rsvg-convert &> /dev/null; then
+        echo -e "${BLUE}Using rsvg-convert (fallback)...${NC}"
+        echo -e "${YELLOW}Warning: rsvg-convert may drop CSS styles or <foreignObject> — install cairosvg for better fidelity${NC}"
+        echo -e "${YELLOW}  pip install cairosvg${NC}"
+        if rsvg-convert -w "$WIDTH" "$SVG_FILE" -o "$PNG_FILE" 2>/dev/null; then
+            PNG_OK=true
+        fi
+    fi
+
+    if [ "$PNG_OK" = true ]; then
+        PNG_SIZE=$(du -h "$PNG_FILE" | cut -f1)
+        echo -e "${GREEN}PNG exported: $PNG_FILE (${PNG_SIZE})${NC}"
     else
-        echo -e "${RED}Error: rsvg-convert not found${NC}"
-        echo "Install with: brew install librsvg"
+        echo -e "${RED}PNG export failed${NC}"
+        echo -e "${YELLOW}Install one of:${NC}"
+        echo -e "  ${YELLOW}pip install cairosvg${NC}        (recommended)"
+        echo -e "  ${YELLOW}brew install librsvg${NC}        (macOS)  /  apt install librsvg2-bin (Debian)"
+        echo -e "  ${YELLOW}npm install puppeteer${NC}       (highest fidelity)"
         exit 1
     fi
 else
