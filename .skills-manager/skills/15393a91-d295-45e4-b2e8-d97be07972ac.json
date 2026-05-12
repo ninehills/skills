@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "15393a91-d295-45e4-b2e8-d97be07972ac",
+  "path": "brainstorming-cn",
+  "path_key": "brainstorming-cn",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "brainstorming-cn",
+    "branch": null
+  }
+}
