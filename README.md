@@ -4,6 +4,37 @@ A curated collection of agent skills for Claude Code and compatible agent platfo
 
 ---
 
+## CLI 工具：skills-manager
+
+使用 `skills-manager` 脚本将场景中的技能通过软连接安装到各 Agent 平台的 skills 目录。
+
+### 使用方式
+
+```bash
+# 列出所有可用场景
+python3 skills-manager scenarios list
+
+# 安装指定场景（将技能软连接到默认目标目录）
+python3 skills-manager scenarios install Common
+```
+
+### 默认安装目标
+
+软连接会安装到以下目录（自动创建，已存在则跳过）：
+
+| 平台 | 目标目录 |
+|------|----------|
+| Codex | `~/.codex/skills` |
+| Pi | `~/.pi/agent/skills` |
+| Claude Code | `~/.claude/skills` |
+| Hermes | `~/.hermes/skills` |
+
+### 软连接清理
+
+每次执行 `install` 时，脚本会自动清理目标目录中指向当前仓库、但不在当前场景配置中的无效软连接，确保安装目录保持整洁。
+
+---
+
 ## Quick Reference
 
 | Skill | Purpose | Use When |

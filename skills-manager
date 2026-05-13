@@ -1,0 +1,296 @@
+#!/usr/bin/env python3
+"""Skills Manager CLI — manage scenario-based skill installations via symlinks.
+
+Usage:
+  python3 skills-manager scenarios list
+  python3 skills-manager scenarios install <name>
+"""
+
+import json
+import os
+import sys
+from pathlib import Path
+
+# ── constants ────────────────────────────────────────────────────────────────
+
+REPO_ROOT = Path(__file__).resolve().parent
+SKILLS_MANAGER_DIR = REPO_ROOT / ".skills-manager"
+SCENARIOS_DIR = SKILLS_MANAGER_DIR / "scenarios"
+SKILLS_DIR = SKILLS_MANAGER_DIR / "skills"
+SCENARIO_SKILLS_DIR = SKILLS_MANAGER_DIR / "scenario-skills"
+
+# Default target directories for symlink installation
+TARGET_DIRS = [
+    Path.home() / ".codex" / "skills",
+    Path.home() / ".pi" / "agent" / "skills",
+    Path.home() / ".claude" / "skills",
+    Path.home() / ".hermes" / "skills",
+]
+
+
+# ── helpers ──────────────────────────────────────────────────────────────────
+
+def load_json(path: Path) -> dict:
+    """Load and return a JSON file as a dict."""
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_scenarios() -> dict:
+    """Return {scenario_name: scenario_data} for all scenarios."""
+    scenarios = {}
+    if not SCENARIOS_DIR.is_dir():
+        print(f"Error: scenarios directory not found: {SCENARIOS_DIR}", file=sys.stderr)
+        sys.exit(1)
+    for fpath in sorted(SCENARIOS_DIR.glob("*.json")):
+        data = load_json(fpath)
+        name = data.get("name")
+        if name:
+            scenarios[name] = data
+    return scenarios
+
+
+def load_scenario_skill_ids(scenario_id: str) -> list:
+    """Return list of skill_id strings for a given scenario_id."""
+    mapping_dir = SCENARIO_SKILLS_DIR / scenario_id
+    if not mapping_dir.is_dir():
+        return []
+    skill_ids = []
+    for fpath in sorted(mapping_dir.glob("*.json")):
+        # The filename is the skill_id, but verify from content
+        data = load_json(fpath)
+        sid = data.get("skill_id")
+        if sid:
+            skill_ids.append(sid)
+    return skill_ids
+
+
+def load_skill_path(skill_id: str) -> str | None:
+    """Return the 'path' field (directory name) for a given skill_id, or None."""
+    skill_file = SKILLS_DIR / f"{skill_id}.json"
+    if not skill_file.is_file():
+        print(f"Warning: skill file not found: {skill_file}", file=sys.stderr)
+        return None
+    data = load_json(skill_file)
+    return data.get("path")
+
+
+def get_scenario_skill_paths(scenario_name: str) -> tuple:
+    """Return (scenario_data, set of skill path names) for a scenario by name."""
+    scenarios = load_scenarios()
+    if scenario_name not in scenarios:
+        print(f"Error: scenario '{scenario_name}' not found.", file=sys.stderr)
+        print(f"Available scenarios: {', '.join(sorted(scenarios.keys()))}", file=sys.stderr)
+        sys.exit(1)
+
+    scenario = scenarios[scenario_name]
+    scenario_id = scenario["scenario_id"]
+    skill_ids = load_scenario_skill_ids(scenario_id)
+
+    paths = set()
+    for sid in skill_ids:
+        p = load_skill_path(sid)
+        if p:
+            paths.add(p)
+        else:
+            print(f"Warning: skill '{sid}' has no path, skipping.", file=sys.stderr)
+
+    return scenario, paths
+
+
+def create_symlink(target_dir: Path, skill_path: str) -> bool:
+    """Create a symlink at target_dir/skill_path pointing to REPO_ROOT/skill_path.
+
+    Returns True if created/updated, False if already correct.
+    """
+    link_path = target_dir / skill_path
+    source_path = REPO_ROOT / skill_path
+
+    if not source_path.is_dir():
+        print(f"Warning: source directory not found: {source_path}", file=sys.stderr)
+        return False
+
+    # Ensure target directory exists
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    # If link already points to the right place, skip
+    if link_path.is_symlink():
+        current_target = os.readlink(str(link_path))
+        if current_target == str(source_path):
+            return False  # already correct
+
+    # Remove existing link/file/dir
+    if link_path.is_symlink() or link_path.exists():
+        if link_path.is_symlink():
+            link_path.unlink()
+        elif link_path.is_dir():
+            import shutil
+            shutil.rmtree(str(link_path))
+        else:
+            link_path.unlink()
+
+    # Create symlink
+    link_path.symlink_to(source_path)
+    return True
+
+
+def cleanup_stale_symlinks(valid_skill_paths: set) -> list:
+    """Remove symlinks in TARGET_DIRS that point into REPO_ROOT but are not in valid_skill_paths.
+
+    Returns list of removed paths.
+    """
+    removed = []
+
+    for target_dir in TARGET_DIRS:
+        if not target_dir.is_dir():
+            continue
+
+        for entry in target_dir.iterdir():
+            if not entry.is_symlink():
+                continue
+
+            # Resolve where the symlink points (the actual target)
+            try:
+                resolved = Path(os.readlink(str(entry)))
+            except OSError:
+                continue
+
+            # Make it absolute if relative (symlinks are stored as relative or absolute)
+            if not resolved.is_absolute():
+                resolved = (entry.parent / resolved).resolve()
+
+            try:
+                resolved = resolved.resolve()
+            except OSError:
+                continue
+
+            # Check if it points inside our REPO_ROOT
+            try:
+                resolved.relative_to(REPO_ROOT)
+            except ValueError:
+                continue  # not in our repo, leave it alone
+
+            # The symlink name is the skill path name
+            skill_name = entry.name
+
+            if skill_name not in valid_skill_paths:
+                entry.unlink()
+                removed.append(str(entry))
+                print(f"  Removed stale symlink: {entry}")
+
+    return removed
+
+
+# ── commands ─────────────────────────────────────────────────────────────────
+
+def cmd_scenarios_list():
+    """List all available scenarios."""
+    scenarios = load_scenarios()
+    if not scenarios:
+        print("No scenarios found.")
+        return
+
+    print("Available scenarios:")
+    for name in sorted(scenarios.keys()):
+        desc = scenarios[name].get("description")
+        if desc:
+            print(f"  {name} — {desc}")
+        else:
+            print(f"  {name}")
+
+
+def cmd_scenarios_install(name: str):
+    """Install a scenario's skills to all target directories."""
+    scenario, skill_paths = get_scenario_skill_paths(name)
+
+    if not skill_paths:
+        print(f"Scenario '{name}' has no skills to install.")
+        return
+
+    print(f"Installing scenario '{name}' ({len(skill_paths)} skills)...")
+    print(f"Target directories: {', '.join(str(d) for d in TARGET_DIRS)}")
+    print()
+
+    created = 0
+    skipped = 0
+    errors = 0
+
+    for skill_path in sorted(skill_paths):
+        installed_to = []
+        for target_dir in TARGET_DIRS:
+            try:
+                changed = create_symlink(target_dir, skill_path)
+                if changed:
+                    installed_to.append(str(target_dir))
+                    created += 1
+                else:
+                    skipped += 1
+            except Exception as e:
+                print(f"  Error creating symlink for '{skill_path}' in {target_dir}: {e}", file=sys.stderr)
+                errors += 1
+
+        if installed_to:
+            print(f"  + {skill_path} → {', '.join(installed_to)}")
+        else:
+            print(f"  = {skill_path} (already installed)")
+
+    print()
+    print(f"Summary: {created} created/updated, {skipped} unchanged, {errors} errors")
+
+    # Cleanup stale symlinks
+    print()
+    print("Cleaning up stale symlinks...")
+    removed = cleanup_stale_symlinks(skill_paths)
+    if removed:
+        print(f"Removed {len(removed)} stale symlink(s).")
+    else:
+        print("No stale symlinks found.")
+
+
+# ── main ─────────────────────────────────────────────────────────────────────
+
+def print_usage():
+    print("Usage:", file=sys.stderr)
+    print("  python3 skills-manager scenarios list", file=sys.stderr)
+    print("  python3 skills-manager scenarios install <name>", file=sys.stderr)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print_usage()
+        sys.exit(1)
+
+    command = sys.argv[1]
+
+    if command == "scenarios":
+        if len(sys.argv) < 3:
+            print_usage()
+            sys.exit(1)
+        subcommand = sys.argv[2]
+
+        if subcommand == "list":
+            if len(sys.argv) != 3:
+                print_usage()
+                sys.exit(1)
+            cmd_scenarios_list()
+
+        elif subcommand == "install":
+            if len(sys.argv) != 4:
+                print("Error: 'scenarios install' requires a scenario name.", file=sys.stderr)
+                print_usage()
+                sys.exit(1)
+            name = sys.argv[3]
+            cmd_scenarios_install(name)
+
+        else:
+            print(f"Error: unknown subcommand '{subcommand}'.", file=sys.stderr)
+            print_usage()
+            sys.exit(1)
+    else:
+        print(f"Error: unknown command '{command}'.", file=sys.stderr)
+        print_usage()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
