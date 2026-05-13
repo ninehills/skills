@@ -12,6 +12,8 @@ Brand isn't a neutral register. AI-generated landing pages have flooded the inte
 
 **The second slop test: aesthetic lane.** Before committing to moves, name the reference. A Klim-style specimen page is one lane; Stripe-minimal is another; Liquid-Death-acid-maximalism is another. Don't drift into editorial-magazine aesthetics on a brief that isn't editorial. A hiking brand with Cormorant italic drop caps has the wrong register within the register.
 
+Then the inverse test: in one sentence, describe what you're about to build the way a competitor would describe theirs. If that sentence fits the modal landing page in the category, restart.
+
 ## Typography
 
 ### Font selection procedure
@@ -66,6 +68,7 @@ Brand surfaces have permission for Committed, Full palette, and Drenched strateg
 - Palette IS voice. A calm brand and a restless brand should not share palette mechanics.
 - When the strategy is Committed or Drenched, color carries the brand. Don't hedge with neutrals around the edges. Commit.
 - Don't converge across projects. If the last brand surface was restrained-on-cream, this one is not.
+- When a cultural-symbol palette is the obvious pull, reach past it. Let the cultural reading come from typography, imagery, and copy, not the palette.
 
 ## Layout
 
@@ -79,14 +82,14 @@ Brand surfaces have permission for Committed, Full palette, and Drenched strateg
 
 Brand surfaces lean on imagery. A restaurant, hotel, magazine, or product landing page without any imagery reads as incomplete, not as restrained. A solid-color rectangle where a hero image should go is worse than a representative stock photo.
 
-**When the brief implies imagery (restaurants, hotels, magazines, photography, hobbyist communities, food, travel, fashion, product), you must ship imagery.** Zero images is a bug, not a design choice. "Restraint" is not an excuse.
+**When the brief implies imagery (restaurants, hotels, magazines, photography, hobbyist communities, food, travel, fashion, product), you must ship imagery.** Zero images is a bug, not a design choice. "Restraint" is not an excuse. If the approved comp or brief is image-led, ship real project assets, generated raster assets, or a credible canvas/SVG/WebGL scene. Do not replace photographic, architectural, product, or place imagery with generic CSS panels, decorative diagrams, cards, bullets, or copy.
 
-- **For greenfield work without local assets, use stock imagery.** Unsplash is the default. The URL shape is `https://images.unsplash.com/photo-{id}?auto=format&fit=crop&w=1600&q=80`. Pick real Unsplash photo IDs you're confident exist (`photo-1559339352-11d035aa65de`, `photo-1590490360182-c33d57733427`, etc.); if unsure, pick fewer photos but don't substitute colored `<div>` placeholders.
+- **For greenfield work without local assets, use stock imagery.** Unsplash is the default. The URL shape is `https://images.unsplash.com/photo-{id}?auto=format&fit=crop&w=1600&q=80`. **Verify the URLs before referencing them.** If you have an image-search MCP, web-fetch tool, or browser access, use it to find real photo IDs and confirm they resolve. Guessed IDs (even ones that look real) often 404 and ship as broken-image placeholders. Without a verification path, pick fewer photos you're confident exist over more that you guessed; never substitute colored `<div>` placeholders.
 - **Search for the brand's physical object**, not the generic category: "handmade pasta on a scratched wooden table" beats "Italian food"; "cypress trees above a limestone hotel facade at dusk" beats "luxury hotel".
 - **One decisive photo beats five mediocre ones.** Hero imagery should commit to a mood; padding with more stock doesn't rescue an indecisive one.
 - **Alt text is part of the voice.** "Coastal fettuccine, hand-cut, served on the terrace" beats "pasta dish".
 
-Tech / dev-tool brands are the exception where zero imagery can be correct; a developer landing page often carries its voice through typography, code samples, diagrams. Know which kind of brand you're working on.
+"Imagery" here is broader than stock photography: product screenshots, custom data visualizations, generated SVG, and canvas/WebGL scenes are all imagery. Text-only pages where typography alone carries the entire visual weight are the failure mode.
 
 ## Motion
 
@@ -102,6 +105,7 @@ Tech / dev-tool brands are the exception where zero imagery can be correct; a de
 - Timid palettes and average layouts. Safe = invisible.
 - Zero imagery on a brief that implies imagery (restaurant, hotel, food, travel, fashion, photography, hobbyist). Colored blocks where a hero photo belongs.
 - Defaulting to editorial-magazine aesthetics (display serif + italic + drop caps + broadsheet grid) on briefs that aren't magazine-shaped. Editorial is ONE aesthetic lane, not the default brand aesthetic.
+- Repeated tiny uppercase tracked labels above every section heading. A single strong kicker can be voice; repeating it as section grammar is AI scaffolding unless it's a deliberate, named brand system.
 
 ## Brand permissions
 
