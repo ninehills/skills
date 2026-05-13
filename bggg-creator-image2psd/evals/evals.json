@@ -1,0 +1,29 @@
+{
+  "skill_name": "bggg-creator-image2psd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有 background.png、logo.png、title.png、ship.png，帮我去掉白底并合成一个有 4 个图层的 PSD，同时给我预览图和每层 PNG。",
+      "expected_output": "使用 assemble 和 manifest 输出 PSD、preview PNG、layer PNG 目录；背景不去底，logo/title 使用 white，ship 使用 white-preserve。文件路径和图层数清楚可查。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "只有一张扁平海报 poster.png，先帮我尽量拆成可编辑的颜色图层 PSD。",
+      "expected_output": "使用 split-colors，设置合理 num-colors，必要时忽略白色背景，输出 PSD、预览和拆出的透明 PNG 层，并说明这是颜色拆层不是语义对象拆层。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "根据一个活动海报描述，先用 Codex 生背景、标题、主体元素图，再拼成 PSD。",
+      "expected_output": "先把视觉拆成独立元素生成，再为每个元素写 manifest 图层，运行 assemble 生成 PSD。说明每个元素的去底策略和最终图层结构。",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "把这张商品生活方式图转成 PSD，要求不要改变元素相对位置，鞋、包、桌子花瓶、文字、背景尽量分层。",
+      "expected_output": "在 bggg-creator-image2psd/projects/YYYYMMDD_slug/ 下创建项目；复制 original_reference.png；输出全画布透明 PNG 图层、manifest、PSD、preview、zip 和 process_notes；如果源图未落盘，应先要求文件路径而不是重绘冒充。",
+      "files": []
+    }
+  ]
+}

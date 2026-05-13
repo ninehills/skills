@@ -1,0 +1,8 @@
+Pillow>=10
+numpy>=1.24
+
+# Optional, used for stronger light-subject background preservation.
+opencv-python>=4.6
+
+# Optional, used by split-colors --method kmeans when available.
+scikit-learn>=1.2

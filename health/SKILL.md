@@ -115,6 +115,34 @@ Action: `git rm --cached .claude/settings.local.json && echo '.claude/settings.l
 
 CLAUDE.md content in wrong layer, missing hooks, oversized descriptions, verifier gaps.
 
+**Broken doc references.** Scan `AGENTS.md`, `CLAUDE.md`, `.claude/rules/*.md`, and every `.claude/skills/*/SKILL.md` for references shaped like `@<path>`, `~/.claude/rules/<name>.md`, `~/.claude/skills/<name>/`, `docs/<name>.md`, or `references/<name>.md`. For each match, check that the target exists on disk. Report every "referenced but missing" pointer with the source file and line.
+
+Common offenders:
+- A project-level rule references a global rule file that was never created (e.g. `~/.claude/rules/swift.md`).
+- A `CLAUDE.md` uses an `@AGENTS.md` placeholder but the actual `AGENTS.md` is missing or empty.
+- A skill body references `references/<name>.md` but only `references/<name>-v2.md` exists.
+- A rule file references a deleted skill path.
+
+Quick check:
+
+```bash
+# Replace <root> with the project root being audited.
+for f in <root>/AGENTS.md <root>/CLAUDE.md <root>/.claude/rules/*.md <root>/.claude/skills/*/SKILL.md; do
+  [ -f "$f" ] || continue
+  grep -nE '@[A-Za-z][A-Za-z0-9_/.-]+\.md|~/\.claude/[A-Za-z0-9_/.-]+\.md|(docs|references)/[A-Za-z0-9_/.-]+\.md' "$f" \
+    | while IFS=: read -r line ref; do
+        target=$(echo "$ref" | grep -oE '@?[A-Za-z0-9_~/.-]+\.md' | head -1 | sed 's|^@||; s|^~|'"$HOME"'|')
+        case "$target" in
+          /*) full="$target" ;;
+          *)  full="$(dirname "$f")/$target" ;;
+        esac
+        [ -f "$full" ] || echo "MISSING: $f:$line -> $target"
+      done
+done
+```
+
+Report missing references as Structural findings, not Critical, unless the missing file is named as a hard dependency (e.g. `release.md` for the project's release skill).
+
 ### [-] Incremental -- nice to have
 
 Outdated items, global vs local placement, context hygiene, stale allowedTools entries.

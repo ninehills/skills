@@ -1,0 +1,67 @@
+{
+  "deck": {
+    "name": "Sample Image2PPT Deck",
+    "canvas_width": 1600,
+    "canvas_height": 900,
+    "slide_width_in": 13.333
+  },
+  "slides": [
+    {
+      "name": "Cover",
+      "elements": [
+        {
+          "kind": "background",
+          "fill": "#f6f0e6"
+        },
+        {
+          "kind": "shape",
+          "shape": "roundRect",
+          "name": "Accent Panel",
+          "x": 960,
+          "y": 140,
+          "w": 420,
+          "h": 520,
+          "fill": "#1f2933",
+          "stroke": "#1f2933"
+        },
+        {
+          "kind": "shape",
+          "shape": "line",
+          "name": "Divider",
+          "x1": 120,
+          "y1": 520,
+          "x2": 660,
+          "y2": 520,
+          "stroke": "#c5362e",
+          "stroke_width_px": 6
+        },
+        {
+          "kind": "text",
+          "name": "Title",
+          "text": "Image to Editable PPTX",
+          "x": 120,
+          "y": 170,
+          "w": 720,
+          "h": 160,
+          "font_size_px": 64,
+          "font_family": "Arial",
+          "bold": true,
+          "color": "#15110d",
+          "align": "left"
+        },
+        {
+          "kind": "text",
+          "name": "Subtitle",
+          "text": "Native text boxes, simple shapes, and image components",
+          "x": 124,
+          "y": 360,
+          "w": 780,
+          "h": 86,
+          "font_size_px": 30,
+          "font_family": "Arial",
+          "color": "#51483f"
+        }
+      ]
+    }
+  ]
+}

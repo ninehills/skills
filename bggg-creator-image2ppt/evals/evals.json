@@ -1,0 +1,41 @@
+{
+  "skill_name": "bggg-creator-image2ppt",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "把一个 16:9 PNG 幻灯片截图转成可编辑 PPTX。",
+      "expected_output": "创建 projects/YYYYMMDD_slug 项目目录，使用 Codex imagegen 生成或清理背景/组件图片，文本以 PPT 文本框写入 manifest，并生成 output.pptx 与 summary.json。",
+      "files": [],
+      "expectations": [
+        "使用 bggg-creator-image2ppt/SKILL.md 的二进制图片工作流",
+        "默认调用 Codex imagegen skill 生成或清理组件图片",
+        "所有中间图片放在 projects/YYYYMMDD_slug/component_images 或 imagegen_assets",
+        "PPTX 中包含可编辑文本框而不是整页纯图片"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "把一个包含绝对定位标题、图片和色块的 HTML 文件转成 PPTX。",
+      "expected_output": "运行 html_svg_to_manifest.py 生成 manifest，再运行 image2pptx.py build 生成可编辑 PPTX。",
+      "files": [],
+      "expectations": [
+        "HTML 文本转换为 text 元素",
+        "HTML 图片转换为 image 元素",
+        "背景色块转换为 shape 元素",
+        "生成 summary.json 并说明解析限制"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "把一个 SVG 信息图转成 PPTX，并保留简单文字、矩形、圆形和线条的可编辑性。",
+      "expected_output": "SVG 简单节点被解析成原生 PPT text/shape/image 元素，复杂 path 写入 diagnostics 并作为 fallback 待处理。",
+      "files": [],
+      "expectations": [
+        "运行 html_svg_to_manifest.py 解析 SVG",
+        "rect/circle/ellipse/line/text 被转换为 manifest 原生元素",
+        "复杂 SVG path 被记录为 diagnostics",
+        "最终 PPTX 可以被 python-pptx 重新打开"
+      ]
+    }
+  ]
+}

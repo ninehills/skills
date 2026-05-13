@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "425ad5ab-38d6-4b25-aed6-452981bb8aa0",
+  "path": "bggg-skill-taotie",
+  "path_key": "bggg-skill-taotie",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/binggandata/bggg-skills",
+    "subpath": "bggg-skill-taotie",
+    "branch": null
+  }
+}

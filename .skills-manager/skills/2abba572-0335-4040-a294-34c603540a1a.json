@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "2abba572-0335-4040-a294-34c603540a1a",
+  "path": "bggg-creator-image2ppt",
+  "path_key": "bggg-creator-image2ppt",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/binggandata/bggg-skills",
+    "subpath": "bggg-creator-image2ppt",
+    "branch": null
+  }
+}

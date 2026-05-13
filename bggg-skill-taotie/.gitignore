@@ -1,0 +1,23 @@
+# Workspace (runtime artifacts, not committed)
+bggg-skill-taotie-workspace/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Temp
+/tmp/

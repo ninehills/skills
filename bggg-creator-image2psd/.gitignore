@@ -1,0 +1,16 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# Runtime outputs. Keep the folder itself for Codex project storage.
+projects/*
+!projects/.gitkeep
+
+# Common generated artifacts.
+*.psd
+*.preview.png
+*.layers.zip
+psd_full_canvas_layers/
+layer_sources/
+imagegen_assets/
+diagnostics/

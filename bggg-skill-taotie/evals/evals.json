@@ -1,0 +1,23 @@
+{
+  "skill_name": "bggg-skill-taotie",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有一个 bggg-creator-research 的 skill，它抓取数据的时候经常超时还容易报错。我刚看到 last30days 这个 skill 抓数据特别稳定又快，帮我把 last30days 喂给 bggg-creator-research，让它的数据抓取能力升级一下",
+      "expected_output": "饕餮应该: 1) 读取并展示两个 skill 的能力地图 2) 自动生成数据抓取相关的测试任务 3) 并行执行对比 4) 输出反向工程报告，指出 last30days 的抓取策略优势 5) 提出渐进式改进方案供用户确认",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "帮我对比一下 skill-A 和 skill-B，我只想知道 B 比 A 好在哪，不需要改动",
+      "expected_output": "饕餮应该只执行到 Phase 3 (反向工程分析)，输出对比报告和优势模式列表，不执行 Phase 4 (注入) 和 Phase 5 (学习)。应该明确问用户是否需要进一步操作",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "上次你帮我把 web-access 的并发策略整合到 bggg-creator-research 里了，效果很好速度快了很多。现在我又发现一个 deep-research 的 skill，它的数据分析报告写得特别专业，能不能也吃进来？",
+      "expected_output": "饕餮应该: 1) 识别这是一个回头用户，查看模式库中的历史记录 2) 基于之前的成功经验(并发策略)调整分析策略 3) 聚焦在'报告质量'这个新维度上进行对比 4) 提供改进建议。模式库应该被更新",
+      "files": []
+    }
+  ]
+}

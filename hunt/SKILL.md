@@ -73,6 +73,23 @@ Treat the reference as evidence, not decoration:
 
 If the issue is purely subjective UI taste, route to `/design`. If it is rendering, state, timing, build output, font generation, or a regression from a known-good version, stay in `/hunt`.
 
+## Scope Blast Mode
+
+Activate after fixing a root-cause pattern, before declaring the bug done. The same shape often hides in N other places; one local fix that ignores the blast leaves N - 1 bugs in the tree.
+
+1. Extract the pattern signature: the specific function name, regex, API call, CSS selector, lock acquisition, validation skip, or input boundary that produced the bug.
+2. `grep -rn <pattern>` across the repo (exclude generated dirs, build output, vendored deps). For class-of-bug patterns (e.g. "any handler missing the lock"), grep for the surrounding shape, not just the literal text.
+3. List every match. For each one, answer in writing: same bug here? Pick fix / leave (explain why it is safe) / unsure (ask the user). Do not silently skip a match.
+4. Do not claim "fixed" until the blast report is in the Outcome block.
+
+Common triggers:
+- Visual bug fixed on one page: check every other page using the same component, layout, or media-query breakpoint.
+- One race fixed in one handler: check every handler acquiring the same lock or touching the same shared state.
+- One validation skip patched at one entry point: check every entry point that reaches the same downstream sink.
+- One regex / parser fix for one input shape: check every caller of the same regex / parser.
+
+If the blast surfaces unrelated bugs, list them but do not fix in this PR unless the user agrees; scope creep is its own anti-pattern.
+
 ## Confirm or Discard
 
 Add one targeted instrument: a log line, a failing assertion, or the smallest test that would fail if the hypothesis is correct. Run it. If the evidence contradicts the hypothesis, discard it completely and re-orient with what was just learned. Do not preserve a hypothesis the evidence disproves.

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "1537c735-aafc-4602-89b8-9b342c6e36ef",
+  "path": "bggg-creator-image2psd",
+  "path_key": "bggg-creator-image2psd",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/binggandata/bggg-skills",
+    "subpath": "bggg-creator-image2psd",
+    "branch": null
+  }
+}

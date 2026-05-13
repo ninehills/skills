@@ -140,6 +140,7 @@ Drift signals (examples, not exhaustive -- any one is enough to label drift):
 
 Examples, not exhaustive -- flag any diff that could cause irreversible harm if merged unreviewed.
 
+- **No unverified claims.** Do not write "I verified X", "I ran Y", "tests pass", or "this fixes Z" unless the shell output is in this turn's transcript. If you reason about behavior without running, say "based on reading the code" instead of "I verified". Every verification claim in the sign-off must point to a command that actually ran in this session.
 - **Destructive auto-execution**: any task marked "safe" or "auto-run" that modifies user-visible state (history files, config, preferences, installed software) must require explicit confirmation.
 - **Release artifacts missing**: verify every artifact listed in release notes, release templates, or project workflows exists and has been uploaded before declaring done.
 - **Generated artifact drift**: if source changes require generated or bundled outputs, verify the output was regenerated and included.
@@ -147,6 +148,17 @@ Examples, not exhaustive -- flag any diff that could cause irreversible harm if 
 - **Unknown identifiers in diff**: any function, variable, or type introduced in the diff that does not exist in the codebase is a hard stop. Grep before writing or approving any reference: `grep -r "name" .` -- no results outside the diff = does not exist.
 - **Injection and validation**: SQL, command, path injection at system entry points. Credentials hardcoded, logged, committed, or copied into public docs.
 - **Dependency changes**: unexpected additions or version bumps in package.json, Cargo.toml, go.mod, requirements.txt. Flag any new dependency not obviously required by the diff.
+
+## Knowledge Sync
+
+After reviewing the diff, check whether it introduces invariants not yet captured in project docs:
+
+- New safety gate or path-guard rule → AGENTS.md
+- New UI constraint (layout rule, animation, overlay registration) → `.claude/rules/*.md`
+- New deploy/release step or artifact → AGENTS.md or `docs/`
+- New cross-file sync requirement (enum ↔ HTML anchors, Swift keys ↔ xcstrings) → AGENTS.md
+
+If found, either apply the doc update as `safe_auto` (when the invariant is clear from the diff) or flag it in the sign-off as `doc debt`. When no new invariants exist, sign-off says `doc debt: none`.
 
 ## Specialist Review (Standard and Deep only)
 
@@ -205,5 +217,6 @@ review depth:     quick / standard / deep
 hard stops:       N found, N fixed, N deferred
 specialists:      [security, architecture] or none
 new tests:        N
+doc debt:         none / AGENTS.md needs X / rules need Y
 verification:     [command] -> pass / fail
 ```

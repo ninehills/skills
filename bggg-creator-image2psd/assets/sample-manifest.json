@@ -1,0 +1,33 @@
+{
+  "canvas": {
+    "width": 1200,
+    "height": 1600,
+    "composite_background": "#ffffff"
+  },
+  "output": "output.psd",
+  "preview": "output.preview.png",
+  "save_layers_dir": "layers",
+  "layers": [
+    {
+      "name": "Background",
+      "file": "background.png",
+      "fit": "cover",
+      "remove_background": "none"
+    },
+    {
+      "name": "Main Subject",
+      "file": "subject.png",
+      "remove_background": "white-preserve"
+    },
+    {
+      "name": "Title",
+      "type": "text",
+      "text": "Event Title",
+      "x": 80,
+      "y": 120,
+      "font_size": 76,
+      "color": "#1c1712",
+      "max_width": 960
+    }
+  ]
+}
