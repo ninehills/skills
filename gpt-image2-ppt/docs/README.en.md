@@ -101,7 +101,7 @@ GPT_IMAGE_QUALITY=high                    # low / medium / high / auto
 
 > 🔒 **Won't accidentally eat your secrets**: only loads `.env` from the skill's own directory or an explicit `GPT_IMAGE2_PPT_ENV` path. It does **not** walk up into project directories.
 >
-> 🪄 Template-clone mode additionally needs native `libreoffice` or the docker `linuxserver/libreoffice` image (to render `.pptx` → PNG).
+> 🪄 Template-clone mode additionally needs native `libreoffice` (to render `.pptx` → PNG).
 
 ---
 

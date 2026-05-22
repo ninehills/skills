@@ -2,8 +2,7 @@
 name: hunt
 description: "Finds root cause of errors, crashes, regressions, screenshot-reported defects, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
 when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, 以前是好的, 回归, 截图回归, 判断错误原因, 判断为什么报错, 反复修不好, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace"
-metadata:
-  version: "3.20.0"
+dispatch_intent: "Error, crash, regression, screenshot-reported defect, test failure, stale cache, runtime boundary, why broken"
 ---
 
 # Hunt: Diagnose Before You Fix
@@ -27,13 +26,9 @@ Rationalization warning: "I'll just try this" means no hypothesis, write it firs
 
 ## Durable Context Preflight
 
-Run this only when the user mentions memory, preview, previous decisions, or a prior conclusion; when they provide a memory path; or when the current project exposes an obvious local memory summary. Do not hard-code machine-specific memory roots or read raw transcripts.
+See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping.
 
-Read durable context in this order: user-provided path, current project scope, then global preferences. List titles first, then open at most 1-2 relevant summaries. Treat cross-project entries as transferable patterns only.
-
-Map memory types before using them: `decision`, `preference`, and `principle` describe diagnostic constraints; `pattern` and `learning` can seed hypotheses; `fact` must be verified against current state before it affects diagnosis. Current code, logs, repro steps, tests, environment versions, and remote state override memory.
-
-For `/hunt`, durable context is hypothesis fuel only. It never replaces a fresh root-cause sentence, a reproducible symptom list, or evidence from the current state.
+For `/hunt`, diagnostic constraints are `decision`, `preference`, and `principle` entries; `pattern` and `learning` can seed hypotheses. Current code, logs, repro steps, tests, environment versions, and remote state override memory. Durable context is hypothesis fuel only. It never replaces a fresh root-cause sentence, a reproducible symptom list, or evidence from the current state.
 
 ## Hard Rules
 
@@ -75,7 +70,7 @@ If the issue is purely subjective UI taste, route to `/design`. If it is renderi
 
 ## Scope Blast Mode
 
-Activate after fixing a root-cause pattern, before declaring the bug done. The same shape often hides in N other places; one local fix that ignores the blast leaves N - 1 bugs in the tree.
+Activate after fixing a root-cause pattern, before declaring the bug done; also when the user says "举一反三", "举一反三深入看看", or "其他地方有没有同样问题". The same shape often hides in N other places; one local fix that ignores the blast leaves N - 1 bugs in the tree.
 
 1. Extract the pattern signature: the specific function name, regex, API call, CSS selector, lock acquisition, validation skip, or input boundary that produced the bug.
 2. `grep -rn <pattern>` across the repo (exclude generated dirs, build output, vendored deps). For class-of-bug patterns (e.g. "any handler missing the lock"), grep for the surrounding shape, not just the literal text.
@@ -93,6 +88,20 @@ If the blast surfaces unrelated bugs, list them but do not fix in this PR unless
 ## Confirm or Discard
 
 Add one targeted instrument: a log line, a failing assertion, or the smallest test that would fail if the hypothesis is correct. Run it. If the evidence contradicts the hypothesis, discard it completely and re-orient with what was just learned. Do not preserve a hypothesis the evidence disproves.
+
+## Runtime Evidence Ladder
+
+Use this ladder before claiming a bug is fixed:
+
+1. Source trace: name the exact function, state transition, file, line, or condition that can produce the symptom.
+2. Deterministic repro: run or write the smallest command, fixture, UI path, or scenario that produces it.
+3. Logs/state/cache: inspect the runtime state that proves the path was reached, including queues, DB rows, caches, temp files, generated outputs, or external tool logs.
+4. Build/test: run the narrow test or build that exercises the fix.
+5. Real runtime check: for UI, native app, browser, rendering, or visual bugs, open the app/page/artifact and verify the visible result with a screenshot or concrete checklist.
+
+Compile-only is not enough for UI, native-app, visual, rendering, or generated-artifact bugs. If the runtime check is impossible in the environment, say why and hand off the exact screen, command, or artifact to verify.
+
+For recurring classes of failures, load `references/failure-patterns.md` before adding a second fix.
 
 ## Targeted Logging
 
@@ -121,6 +130,7 @@ If adding logs changes the behavior, treat that as evidence of a timing, lifecyc
 | Reproduced locally but failed in CI | Align the environment first (runtime version, env vars, timezone), then chase the code |
 | Stack trace points deep into a library | Walk back 3 frames into your own code; the bug is almost always there, not in the dependency |
 | Worked when launched from app, broke when opened via file association / drag-drop / deep link / external proxy | Reproduce using the exact entry point the user described. App-internal init differs from cold-launch-with-file init; state may not be ready when the document arrives. |
+| Build passed but UI still looked wrong | Move up the Runtime Evidence Ladder and verify the real rendered surface or artifact. |
 
 ## Outcome
 

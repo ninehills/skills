@@ -155,10 +155,12 @@ function broadcast(msg) {
 // ---------------------------------------------------------------------------
 
 function loadBrowserScripts() {
-  // Detection script: look relative to the skill scripts dir, then fall back
-  // to the npm package location (cli/engine/detect-antipatterns-browser.js).
+  // Detection script: prefer the skill-bundled detector, then fall back to
+  // source/npm package locations for local development and older installs.
   // This one IS cached — detect.js rarely changes during a session.
   const detectPaths = [
+    path.join(__dirname, 'detector', 'detect-antipatterns-browser.js'),
+    path.join(__dirname, '..', '..', 'cli', 'engine', 'detect-antipatterns-browser.js'),
     path.join(__dirname, '..', '..', '..', '..', 'cli', 'engine', 'detect-antipatterns-browser.js'),
     path.join(process.cwd(), 'node_modules', 'impeccable', 'cli', 'engine', 'detect-antipatterns-browser.js'),
   ];

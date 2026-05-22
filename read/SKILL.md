@@ -2,8 +2,7 @@
 name: read
 description: "Fetches any URL or PDF as clean Markdown for reading, quoting, citation, or downstream work. Handles paywalls, JS-heavy pages, X/Twitter, and Chinese platforms via proxy cascade. Not for local text files already in the repo."
 when_to_use: "any URL or PDF to fetch, 看这个链接, 读一下, 看看这个网页, 抓取网页, read this, check this URL, fetch this page"
-metadata:
-  version: "3.14.0"
+dispatch_intent: "Any URL or PDF to fetch, read this, fetch this page"
 ---
 
 # Read: Fetch Any URL or PDF as Markdown
@@ -24,6 +23,17 @@ Convert any URL or local PDF to clean Markdown. No analysis, no summary, no disc
 | Everything else | Proxy cascade |
 
 After routing, load `references/read-methods.md` and run the commands for the chosen method.
+
+## Privacy and Fetch Tiers
+
+`scripts/fetch.sh` is privacy-first. The cascade depends on whether the user opts into proxy services.
+
+- **Default (`fetch.sh URL`)**: local extractor only. The URL never leaves the machine. Best quality requires `pip install --user readability-lxml html2text`; without those, falls back to a stdlib HTML stripper (works but messier output).
+- **Opt-in (`fetch.sh --use-proxy URL`)**: local first, then `defuddle.md`, then `r.jina.ai`. Those third-party services receive the URL and may cache or log it. Reserve `--use-proxy` for JS-heavy pages (X/Twitter), paywalls, or anything the local extractor cannot reach.
+
+Every tier emits a structured stderr line: `[fetch] tier=<name> status=<ok|fail> reason="..."`. Read the stderr if a fetch fails; it names the specific tier and reason.
+
+**Hard rule**: do not pass authenticated, internal, or otherwise sensitive URLs to `--use-proxy`. Default mode is safe; proxy mode is not.
 
 ## Output Format
 
@@ -76,7 +86,8 @@ When asked, after saving the Markdown:
 | Fetched a paywalled article and returned a login page as Markdown | Inspect the first 10 lines for paywall signals ("Subscribe", "Sign in", "Continue reading"). If found, stop and warn the user. Do not save the login page. |
 | User said "read this" but meant "summarize and act on it" | Deliver the Markdown first, then ask what to do next. Do not save unless asked. |
 | URL returned empty page or paywall with no content | Report the failure clearly: what was tried, what failed. Do not fabricate or guess the content. |
-| r.jina.ai or defuddle.md returned empty for a JS-heavy site | Try the local fallback (`agent-fetch` or `defuddle parse`) before giving up. |
+| Local extractor returned a few lines of menu junk | Install `readability-lxml` + `html2text` (`pip install --user readability-lxml html2text`) for a real article extractor. |
+| Default fetch failed and the page is clearly public | Re-run with `--use-proxy` to send the URL through defuddle.md / r.jina.ai. Only do this for public, non-sensitive URLs. |
 | Network failures | Prepend local proxy env vars if available and retry once. |
 | Long content | Preview with `head -n 200` first; mention truncation when reporting the save. |
 | Local fallback tools returned JSON | Extract the Markdown-bearing field. Raw JSON is not a valid final output for `/read`. |

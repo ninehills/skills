@@ -29,10 +29,10 @@ If a web search plugin is installed (e.g., PipeLLM), the cascade tries its reade
 ```bash
 npx agent-fetch "{url}" --json
 # or
-defuddle parse "{url}" -m -j
+defuddle parse "{url}" -m
 ```
 
-Last resort if both proxies fail. These commands may return JSON, so extract the Markdown-bearing field before returning or saving the result. Raw JSON is not a valid final output for `/read`.
+Last resort if both proxies fail. `agent-fetch --json` returns JSON, so extract the Markdown-bearing field before returning or saving the result. `defuddle parse -m` outputs Markdown directly. Raw JSON is not a valid final output for `/read`.
 
 ## GitHub URLs
 

@@ -1,14 +1,39 @@
 #!/usr/bin/env bash
-# Fetch a URL as Markdown via proxy cascade.
-# Special thanks to joeseesun for the excellent qiaomu-markdown-proxy project,
-# which inspired the proxy cascade design and fallback logic in this script.
+# Fetch a URL as Markdown.
+#
+# Privacy-first cascade:
+#   Default (no --use-proxy): local extractor only. URL is never sent to a
+#   third party. Best quality when readability-lxml + html2text are pip-
+#   installed; degrades to a stdlib-only stripper otherwise.
+#
+#   With --use-proxy: tries local first, then defuddle.md, then r.jina.ai.
+#   Use this for JS-heavy pages, X/Twitter, paywalls, or anything the local
+#   extractor cannot reach. Be aware: the URL is sent to those third-party
+#   services and may be cached or logged. Never feed sensitive URLs through
+#   --use-proxy.
+#
+# Every tier writes a structured stderr line:
+#   [fetch] tier=<local|defuddle|jina> status=<ok|fail|skip> reason="..."
+#
+# Special thanks to joeseesun for the qiaomu-markdown-proxy project, which
+# inspired the proxy cascade design:
 # https://github.com/joeseesun/qiaomu-markdown-proxy
-# Usage: fetch.sh <url> [proxy_url]
-# Example: fetch.sh https://example.com http://127.0.0.1:7890
+#
+# Usage:
+#   fetch.sh <url> [proxy_url]
+#   fetch.sh --use-proxy <url> [proxy_url]
 set -euo pipefail
 
-URL="${1:?Usage: fetch.sh <url> [proxy_url]}"
+USE_PROXY=0
+if [ "${1:-}" = "--use-proxy" ]; then
+  USE_PROXY=1
+  shift
+fi
+
+URL="${1:?Usage: fetch.sh [--use-proxy] <url> [proxy_url]}"
 PROXY="${2:-}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # shellcheck disable=SC2329,SC2317  # called indirectly via _with_retry / _try_once
 _curl() {
@@ -44,41 +69,37 @@ _with_retry() {
   return 1
 }
 
-_agent_fetch_markdown() {
-  local raw
-  raw=$(npx --yes agent-fetch "$URL" --json 2>/dev/null || true)
-  [ -n "$raw" ] || return 1
-  command -v python3 >/dev/null 2>&1 || return 1
-  printf '%s' "$raw" | python3 -c '
-import json
-import sys
+# Tier 1: local extractor. Always tried first.
+if OUT=$(python3 "$SCRIPT_DIR/fetch_local.py" "$URL" 2>/tmp/fetch-local.err); then
+  cat /tmp/fetch-local.err >&2 2>/dev/null || true
+  echo "$OUT"
+  rm -f /tmp/fetch-local.err
+  exit 0
+fi
+cat /tmp/fetch-local.err >&2 2>/dev/null || true
+rm -f /tmp/fetch-local.err
 
-try:
-    data = json.load(sys.stdin)
-except Exception:
-    raise SystemExit(1)
+# Without --use-proxy, stop here. URL never leaves the machine.
+if [ "$USE_PROXY" -eq 0 ]; then
+  echo "[fetch] status=fail reason=\"local extractor failed; rerun with --use-proxy to try defuddle.md and r.jina.ai (URL will be sent to those services)\"" >&2
+  exit 1
+fi
 
-if not isinstance(data, dict):
-    raise SystemExit(1)
+# Tier 2: defuddle.md (third party; user opted in via --use-proxy).
+if OUT=$(_with_retry _curl "https://defuddle.md/$URL"); then
+  echo "[fetch] tier=defuddle status=ok" >&2
+  echo "$OUT"
+  exit 0
+fi
+echo "[fetch] tier=defuddle status=fail reason=\"empty or paywall-like response\"" >&2
 
-for key in ("markdown", "content", "text", "body"):
-    value = data.get(key)
-    if isinstance(value, str) and value.strip():
-        sys.stdout.write(value)
-        raise SystemExit(0)
+# Tier 3: r.jina.ai (third party; user opted in via --use-proxy).
+if OUT=$(_with_retry _curl "https://r.jina.ai/$URL"); then
+  echo "[fetch] tier=jina status=ok" >&2
+  echo "$OUT"
+  exit 0
+fi
+echo "[fetch] tier=jina status=fail reason=\"empty or paywall-like response\"" >&2
 
-raise SystemExit(1)
-' 2>/dev/null
-}
-
-# 1. defuddle.md - cleaner output with YAML frontmatter
-if OUT=$(_with_retry _curl "https://defuddle.md/$URL"); then echo "$OUT"; exit 0; fi
-
-# 2. r.jina.ai - wide coverage, preserves image links
-if OUT=$(_with_retry _curl "https://r.jina.ai/$URL"); then echo "$OUT"; exit 0; fi
-
-# 3. agent-fetch - last resort local tool
-if OUT=$(_agent_fetch_markdown); then printf '%s\n' "$OUT"; exit 0; fi
-
-echo "ERROR: All fetch methods failed for: $URL" >&2
+echo "[fetch] status=fail reason=\"all tiers (local, defuddle, jina) failed for $URL\"" >&2
 exit 1

@@ -113,7 +113,7 @@ GPT_IMAGE_QUALITY=high                    # low / medium / high / auto
 >
 > 🔒 **不会误吃密钥**：只从 skill 自己目录的 `.env` 或显式 `GPT_IMAGE2_PPT_ENV` 加载，**不会**向上递归读项目目录的 `.env`。
 >
-> 🪄 模板克隆模式额外需要本机 `libreoffice` 或 docker `linuxserver/libreoffice` 镜像（用来把 `.pptx` 渲染成 PNG）。
+> 🪄 模板克隆模式额外需要本机 `libreoffice`（用来把 `.pptx` 渲染成 PNG）。
 
 ### 模板克隆的 Vision 分析（可选）
 

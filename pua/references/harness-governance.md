@@ -83,11 +83,11 @@ final verifier_status
 
 | 作弊面 | 典型信号 | PUA 行为约束 | 机械防线 |
 |---|---|---|---|
-| Grader gaming | 修改 tests/evals/scoring/verifier 让失败消失 | 先声明这是评分资产，不能直接改成“通过” | `integrity-guard.sh` 对写入/修改高风险路径 ask/deny |
+| Grader gaming | 修改 tests/evals/scoring/verifier 让失败消失 | 先声明这是评分资产，不能直接改成“通过” | `integrity-guard.sh` 对高风险路径注入 advisory；hidden/private/answer 污染路径才 deny |
 | Solution contamination | 读取 hidden solution、gold patch、benchmark artifact | 不读取隐藏答案；只能读公开需求和失败报告 | 对 hidden/private/solution-artifact 读写 deny |
 | Self-report cheating | 没跑验证就写 done/pass | agent 只能提出候选状态，不能最终裁决 | Stop hook / verifier 负责放行 |
 | Intent drift | 用户要修 bug，却只隐藏 UI 症状 | 回到 task contract 的 intent 与 forbidden | 信心门控逐条对照验收 |
-| Persistent hallucination | 把未验证结论写入长期 memory | append-only，且标注 verified/unverified | memory/status 写入走 approval |
+| Persistent hallucination | 把未验证结论写入长期 memory | append-only，且标注 verified/unverified | memory/status 写入走 advisory context；最终状态仍由 verifier/harness 裁决 |
 | Capability abuse | 为完成任务越权读敏感数据或部署生产 | 风险分层审批，不靠 prompt 自觉 | hooks + human gate |
 | Trace-level deception | 总结很漂亮但隐藏失败路径 | 报告失败路径、命令、输出、剩余风险 | eval/trace review 检查证据链 |
 
@@ -133,10 +133,10 @@ final verifier_status
 |---|---|
 | 读项目普通文件 | 允许 |
 | 修改普通代码 | 通常允许，交付前验证 |
-| 删除文件、大规模重命名 | ask |
-| 改 tests/evals/scoring/verifier/CI | ask，必须说明为什么不是 grader gaming |
+| 删除文件、大规模重命名 | advisory + 必要时人工确认 |
+| 改 tests/evals/scoring/verifier/CI | advisory-only，必须说明为什么不是 grader gaming；不触发权限弹窗 |
 | 读 hidden tests / hidden solution / benchmark answer | deny，除非用户显式授权并隔离记录 |
-| 写长期 memory / status / progress | ask，必须区分 proposed 与 verified |
+| 写长期 memory / status / progress | advisory-only，必须区分 proposed 与 verified；不触发权限弹窗 |
 | 生产部署、转账、发邮件、访问敏感数据 | 必须 human gate |
 
 ## 交付前治理循环

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Collect Claude Code configuration data for health audit.
+# Collect agent configuration data for health audit.
 # Outputs labeled sections for each data source.
 # Run from any directory; uses pwd as the project root.
 #
@@ -17,6 +17,7 @@ P=$(pwd)
 SETTINGS="$P/.claude/settings.local.json"
 TIER="${1:-auto}"
 MODE="${2:-${WAZA_HEALTH_MODE:-summary}}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ "${WAZA_HEALTH_DEEP:-0}" = "1" ]; then
   MODE="deep"
 fi
@@ -26,6 +27,27 @@ case "$MODE" in
 esac
 PROJECT_KEY=$(printf '%s' "$P" | sed 's|[/_]|-|g; s|^-||')
 CONVO_DIR="$HOME/.claude/projects/-${PROJECT_KEY}"
+
+resolve_health_helper() {
+  local name="$1"
+  local installed_path=""
+  local candidate=""
+
+  for candidate in "$SCRIPT_DIR/$name" "./skills/health/scripts/$name"; do
+    if [ -f "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+
+  installed_path="$(npx skills path tw93/Waza 2>/dev/null || true)"
+  if [ -n "$installed_path" ] && [ -f "$installed_path/skills/health/scripts/$name" ]; then
+    printf '%s\n' "$installed_path/skills/health/scripts/$name"
+    return 0
+  fi
+
+  return 1
+}
 
 count_project_files() {
   local count
@@ -116,6 +138,59 @@ print_rule_files() {
   [ "$found" -eq 1 ] || echo "(none)"
 }
 
+print_file_summary() {
+  local label="$1"
+  local file="$2"
+
+  if [ ! -f "$file" ]; then
+    echo "${label}_present: no"
+    return
+  fi
+
+  echo "${label}_present: yes"
+  echo "${label}_path: $file"
+  echo "${label}_lines: $(count_file_lines "$file")"
+  echo "${label}_words: $(count_file_words "$file")"
+
+  local headings
+  headings=$(grep -nE '^[[:space:]]*#{1,3}[[:space:]]+' "$file" 2>/dev/null | head -8 || true)
+  if [ -n "$headings" ]; then
+    echo "${label}_headings:"
+    printf '%s\n' "$headings" | sed 's/^/  /'
+  fi
+}
+
+print_settings_summary() {
+  local file="$1"
+  if [ ! -f "$file" ]; then
+    echo "settings_local_json: no"
+    return
+  fi
+
+  echo "settings_local_json: yes"
+  echo "settings_local_json_path: $file"
+  echo "settings_local_json_lines: $(count_file_lines "$file")"
+  echo "settings_local_json_bytes: $(wc -c < "$file" | tr -d ' ')"
+}
+
+print_rule_file_summary() {
+  local files count=0
+  files=$(list_rule_files)
+  if [ -z "$files" ]; then
+    echo "rule_files: 0"
+    return
+  fi
+
+  count=$(printf '%s\n' "$files" | wc -l | tr -d ' ')
+  echo "rule_files: $count"
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    echo "path=$f lines=$(count_file_lines "$f") words=$(count_file_words "$f")"
+  done <<EOF
+$files
+EOF
+}
+
 rules_word_count() {
   local words=0
   if [ -d "$P/.claude/rules" ]; then
@@ -143,6 +218,27 @@ print_skill_descriptions() {
     printf '%s\n' "$out"
   else
     echo "(none)"
+  fi
+}
+
+print_skill_description_summary() {
+  local out count
+  out=$(collect_skill_descriptions_raw | sort -u)
+  if [ -z "$out" ]; then
+    echo "skill_descriptions: 0"
+    return
+  fi
+
+  count=$(printf '%s\n' "$out" | wc -l | tr -d ' ')
+  echo "skill_descriptions: $count"
+  printf '%s\n' "$out" | head -20 | awk -F: '{
+    path=$1
+    line=$0
+    sub(/^[^:]*:/, "", line)
+    printf "path=%s description_chars=%d\n", path, length(line)
+  }'
+  if [ "$count" -gt 20 ]; then
+    echo "skill_descriptions_truncated: yes"
   fi
 }
 
@@ -351,7 +447,7 @@ PROJECT_FILES=$(count_project_files)
 CONTRIBUTORS=$(count_contributors)
 CI_WORKFLOWS=$(count_ci_workflows)
 
-echo "[1/10] Tier metrics..."
+echo "[1/12] Tier metrics..."
 echo "=== TIER METRICS ==="
 echo "project_files: $PROJECT_FILES"
 echo "contributors: $CONTRIBUTORS"
@@ -373,29 +469,55 @@ if [ "$TIER" = "auto" ]; then
 fi
 echo "detected_tier: $TIER"
 
-echo "[2/10] CLAUDE.md (global + local)..."
-echo "=== CLAUDE.md (global) ===" ; cat ~/.claude/CLAUDE.md 2>/dev/null || echo "(none)"
-echo "=== CLAUDE.md (local) ===" ; cat "$P/CLAUDE.md" 2>/dev/null || echo "(none)"
+echo "[2/12] CLAUDE.md (global + local)..."
+echo "=== CLAUDE.md (global) ==="
+if [ "$MODE" = "deep" ]; then
+  cat ~/.claude/CLAUDE.md 2>/dev/null || echo "(none)"
+else
+  print_file_summary "global_claude_md" "$HOME/.claude/CLAUDE.md"
+fi
+echo "=== CLAUDE.md (local) ==="
+if [ "$MODE" = "deep" ]; then
+  cat "$P/CLAUDE.md" 2>/dev/null || echo "(none)"
+else
+  print_file_summary "local_claude_md" "$P/CLAUDE.md"
+fi
 
-echo "[3/10] Settings, hooks, MCP..."
-echo "=== settings.local.json ===" ; cat "$SETTINGS" 2>/dev/null || echo "(none)"
+echo "[3/12] Settings, hooks, MCP..."
+echo "=== settings.local.json ==="
+if [ "$MODE" = "deep" ]; then
+  cat "$SETTINGS" 2>/dev/null || echo "(none)"
+else
+  print_settings_summary "$SETTINGS"
+fi
 
-echo "[4/10] Rules + skill descriptions..."
-echo "=== rules/ ===" ; print_rule_files
-echo "=== skill descriptions ===" ; print_skill_descriptions
+echo "[4/12] Rules + skill descriptions..."
+echo "=== rules/ ==="
+if [ "$MODE" = "deep" ]; then
+  print_rule_files
+else
+  print_rule_file_summary
+fi
+echo "=== skill descriptions ==="
+if [ "$MODE" = "deep" ]; then
+  print_skill_descriptions
+else
+  print_skill_description_summary
+fi
 
-echo "[5/10] Context budget estimate..."
+echo "[5/12] Context budget estimate..."
 echo "=== STARTUP CONTEXT ESTIMATE ==="
 echo "global_claude_words: $(count_file_words "$HOME/.claude/CLAUDE.md")"
 echo "local_claude_words: $(count_file_words "$P/CLAUDE.md")"
 echo "rules_words: $(rules_word_count)"
 echo "skill_desc_words: $(skill_description_word_count)"
 if command -v python3 >/dev/null 2>&1; then
-python3 - "$SETTINGS" <<'PYEOF' 2>/dev/null || echo "(unavailable)"
+python3 - "$SETTINGS" "$MODE" <<'PYEOF' 2>/dev/null || echo "(unavailable)"
 import json
 import sys
 
 path = sys.argv[1]
+mode = sys.argv[2]
 try:
     with open(path) as fh:
         d = json.load(fh)
@@ -412,7 +534,15 @@ except Exception:
     sys.exit(0)
 
 print('=== hooks ===')
-print(json.dumps(d.get('hooks', {}), indent=2))
+hooks = d.get('hooks', {})
+if mode == 'deep':
+    print(json.dumps(hooks, indent=2))
+elif isinstance(hooks, dict):
+    names = sorted(hooks.keys())
+    print(f'hook_events: {len(names)}')
+    print('hook_event_names:', ', '.join(names) if names else '(none)')
+else:
+    print('hook_events: (unknown format)')
 
 print('=== MCP ===')
 servers = d.get('mcpServers', d.get('enabledMcpjsonServers', {}))
@@ -444,7 +574,10 @@ else:
             if not allowed:
                 allowed = [value for value in args if value.startswith('/') or (value.startswith('~') and len(value) > 1)]
     print('filesystem_present:', 'yes' if filesystem else 'no')
-    print('allowedDirectories:', allowed or '(missing or not detected)')
+    if mode == 'deep':
+        print('allowedDirectories:', allowed or '(missing or not detected)')
+    else:
+        print('allowedDirectories_count:', len(allowed))
 
 print('=== allowedTools count ===')
 print(len(d.get('permissions', {}).get('allow', [])))
@@ -460,7 +593,7 @@ else
   echo "(unavailable)"
 fi
 
-echo "[6/10] Nested CLAUDE.md + gitignore..."
+echo "[6/12] Nested CLAUDE.md + gitignore..."
 echo "=== NESTED CLAUDE.md ==="
 _NESTED_CLAUDE=$(find "$P" -maxdepth 4 -name "CLAUDE.md" -not -path "$P/CLAUDE.md" -not -path "*/.git/*" -not -path "*/node_modules/*" 2>/dev/null || true)
 if [ -n "$_NESTED_CLAUDE" ]; then
@@ -484,7 +617,7 @@ else
   echo "settings.local.json: NOT gitignored -- risk of committing tokens/credentials"
 fi
 
-echo "[7/10] HANDOFF.md + MEMORY.md..."
+echo "[7/12] HANDOFF.md + MEMORY.md..."
 echo "=== HANDOFF.md ===" ; cat "$P/HANDOFF.md" 2>/dev/null || echo "(none)"
 echo "=== MEMORY.md ==="
 if [ -f "$HOME/.claude/projects/-${PROJECT_KEY}/memory/MEMORY.md" ]; then
@@ -493,7 +626,7 @@ else
   echo "(none)"
 fi
 
-echo "[8/10] Conversation signals + extract..."
+echo "[8/12] Conversation signals + extract..."
 echo "=== CONVERSATION FILES ==="
 print_conversation_file_listing
 
@@ -510,7 +643,37 @@ else
   echo "=== MCP ACCESS DENIALS ===" ; echo "(skipped: summary mode; ask for a deep health audit or run collect-data.sh auto deep for access-denial scan)"
 fi
 
-echo "[9/10] Skill inventory + frontmatter + provenance..."
+echo "[9/12] Agent config..."
+if [ "$MODE" = "deep" ]; then
+  echo "=== AGENT CONFIG DETAIL ==="
+else
+  echo "=== AGENT CONFIG SUMMARY ==="
+fi
+AGENT_CONTEXT_SCRIPT="$(resolve_health_helper check-agent-context.sh || true)"
+if [ -n "$AGENT_CONTEXT_SCRIPT" ]; then
+  if ! bash "$AGENT_CONTEXT_SCRIPT" "$P" "$MODE"; then
+    echo "(unavailable: check-agent-context.sh failed)"
+  fi
+else
+  echo "(unavailable: check-agent-context.sh not found)"
+fi
+
+echo "[10/12] AI maintainability..."
+if [ "$MODE" = "deep" ]; then
+  echo "=== AI MAINTAINABILITY DETAIL ==="
+else
+  echo "=== AI MAINTAINABILITY SUMMARY ==="
+fi
+MAINTAINABILITY_SCRIPT="$(resolve_health_helper check-maintainability.sh || true)"
+if [ -n "$MAINTAINABILITY_SCRIPT" ]; then
+  if ! bash "$MAINTAINABILITY_SCRIPT" "$P" "$MODE"; then
+    echo "(unavailable: check-maintainability.sh failed)"
+  fi
+else
+  echo "(unavailable: check-maintainability.sh not found)"
+fi
+
+echo "[11/12] Skill inventory + frontmatter + provenance..."
 echo "=== SKILL INVENTORY ==="
 _SKILL_FOUND=0
 for DIR in "$P/.claude/skills" "$HOME/.claude/skills"; do
@@ -531,22 +694,26 @@ done
 [ "$_SKILL_FOUND" -eq 1 ] || echo "(none)"
 
 echo "=== SKILL FRONTMATTER ==="
-_FRONTMATTER_FOUND=0
-for DIR in "$P/.claude/skills" "$HOME/.claude/skills"; do
-  [ -d "$DIR" ] || continue
-  while IFS= read -r f; do
-    [ -n "$f" ] || continue
-    is_health_skill "$f" && continue
-    _FRONTMATTER_FOUND=1
-    if head -1 "$f" | grep -q '^---'; then
-      echo "frontmatter=yes path=$f"
-      sed -n '2,/^---$/p' "$f" | head -10
-    else
-      echo "frontmatter=MISSING path=$f"
-    fi
-  done < <(list_skill_files "$DIR")
-done
-[ "$_FRONTMATTER_FOUND" -eq 1 ] || echo "(none)"
+if [ "$MODE" = "deep" ]; then
+  _FRONTMATTER_FOUND=0
+  for DIR in "$P/.claude/skills" "$HOME/.claude/skills"; do
+    [ -d "$DIR" ] || continue
+    while IFS= read -r f; do
+      [ -n "$f" ] || continue
+      is_health_skill "$f" && continue
+      _FRONTMATTER_FOUND=1
+      if head -1 "$f" | grep -q '^---'; then
+        echo "frontmatter=yes path=$f"
+        sed -n '2,/^---$/p' "$f" | head -10
+      else
+        echo "frontmatter=MISSING path=$f"
+      fi
+    done < <(list_skill_files "$DIR")
+  done
+  [ "$_FRONTMATTER_FOUND" -eq 1 ] || echo "(none)"
+else
+  echo "(skipped: summary mode; use collect-data.sh auto deep to print skill frontmatter samples)"
+fi
 
 echo "=== SKILL SYMLINK PROVENANCE ==="
 _PROVENANCE_FOUND=0
@@ -571,7 +738,7 @@ done | grep -q .; }; then
   echo "(none)"
 fi
 
-echo "[10/10] Skill content sample + security scan..."
+echo "[12/12] Skill content sample + security scan..."
 if [ "$TIER" != "simple" ] && [ "$MODE" = "deep" ]; then
 echo "=== SKILL FULL CONTENT ==="
 _CONTENT_COUNT=0

@@ -45,10 +45,10 @@ class CodexImageBackend:
         self.model = os.getenv("CODEX_IMAGE_MODEL", "gpt-image-2")
         self.timeout = int(os.getenv("CODEX_TIMEOUT_SECS", str(DEFAULT_TIMEOUT_SECS)))
         self.size = {
-            "16:9": "1536x1024",
-            "9:16": "1024x1536",
+            "16:9": "1536x864",
+            "9:16": "864x1536",
             "1:1": "1024x1024",
-        }.get(aspect_ratio, "1536x1024")
+        }.get(aspect_ratio, "1536x864")
 
         # Sanity check: codex binary reachable?
         exe = shlex.split(self.codex_cmd, posix=os.name != "nt")[0]

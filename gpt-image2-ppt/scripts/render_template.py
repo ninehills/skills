@@ -2,7 +2,7 @@
 """Render a .pptx template to per-page PNGs.
 
 Backends, in priority order:
-  PPTX -> PDF: native LibreOffice CLI > docker linuxserver/libreoffice
+  PPTX -> PDF: native LibreOffice CLI
   PDF -> PNG:  pymupdf > pdf2image (needs poppler)
 
 Default output: <cwd>/template_renders/<pptx_stem>/page-NN.png
@@ -22,7 +22,6 @@ from typing import Optional
 
 
 DEFAULT_RENDERS_DIR_NAME = "template_renders"
-DOCKER_IMAGE = "linuxserver/libreoffice:latest"
 
 
 def _safe_stem(name: str) -> str:
@@ -56,6 +55,12 @@ def render_pptx_to_pngs(
             print(f"📦 已渲染 {len(existing)} 页 -> {out_dir}（用 --force 强制重渲）")
             return out_dir
 
+    # Windows: try PowerPoint COM first (direct PNG export, no PDF step)
+    count = _try_powerpoint_render(pptx_path, out_dir)
+    if count is not None:
+        print(f"[OK] 渲染 {count} 页 -> {out_dir}")
+        return out_dir
+
     pdf_path = out_dir / "_source.pdf"
     print(f"🖨️  PPTX -> PDF：{pptx_path.name}")
     _convert_pptx_to_pdf(pptx_path, pdf_path)
@@ -82,6 +87,77 @@ def _find_libreoffice() -> Optional[str]:
     return None
 
 
+def _try_powerpoint_render(pptx_path: Path, out_dir: Path) -> Optional[int]:
+    """Windows only: use PowerPoint COM to export slides as PNGs.
+
+    Returns page count, or None if unavailable / failed (caller should fall back to LO).
+    """
+    if sys.platform != "win32":
+        return None
+
+    try:
+        import pythoncom  # type: ignore
+        from win32com import client as _win32  # type: ignore
+    except ImportError:
+        print("(!) pywin32 未安装，正在自动安装 …")
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", "pywin32"],
+            check=False, capture_output=True, text=True,
+        )
+        if result.returncode != 0:
+            print("(!) pywin32 安装失败，回退到 LibreOffice")
+            return None
+        try:
+            import pythoncom  # type: ignore
+            from win32com import client as _win32  # type: ignore
+        except ImportError:
+            print("(!) pywin32 安装后仍无法导入，回退到 LibreOffice")
+            return None
+
+    pptx_path = pptx_path.resolve()
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"\U0001f5a5️  尝试 PowerPoint 渲染：{pptx_path.name}")
+
+    app = None
+    pres = None
+    try:
+        pythoncom.CoInitialize()
+        app = _win32.Dispatch("PowerPoint.Application")
+        app.Visible = True
+        pres = app.Presentations.Open(str(pptx_path), WithWindow=False)
+        pres.Export(str(out_dir), "PNG", 1920)  # 1920px wide (~144dpi for 16:9)
+        count = len(pres.Slides)
+
+        # Rename Slide1.PNG -> page-01.png
+        for i in range(1, count + 1):
+            src = out_dir / f"Slide{i}.PNG"
+            dst = out_dir / f"page-{i:02d}.png"
+            if src.exists():
+                src.replace(dst)
+
+        print(f"[OK] PowerPoint 导出 {count} 页 -> {out_dir}")
+        return count
+    except Exception as e:
+        print(f"(!) PowerPoint 失败 ({e})，回退到 LibreOffice")
+        return None
+    finally:
+        if pres is not None:
+            try:
+                pres.Close()
+            except Exception:
+                pass
+        if app is not None:
+            try:
+                app.Quit()
+            except Exception:
+                pass
+        try:
+            pythoncom.CoUninitialize()
+        except Exception:
+            pass
+
+
 def _convert_pptx_to_pdf(pptx_path: Path, out_pdf: Path) -> None:
     cli = _find_libreoffice()
     if cli:
@@ -96,47 +172,12 @@ def _convert_pptx_to_pdf(pptx_path: Path, out_pdf: Path) -> None:
         produced.replace(out_pdf)
         return
 
-    if shutil.which("docker"):
-        inspect = subprocess.run(
-            ["docker", "image", "inspect", DOCKER_IMAGE], capture_output=True
-        )
-        if inspect.returncode != 0:
-            raise RuntimeError(
-                f"docker 镜像 {DOCKER_IMAGE} 不在本地。\n"
-                f"  先拉一次：docker pull {DOCKER_IMAGE}\n"
-                "  或装本机 libreoffice：sudo apt-get install -y libreoffice"
-            )
-        out_dir = out_pdf.parent
-        staging = out_dir / pptx_path.name
-        copied_for_run = False
-        if not staging.exists() or not staging.samefile(pptx_path):
-            shutil.copy2(pptx_path, staging)
-            copied_for_run = True
-        try:
-            mount_src = str(out_dir).replace("\\", "/") if sys.platform == "win32" else str(out_dir)
-            subprocess.run(
-                ["docker", "run", "--rm",
-                 "-v", f"{mount_src}:/work",
-                 "--entrypoint", "soffice",
-                 DOCKER_IMAGE,
-                 "--headless", "--convert-to", "pdf",
-                 "--outdir", "/work", f"/work/{pptx_path.name}"],
-                check=True, capture_output=True, text=True,
-            )
-            produced = out_dir / f"{pptx_path.stem}.pdf"
-            if not produced.exists():
-                raise RuntimeError(f"docker LibreOffice 未产出 PDF：{produced}")
-            produced.replace(out_pdf)
-        finally:
-            if copied_for_run and staging.exists():
-                staging.unlink()
-        return
-
     raise RuntimeError(
-        "没找到可用的 LibreOffice。任选一种装：\n"
-        "  - 本机：sudo apt-get install -y libreoffice\n"
-        f"  - Docker：docker pull {DOCKER_IMAGE}\n"
-        "或者自己手动从 PowerPoint/Keynote 把每页导出 PNG，"
+        "没找到可用的 LibreOffice。请安装：\n"
+        "  Windows: winget install LibreOffice.LibreOffice\n"
+        "  macOS:   brew install --cask libreoffice\n"
+        "  Linux:   sudo apt-get install -y libreoffice\n"
+        "或者手动从 PowerPoint/Keynote 把每页导出 PNG，"
         "命名 page-01.png 起按字典序对应页码。"
     )
 

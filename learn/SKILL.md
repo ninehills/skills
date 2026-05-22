@@ -2,8 +2,7 @@
 name: learn
 description: "Runs a six-phase research workflow to turn unfamiliar domains or collected sources into publish-ready output. Not for quick lookups or single-file reads."
 when_to_use: "学习一下, 深入研究, 研究一下, 整理成文章, 把这批材料整理, 一站式参考, 一篇就够, 整理成长文, research, deep dive, help me understand, compile sources, unfamiliar domain"
-metadata:
-  version: "3.15.0"
+dispatch_intent: "Deep research, unfamiliar domain, compile sources into output"
 ---
 
 # Learn: From Raw Materials to Published Output
@@ -71,6 +70,15 @@ Generic wisdom is not worth distilling. Passes two or three: belongs in the outl
 
 When two sources contradict on a factual claim, note both positions and the evidence each gives. Do not silently pick one.
 
+### Conversation Or Review Distillation
+
+When the input is a recent conversation, project review, scorecard, or diagnostic report, treat it as raw material:
+
+- Extract repeated workflow failures, invariants, and verifier surfaces.
+- Drop dated line numbers, current-score framing, private paths, one-machine setup, and repo-specific commands unless the output is explicitly for that same repo.
+- Map each durable lesson to its target layer: project docs, shared rules, skill references, or deterministic scripts.
+- Keep evidence snippets only as notes for yourself; do not paste raw conversation history into the final artifact.
+
 ## Phase 3: Outline
 
 Write the outline for the article. For each section: note the source materials it draws from. If a section has no sources, either it does not belong or a source needs to be found first.
@@ -117,3 +125,4 @@ When it reads clean from start to finish, the draft is ready for the user to pub
 | Treated a convincing explainer as ground truth | Ask: does this appear in at least two different contexts from the same source? |
 | Phase 2 wrote summaries instead of teaching the concept | Digest means building the mental model. Summarizing is not digesting. |
 | AI offered to upload the article to a blog or social platform after the user said it was ready | Stop at confirmation. Publishing is the user's action, not yours. |
+| Turned a project review into a generic Waza rule without filtering | Promote only repeated workflow behavior. Leave project-specific commands, paths, and safety constraints in that project |

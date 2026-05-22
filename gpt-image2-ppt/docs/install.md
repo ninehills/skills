@@ -13,7 +13,7 @@
 ## 前置依赖（agent 请先检查）
 
 - **必需**：`git`、`python3`（3.8+）、`pip`
-- **可选**：`libreoffice` 本机命令，或 `docker` + `linuxserver/libreoffice` 镜像（仅模板克隆模式需要，用来把 `.pptx` 渲染成 PNG）
+- **可选**：`libreoffice` 本机命令（仅模板克隆模式需要，用来把 `.pptx` 渲染成 PNG）
 
 如果缺 `git` / `python3`，先用系统包管理器装好；`libreoffice` 可以留到用户要用模板克隆模式时再装。
 
