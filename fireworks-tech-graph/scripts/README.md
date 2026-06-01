@@ -135,12 +135,7 @@ python3 ./generate-from-template.py memory ./output/mem0.svg '{
   sudo apt install librsvg2-bin       # Ubuntu/Debian
   ```
 
-- **puppeteer**（最高保真）- 真实 Chromium 渲染
-  ```bash
-  npm install puppeteer
-  ```
-
-`generate-diagram.sh` 会优先调用 cairosvg，缺失时自动回退到 rsvg-convert。完整对比与 puppeteer 脚本见 [SKILL.md → SVG → PNG Conversion](../SKILL.md)。
+`generate-diagram.sh` 会优先调用 cairosvg，缺失时自动回退到 rsvg-convert。完整对比见 [SKILL.md → SVG → PNG Conversion](../SKILL.md)。
 
 - **grep, sed, awk** - 文本处理（macOS 自带）
 

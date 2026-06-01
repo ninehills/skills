@@ -20,6 +20,7 @@ Use this template to compress repository context before running Waza `/check`. T
 - Protected files and directories.
 - Generated or bundled artifacts that must stay in sync with source changes.
 - Packaging source of truth: whether archives are built from `git ls-files`, explicit allowlists, generated manifests, or source directories.
+- CLI command surfaces: entrypoints, subcommands, flags, help/version behavior, exit codes, stdout/stderr contract, TTY and non-interactive paths, config/env precedence, and installed-runtime checks.
 - Runtime dependencies introduced by the diff: Python packages, CLIs, network services, package managers, or platform tools that are not already declared in CI/docs.
 - Domain-specific safety rules.
 - Release artifacts that must exist.
@@ -34,6 +35,7 @@ Use this template to compress repository context before running Waza `/check`. T
 - Maintainer-only machine paths.
 - One-off personal preferences that do not affect project behavior.
 - One-off review reports, scorecards, or diagnostic snapshots copied as guidance instead of distilled into stable project rules.
+- Raw memory, chat excerpts, screenshots, private support details, local paths, project-specific commands, issue/PR numbers, release tags, or commit hashes from another project.
 - Full copies of Waza `/check` sections.
 
 ## Recommended Context Shape
@@ -44,6 +46,14 @@ Use this template to compress repository context before running Waza `/check`. T
 - Format: `<command>`
 - Fast check: `<command>`
 - Full verification: `<command>`
+
+## CLI Command Surface
+
+- Entrypoints: `<command or bin>`.
+- Command contract: help/version, subcommands, flags, exit codes, stdout/stderr, JSON/schema output.
+- Runtime shape: TTY vs non-interactive behavior, env/config precedence, completion/manpage or shell integration.
+- Install/run proof: built package, temp prefix, PATH shim, shebang/executable bit, or package-manager path checked with `<command>`.
+- Mutating commands: dry-run/confirmation, operation log, rollback/retry behavior, signal/partial-failure handling.
 
 ## Project Hard Stops
 

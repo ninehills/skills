@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "d86803a2-4041-4e9e-96e0-560f3eecd9d3",
+  "path": "deslop-zh",
+  "path_key": "deslop-zh",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "deslop-zh",
+    "branch": null
+  }
+}

@@ -110,6 +110,7 @@ fi
 
 # Check 5: Arrow-component collision
 echo -n "Checking arrow collisions... "
+set +e
 COLLISIONS=$(python3 - "$SVG_FILE" <<'PY'
 from pathlib import Path
 import re
@@ -250,7 +251,13 @@ for element in root.iter():
 print(collisions)
 PY
 )
-if [ "$COLLISIONS" -eq 0 ]; then
+COLLISION_EXIT=$?
+set -e
+
+if [ "$COLLISION_EXIT" -ne 0 ]; then
+    echo -e "${YELLOW}⚠ Skipped${NC} (XML parse error)"
+    FAILURES=$((FAILURES + 1))
+elif [ "$COLLISIONS" -eq 0 ]; then
     echo -e "${GREEN}✓ Pass${NC}"
 else
     echo -e "${RED}✗ Fail${NC} (${COLLISIONS} arrow path collision(s))"
@@ -274,7 +281,7 @@ RENDER_ERR=""
 
 if python3 -c "import cairosvg" 2>/dev/null; then
     RENDER_TOOL="cairosvg"
-    if RENDER_ERR=$(python3 -c "import cairosvg; cairosvg.svg2png(url='${SVG_FILE}', write_to='/tmp/test-output.png')" 2>&1); then
+    if RENDER_ERR=$(python3 -c "import sys, cairosvg; cairosvg.svg2png(url=sys.argv[1], write_to=sys.argv[2])" "$SVG_FILE" "/tmp/test-output.png" 2>&1); then
         RENDER_OK=true
     fi
 elif command -v rsvg-convert &> /dev/null; then

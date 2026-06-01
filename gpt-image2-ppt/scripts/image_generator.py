@@ -16,13 +16,12 @@ import base64
 import os
 import re
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 
-# .env 加载由顶层入口（generate_ppt.py 的 find_and_load_env）统一负责。
-# 本模块不调 load_dotenv()，避免 import 时无意识加载父目录 / cwd 的 .env，
-# 与 SKILL.md 声明的"scoped .env loading"保持一致。
+# 环境变量加载由顶层入口 generate_ppt.py 统一负责。
+# 本模块不调 load_dotenv()，避免 import 时无意识加载父目录 / cwd 的 .env。
 
 
 # 16:9 横版用 1536x864，竖版 9:16 用 864x1536，方图用 1024x1024
@@ -85,7 +84,10 @@ class GptImage2Generator:
         self.endpoint = os.getenv("GPT_IMAGE_ENDPOINT", "auto").lower()
 
         if not self.api_key:
-            raise ValueError("缺少 OPENAI_API_KEY，请在 .env 中配置")
+            raise ValueError(
+                "缺少 OPENAI_API_KEY。请通过 agent 配置 / 系统环境变量注入，"
+                "或设置 GPT_IMAGE2_PPT_ENV 指向私有 env 文件。"
+            )
 
         self.aspect_ratio = aspect_ratio
         self.default_size = ASPECT_TO_SIZE.get(aspect_ratio, "1536x1024")
@@ -139,6 +141,16 @@ class GptImage2Generator:
             # 兜底当 base64
             self._save_b64(payload, output_path)
 
+    def _normalize_reference_images(self, reference_image_path: Optional[Union[str, List[str]]]) -> List[str]:
+        """Return existing local reference images, preserving caller order."""
+        if not reference_image_path:
+            return []
+        if isinstance(reference_image_path, (list, tuple)):
+            candidates = [str(p) for p in reference_image_path if p]
+        else:
+            candidates = [str(reference_image_path)]
+        return [p for p in candidates if os.path.exists(p)]
+
     # ---------- 多模态响应解析（chat completions 走这里）----------
 
     def _extract_image(self, content: Any) -> str:
@@ -187,14 +199,19 @@ class GptImage2Generator:
 
     # ---------- 端点 1: /v1/chat/completions ----------
 
-    def _request_via_chat(self, prompt: str, size: str, reference_image_path: Optional[str] = None) -> str:
+    def _request_via_chat(
+        self,
+        prompt: str,
+        size: str,
+        reference_image_path: Optional[Union[str, List[str]]] = None,
+    ) -> str:
         """流式请求 chat completions，从增量文本中拼接出图片 URL / b64。
 
         中转站（如聚灵）把图片模型挂在 chat completions 上时，通常要求 stream=True。
         响应里会先推送进度文本（"> 进度：25%"），最后吐 markdown 图片
         （"![image](http://...png)"）或 base64。
 
-        reference_image_path 不为空时，把该图片作为多模态 input 一并塞进 messages，
+        reference_image_path 不为空时，把参考图片作为多模态 input 一并塞进 messages，
         让 gpt-image-2 按它的视觉风格出新图（高保真 / 模板克隆模式）。
         """
         url = f"{self.base_url}/v1/chat/completions"
@@ -219,18 +236,78 @@ class GptImage2Generator:
             )
 
         full_prompt = f"{prompt}{aspect_hint}"
-        if reference_image_path and os.path.exists(reference_image_path):
-            with open(reference_image_path, "rb") as f:
-                ref_b64 = base64.b64encode(f.read()).decode("ascii")
-            ref_data_url = f"data:image/png;base64,{ref_b64}"
-            user_content: Any = [
-                {"type": "image_url", "image_url": {"url": ref_data_url}},
-                {"type": "text", "text": (
-                    "请以上面这张图作为视觉风格参考（配色 / 字体 / 装饰元素 / 布局氛围），"
+        reference_images = self._normalize_reference_images(reference_image_path)
+        if reference_images:
+            content_parts: List[Dict[str, Any]] = []
+            has_asset_skeleton = False
+            has_style_reference = False
+            for idx, ref_path in enumerate(reference_images, start=1):
+                with open(ref_path, "rb") as f:
+                    ref_b64 = base64.b64encode(f.read()).decode("ascii")
+                ref_data_url = f"data:image/png;base64,{ref_b64}"
+                is_asset_skeleton = "asset-skeleton" in os.path.basename(ref_path)
+                has_asset_skeleton = has_asset_skeleton or is_asset_skeleton
+                has_style_reference = has_style_reference or not is_asset_skeleton
+                if is_asset_skeleton:
+                    content_parts.append({
+                        "type": "text",
+                        "text": f"参考图 {idx} 是空间定位图，不是视觉风格参考。",
+                    })
+                else:
+                    content_parts.append({
+                        "type": "text",
+                        "text": f"参考图 {idx} 是视觉风格/模板参考，不要复制其中的文字内容。",
+                    })
+                content_parts.append({"type": "image_url", "image_url": {"url": ref_data_url}})
+
+            # 判断是编辑模式还是模板克隆模式
+            # 编辑模式的 prompt 含「只修改」「保持其他不变」等语义
+            is_edit = any(kw in prompt for kw in [
+                "只修改", "在参考图基础上", "保持其他所有", "不要动",
+                "请基于上面这张参考图", "只改", "其他完全不变", "其他都不要动",
+            ])
+
+            if is_edit:
+                instruction = (
+                    "请基于上面提供的幻灯片参考图，严格按以下修改要求生成新图片。\n"
+                    "只修改要求提到的部分，其他所有内容（背景、配色、字体、装饰、布局、位置）"
+                    "必须与参考图完全一致。\n\n"
+                )
+            elif has_asset_skeleton and has_style_reference:
+                instruction = (
+                    "上面同时提供了两类参考图：模板/风格参考图，以及空间定位图。\n"
+                    "模板/风格参考图只用于学习配色、字体、装饰元素、布局气质和版式节奏，不要复制原图文字内容。\n"
+                    "空间定位图中的细角标只表示后续会由代码贴入真实图片的覆盖区；"
+                    "它们不是页面设计元素，也不是图片框、卡片、遮罩或留白块。\n"
+                    "请避让这些覆盖区里的关键信息：不要把标题、正文、数字、图标、人物或主体照片放进这些区域。\n"
+                    "覆盖区底下的背景必须自然连续，可以有同页背景色、纸张纹理或轻微装饰延续过去。\n"
+                    "严禁生成白色/浅色矩形、空卡片、图片占位框、边框、阴影、透明洞或任何可见预留块。\n"
+                    "如果下方页面布局或风格模板提到主体照片、产品照、人物照、场景摄影、photo crop、image crop、图片区或照片区，"
+                    "这些角色都将由代码后贴真实图片完成，模型绝对不要自行生成、仿造或重绘这些照片内容。\n"
+                    "不要复制、描摹、强化、美化或保留空间定位图里的角标；最终页面里应看不到任何占位痕迹。\n\n"
+                )
+            elif has_asset_skeleton:
+                instruction = (
+                    "上面这张图不是视觉风格参考，而是空间定位图。\n"
+                    "图中的细角标只表示后续会由代码贴入真实图片的覆盖区；"
+                    "它们不是页面设计元素，也不是图片框、卡片、遮罩或留白块。\n"
+                    "请避让这些覆盖区里的关键信息：不要把标题、正文、数字、图标、人物或主体照片放进这些区域。\n"
+                    "覆盖区底下的背景必须自然连续，可以有同页背景色、纸张纹理或轻微装饰延续过去。\n"
+                    "严禁生成白色/浅色矩形、空卡片、图片占位框、边框、阴影、透明洞或任何可见预留块。\n"
+                    "如果下方页面布局或风格模板提到主体照片、产品照、人物照、场景摄影、photo crop、image crop、图片区或照片区，"
+                    "这些角色都将由代码后贴真实图片完成，模型绝对不要自行生成、仿造或重绘这些照片内容。\n"
+                    "本页可以保留所选风格的文字、细线、背景纹理、柔和光影和少量抽象装饰，但不要生成额外摄影主体。\n"
+                    "不要复制、描摹、强化、美化或保留参考图里的角标；最终页面里应看不到任何占位痕迹。\n"
+                    "角标外部请按下方 PPT 设计要求生成页面。\n\n"
+                )
+            else:
+                instruction = (
+                    "请以上面提供的参考图作为视觉风格参考（配色 / 字体 / 装饰元素 / 布局氛围），"
                     "按下方新内容生成一张全新的 PPT 页，不要复制原图的文字内容。\n\n"
-                    + full_prompt
-                )},
-            ]
+                )
+
+            content_parts.append({"type": "text", "text": instruction + full_prompt})
+            user_content: Any = content_parts
         else:
             user_content = full_prompt
 
@@ -334,7 +411,7 @@ class GptImage2Generator:
         scene_data: Dict[str, Any],
         output_path: str,
         size: str = "auto",
-        reference_image_path: Optional[str] = None,
+        reference_image_path: Optional[Union[str, List[str]]] = None,
     ) -> str:
         scene_index = scene_data.get("index", 0)
         prompt = scene_data.get("image_prompt", "")

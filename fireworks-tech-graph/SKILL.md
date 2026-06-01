@@ -96,7 +96,7 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 10. **Report** the generated file paths
 11. **(Optional) Visual self-review** — if your runtime can read images, load the exported PNG back and inspect it. Syntactic validity does not guarantee visual correctness: arrows may cross through component interiors, labels may collide with lifelines or other labels, boxes may overlap, alt-frame text may sit on top of a message, or a legend may cover content. If you see any of these, revise the SVG and re-export; repeat until the rendered image is clean. Common fixes:
     - Route arrows through gaps between boxes, not through box interiors
-    - Add background rects behind arrow labels (opacity 0.95, matching canvas color)
+    - Move arrow labels 6-8px away from the arrow line (offset-first); add background rects only when offset is insufficient
     - Widen inter-row/inter-column gutters so same-layer arrows have clear corridors
     - Collapse repeated cross-layer arrows into a single "delegates down" rail outside the content area
     - Move legend/notes out of any region where arrows or labels land
@@ -323,7 +323,8 @@ Always include a **legend** when 2+ arrow types are used.
 - Snap to 8px grid: horizontal 120px intervals, vertical 120px intervals
 
 **Arrow Labels** (CRITICAL):
-- MUST have background rect: `<rect fill="canvas_bg" opacity="0.95"/>` with 4px horizontal, 2px vertical padding
+- **Offset-first** (default): place label 6-8px above horizontal arrows, or 8px left/right of vertical arrows — do not overlap the arrow line
+- **Background fallback**: add `<rect fill="canvas_bg" opacity="0.95"/>` only when the offset label still crosses another visual element (another arrow, a node edge, etc.)
 - Place mid-arrow, ≤3 words, stagger by 15-20px when multiple arrows converge
 - Maintain 10px safety distance from nodes
 
@@ -347,6 +348,9 @@ Available arrow override fields (in recommended order of use):
 | `route_points` | `[[x1,y1], [x2,y2], ...]` | Force exact waypoints (bypasses auto-routing); keep segments orthogonal |
 | `routing_padding` | number (default: 24) | *(Advanced)* Adjust obstacle clearance for this arrow |
 | `port_clearance` | number | *(Advanced)* Adjust first-segment offset from node edge |
+| `label_style` | `"badge"` / `"offset"` | Choose `"offset"` when badge backgrounds create visual clutter; keep `"badge"` (default) for legacy/high-contrast labels |
+
+For JSON/template rendering, the default remains `"badge"` for backward compatibility. Set `"label_style": "offset"` on individual arrows when you want offset-first labels without background rects.
 
 Optimization steps:
 1. Read the existing SVG — identify which arrows overlap, cross nodes, or look misaligned
@@ -370,9 +374,10 @@ When two arrows must cross each other, ALWAYS use jump-over arcs to prevent visu
 **Validation Checklist** (run before finalizing):
 1. **Arrow-Component Collision**: Arrows MUST NOT pass through component interiors (route around with orthogonal paths)
 2. **Text Overflow**: All text MUST fit with 8px padding (estimate: `text.length × 7px ≤ shape_width - 16px`)
-3. **Arrow-Text Alignment**: Arrow endpoints MUST connect to shape edges (not floating); all arrow labels MUST have background rects
+3. **Arrow-Text Alignment**: Arrow endpoints MUST connect to shape edges (not floating); arrow labels should not overlap arrow lines (use offset positioning or background rects)
 4. **Container Discipline**: Prefer arrows entering and leaving section containers through open gaps between components, not through inner component bodies
 5. **Filter Boundary Safety**: For every element with `filter="url(...)"`, verify `(element_x + element_width + filter_extension) ≤ viewBox_width` AND `element_x ≥ filter_extension`. The default filter region extends 10-20% beyond bbox; staying near viewBox edges causes Chrome/cairosvg to clip the element's edge-side stroke (one side of the border vanishes while other sides render correctly)
+6. **Arrow-Title Collision**: Arrows MUST NOT cross through section/container title text or region labels (font-size ≥ 13px). For smaller annotations (< 13px), prefer routing around but tolerate if layout constraints require it. *(Visual self-review check — not covered by `validate-svg.sh` automated checks)*
 
 ## SVG Technical Rules
 
@@ -384,6 +389,7 @@ When two arrows must cross each other, ALWAYS use jump-over arcs to prevent visu
 - Drop shadows: `<feDropShadow>` in `<filter>`, apply sparingly (key nodes only)
 - Curved paths: use `M x1,y1 C cx1,cy1 cx2,cy2 x2,y2` cubic bezier for loops/feedback arrows
 - Clip content: use `<clipPath>` if text might overflow a node box
+- Z-order (drawing order): SVG uses painter's model — later elements cover earlier ones. Recommended layer order (bottom → top): ① canvas background ② dashed containers / region backgrounds ③ arrows and connection lines ④ node shapes (rects, circles) ⑤ text labels and annotations ⑥ legends and overlays. When arrows pass near text, draw arrows BEFORE text so text stays readable. Adjust per diagram needs — this is guidance, not rigid.
 
 ## SVG Generation & Error Prevention
 
@@ -552,7 +558,7 @@ const path = require('path');
 
 - `rsvg-convert` renders SVGs containing `<foreignObject>`, CSS `filter`, or complex `<style>` blocks **incompletely** — missing borders / missing text are the typical symptoms
 - `cairosvg` (built on Cairo) has much better CSS support than rsvg and is sufficient for most cases
-- `cairosvg` **cannot render emoji** in `<text>` elements — Cairo's toy font API has no emoji font fallback, so emoji characters render as empty boxes (□) while all other text appears normally. Use plain text labels or inline SVG shapes instead of emoji; if emoji are required, switch to the puppeteer path
+- `cairosvg` **may fail to render CJK characters and emoji** in `<text>` elements — Cairo's font API (`cairo_select_font_face`) does not reliably perform system fontconfig fallback, so glyphs not present in the matched font face render as □ (empty box). This commonly affects Chinese/Japanese/Korean text and emoji, depending on system font configuration. **Workaround**: use SVG as primary format for web/GitHub rendering (browsers handle CJK natively); reserve PNG export for Latin-only diagrams, or switch to the puppeteer path for full CJK+emoji fidelity
 - If the SVG was generated by a browser (D3.js, Mermaid, etc.), only headless Chrome (puppeteer) renders it 100% faithfully
 - **Chrome headless CLI `--window-size=W,H` is not the drawable area** — even in `--headless=new` mode, browser chrome (scrollbars, internal UI surfaces) consumes ~15-20% of both width and height, so the actual SVG viewport is only ~0.84×W by ~0.84×H. Symptom: SVG content past `x ≈ 0.84 × W` or `y ≈ 0.84 × H` is cut off and renders as a solid white band, even though the SVG file itself is correct. Typical failure modes: a Legend in the top-right corner loses its right border; a bottom-row container loses its bottom dashed line. Fix: pass window dimensions **≥ SVG width × 1.2 AND SVG height × 1.2**, then crop the raw screenshot back to `(SVG_width × scale, SVG_height × scale)` with PIL or ImageMagick. Example: for a 1280×580 SVG at 3× DPR, use `--window-size=1600,800` then crop the output to 3840×1740. The Puppeteer / `page.setViewport()` path does NOT have this issue — it sets a precise viewport regardless of window UI.
 

@@ -1,4 +1,6 @@
-# Design Tokens: Color, Typography, and Motion
+# Design Tokens: Color and Typography
+
+Motion rules live in [design-reference.md](./design-reference.md) under Animation and Motion Specifics. This file owns color and typography only.
 
 ## Color System: OKLCH Rules
 
@@ -41,13 +43,3 @@ Reject: Inter, DM Sans, DM Serif Display, DM Serif Text, Outfit, Plus Jakarta Sa
 - `-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale` once on root layout (macOS only)
 - `font-variant-numeric: tabular-nums` for counters, timers, prices, number columns
 - Letter-spacing: roughly -0.022em for display sizes (32px+), -0.012em for mid-range (20-28px), normal at 16px and below
-
-## Motion Specifics
-
-- No bounce or elastic easing. Use exponential ease-out: `cubic-bezier(0.16,1,0.3,1)` for natural deceleration.
-- Animate `transform` and `opacity` only. Every other property triggers layout or paint.
-- For height reveals: `grid-template-rows: 0fr` to `1fr` (avoids `height: auto` animation trap).
-- Icon swaps: 120ms cross-fade with `opacity` and subtle `scale(0.9)` to `scale(1)`.
-- Scale on press: `scale(0.96)` on active/press via CSS transitions.
-- Page-load guard: `initial={false}` on animated presence wrappers for toggles and tabs (prevents enter animations on first render).
-- Honor `prefers-reduced-motion`: disable or reduce animations when set.

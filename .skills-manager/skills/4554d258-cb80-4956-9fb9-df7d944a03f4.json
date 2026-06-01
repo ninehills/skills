@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "4554d258-cb80-4956-9fb9-df7d944a03f4",
+  "path": "gpt-image-gen",
+  "path_key": "gpt-image-gen",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "gpt-image-gen",
+    "branch": null
+  }
+}

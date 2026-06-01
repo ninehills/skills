@@ -4,7 +4,7 @@
 
 **用 OpenAI `gpt-image-2` 一键生成视觉强烈的 PPT。**
 
-Claude Code / Codex / OpenClaw Skill。装进 agent 后，用一句自然语言生成 16:9 高清图片 + 可键盘翻页的 HTML viewer + 打包好的 `.pptx`，也可以仿任意 `.pptx` 模板出全新内容。
+Claude Code / Codex / OpenClaw Skill。装进 agent 后，用一句自然语言生成 16:9 高清图片 + 打包好的 `.pptx`，也可以仿任意 `.pptx` 模板出全新内容。
 
 [![GitHub stars](https://img.shields.io/github/stars/JuneYaooo/gpt-image2-ppt-skills?style=flat)](https://github.com/JuneYaooo/gpt-image2-ppt-skills/stargazers)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](./LICENSE)
@@ -39,12 +39,34 @@ Claude Code / Codex / OpenClaw Skill。装进 agent 后，用一句自然语言�
 
 ## ✨ 能做什么
 
-- 🎨 **十套精选风格** — Spatial Glass / Tech Blue / Editorial Mono / Dark Aurora / Riso / Wabi / Swiss Grid / Hand Sketch / Y2K Chrome / Vector Illustration，每套都细分 `cover` / `content` / `data` 三种构图
-- 🪄 **模板克隆模式** — 丢一个 `.pptx` 进去，自动渲染 + vision 抽风格 + JSON Schema 复刻，像上面那张图一样仿版式换内容
-- 🎮 **HTML viewer + `.pptx` 双产出** — 键盘翻页 / 空格自动播放 / ESC 全屏 / 触摸滑动，同时打包成 16:9 `.pptx` 直接用
+- 🎨 **十套精选风格 + 扩展风格库** — 内置 Spatial Glass / Tech Blue / Editorial Mono / Dark Aurora / Riso / Wabi / Swiss Grid / Hand Sketch / Y2K Chrome / Vector Illustration，并持续补充优质风格
+- 🪄 **模板克隆模式** — 丢一个 `.pptx` 进去，AI 会参考原模板的版式、配色和插画语汇，像上面那张图一样换成新内容
+- 🎯 **自然语言改 PPT** — 直接说“改第 3 页副标题”“删掉页脚”“把三个数据换成新数字”，AI 会只重生成目标页
+- 🎮 **双产出** — 每页 PNG 高清原图 + 16:9 `.pptx` 直接用
 - ⚡ **默认 10 路并发出图** — 10 页 ~30 秒出完
-- 🔁 **双后端** — `openai` 直调（需 key）或 `codex` CLI（复用 codex 登录，无需在本 skill 配 key）
-- 🤖 **官方 OpenAI Images API** — 模型 `gpt-image-2`，`base_url` 可换任意 OpenAI 兼容中转
+- 🧪 **先看一页再跑全量** — 默认建议先出封面给你确认，满意后再生成整套
+- 🧾 **可追踪、可回滚** — 修改过哪些页、生成过哪些版本都能追踪，方便继续改
+- 🖼️ **真实素材双模式** — 用户给的真实图默认保真嵌入；用户明确允许时，也可以作为参考图融合重绘
+
+## 🆕 更新记录
+
+- **2026-05-31 · 真实素材双模式**：产品截图、logo、图表、表格、医学影像、证据截图等真实素材默认保真嵌入为独立图片对象；如果用户明确说“不需要贴原图 / 可以重绘 / 更重视整体效果”，也可以作为参考图融合重绘。医疗影像、诊断图、论文图表、财务表格、法律证据、精确 UI 截图不建议重绘，生成后需要人工核对。
+- **2026-05-26 · 扩展风格库**：从公开渠道 500+ 个 PPT 模板中筛选补充 22 个优质风格，覆盖商务、学术、教育、餐饮、时尚、医疗、环保等场景。
+
+## 🧩 整体实现流程
+
+本项目采用“AI 生成整页视觉稿 + PPT 打包”的路线；真实素材默认保真嵌入，用户明确允许时可作为参考图融合重绘。完整流程图、可靠性边界和素材处理规则见：[`docs/ppt-implementation-logic.md`](./docs/ppt-implementation-logic.md)。
+
+## ✅ 适合哪些用户场景
+
+| 场景 | 适合程度 | 说明 |
+| --- | --- | --- |
+| 从主题生成一套新 PPT | 很适合 | 适合汇报、路演、培训、课程、产品介绍。 |
+| 按公司模板仿一套新内容 | 很适合 | 上传 `.pptx` 模板，先出封面确认，再跑全量。 |
+| 改标题、副标题、日期、页脚 | 很适合 | 当前最稳定的编辑场景。 |
+| 更新数据卡片和关键数字 | 适合 | 可批量改，但交付前要逐项核对数字。 |
+| 只改复杂多页 PPT 的某一页 | 适合 | 只更新目标页，其他页不重新生成。 |
+| 密集表格、财报、法务长文 | 不建议直接承诺 | 小字和数字需要更严格人工验收。 |
 
 ## 🎨 十种内置风格
 
@@ -64,6 +86,37 @@ Claude Code / Codex / OpenClaw Skill。装进 agent 后，用一句自然语言�
 | `swiss-grid` | Bauhaus / Vignelli 国际主义网格 | 学术报告、博物馆展陈、严肃汇报 |
 | `hand-sketch` | Sketchnote / 白板手绘 | 工作坊、产品 brainstorming、培训 |
 | `y2k-chrome` | Y2K 千禧液态金属 + 蝴蝶贴纸 | 潮牌、文娱、品牌联名、Z 世代营销 |
+
+## 🧬 扩展风格库
+
+已从公开渠道 500+ 个 PPT 模板中筛选补充 22 个优质风格。后续还会持续补充，也欢迎大家提供好看的 PPT 模板或风格参考。
+
+更多风格展示、风格 ID、特色和适用场景见：[`docs/distilled-styles.md`](./docs/distilled-styles.md)。
+
+---
+
+## 🧪 修改能力测评
+
+如果你关心“到底能不能稳定改 PPT”，先看这份面向用户的图文测评：
+
+- **[`docs/edit_guide.md`](./docs/edit_guide.md)** — 标题替换、日期修改、删除页脚、数据更新、新增 logo、复杂多页只改一页，以及当前不足和交付前检查清单
+
+核心结论：
+
+| 能力 | 当前表现 |
+| --- | --- |
+| 改短文本 | 稳定，适合日常交付。 |
+| 改多个明确元素 | 可用，建议一次说清楚“其他不要动”。 |
+| 改数据页 | 可用，但必须核对数字。 |
+| 加小图标 / logo | 可用；真实品牌 logo 需要提供素材。 |
+| 原生 PPT 对象级编辑 | 背景与文字仍是整页图片；通过 `external_image` 声明的真实图片会作为独立 PPT 图片对象叠加，可单独选中拖动。 |
+
+<details>
+<summary>开发者：查看内部编辑机制示意图</summary>
+
+<img src="docs/assets/architecture_cn.jpg" width="100%" alt="system architecture">
+
+</details>
 
 ---
 
@@ -95,14 +148,15 @@ bash install_as_skill.sh --target codex    # Codex
 - Claude Code: `~/.claude/skills/gpt-image2-ppt-skills/`
 - Codex: `~/.codex/skills/gpt-image2-ppt-skills/`
 
-如果你走 API 直连模式，再填一个 key 就能用：
+如果你走 API 直连模式，需要给 agent 注入环境变量。推荐使用当前 agent 框架的标准配置，而不是把密钥写进业务项目根目录 `.env`：
+
+- Claude Code：用户级 `~/.claude/settings.json`，或项目级 `.claude/settings.local.json`
+- OpenClaw / 自定义 Agent：用 `apiKey` / env reference 引用系统环境变量
+- CI / 服务器：用系统环境变量、Docker Compose、Kubernetes Secret 或 CI Secret
+- standalone CLI：可设置 `GPT_IMAGE2_PPT_ENV=/path/to/private.env`，或使用 skill 安装目录下的 `.env` fallback
 
 ```bash
-# Claude Code:
-# ~/.claude/skills/gpt-image2-ppt-skills/.env
-#
-# Codex:
-# ~/.codex/skills/gpt-image2-ppt-skills/.env
+# 变量名如下：
 OPENAI_BASE_URL=https://api.openai.com    # 或任意 OpenAI 兼容中转
 OPENAI_API_KEY=sk-...                     # 必需
 GPT_IMAGE_MODEL_NAME=gpt-image-2
@@ -111,15 +165,15 @@ GPT_IMAGE_QUALITY=high                    # low / medium / high / auto
 
 > 在 **Codex** 里如果当前 agent 自带原生图片生成能力，可以直接走 `SKILL.md` 里的原生路径，**不必配置 `OPENAI_API_KEY`**。
 >
-> 🔒 **不会误吃密钥**：只从 skill 自己目录的 `.env` 或显式 `GPT_IMAGE2_PPT_ENV` 加载，**不会**向上递归读项目目录的 `.env`。
+> 🔒 **不会误吃密钥**：脚本只读取当前进程环境、平台注入变量、显式 `GPT_IMAGE2_PPT_ENV` 和 skill 安装目录 `.env` fallback，**不会**向上递归读调用者项目目录的 `.env`。
 >
 > 🪄 模板克隆模式额外需要本机 `libreoffice`（用来把 `.pptx` 渲染成 PNG）。
 
 ### 模板克隆的 Vision 分析（可选）
 
-模板克隆模式下，skill 需要先"看懂"你的 `.pptx` 模板的视觉风格。**如果你的 AI 助手本身就是多模态的**（Claude Code 走 Claude Opus/Sonnet，Codex 走 GPT 多模态等），agent 会直接自己看图抽取风格，**不需要额外配置**。
+模板克隆模式下，skill 需要先"看懂"你的 `.pptx` 模板的视觉风格。**如果你的 AI 助手本身就是多模态的**（Claude Code 走 Claude Opus/Sonnet，Codex 走 GPT 多模态等），agent 会直接自己看图抽取风格，生成带 `reference_image` 的 `template_profile.json` 后通过 `--template-profile` 传给 CLI，**不需要额外配置**。
 
-只有当你用的 agent 是纯文本模型时，才需要配下面这组环境变量，走一个独立的多模态模型来分析模板：
+只有当你用的 agent 是纯文本模型时（例如只接入 DeepSeek 文本模型），才需要配下面这组环境变量，走一个独立的多模态模型来分析模板：
 
 ```bash
 # 可选：模板克隆的 vision 分析（仅纯文本 agent 需要，多模态 agent 不用配）
@@ -142,15 +196,15 @@ VISION_MODEL_NAME=gemini-3.1-pro-preview   # 或 gpt-4o / claude-3.5-sonnet 等�
 
 > 我这有一个 `company-template.pptx`，帮我按这个模板做一份关于 **[你的主题]** 的 5 页 PPT。
 
-Claude 会自己写 `slides_plan`、先出一页封面让你确认、再跑全量，把 HTML viewer + `.pptx` 路径告诉你。
+Claude 会自己写 `slides_plan`、先出一页封面让你确认、再跑全量，把输出目录和 `.pptx` 路径告诉你。
 
-> 🧑‍💻 想自己写脚本调 CLI 而不走 agent？看 [`SKILL.md`](./SKILL.md)，CLI 参数、文件布局都在那。
+> 想自己写脚本调 CLI 而不走 agent？看 [`SKILL.md`](./SKILL.md)，CLI 参数、文件布局都在那。
 
 ---
 
 ## 🙏 致谢
 
-- [op7418/NanoBanana-PPT-Skills](https://github.com/op7418/NanoBanana-PPT-Skills) — 风格 prompts 与 viewer 模板的原始作者。本项目把图片后端从 Nano Banana Pro 换成了 OpenAI gpt-image-2，重写了继承自上游的 3 套风格并新增 7 套（共 10 套），另加入模板克隆模式（vision 抽风格仿任意 `.pptx`）、md-first 编排流程、`.pptx` 自动打包、codex CLI 备用后端等新功能。
+- [op7418/NanoBanana-PPT-Skills](https://github.com/op7418/NanoBanana-PPT-Skills) — 风格 prompts 与早期 skill 结构参考。本项目把图片后端从 Nano Banana Pro 换成了 OpenAI gpt-image-2，重写了继承自上游的 3 套风格并新增 7 套（共 10 套），另加入模板克隆模式（vision 抽风格仿任意 `.pptx`）、md-first 编排流程、`.pptx` 自动打包、codex CLI 备用后端等新功能。
 - [lewislulu/html-ppt-skill](https://github.com/lewislulu/html-ppt-skill) — Claude Code skill SKILL.md frontmatter 写法参考。
 
 ## 💬 Community
@@ -161,7 +215,7 @@ Claude 会自己写 `slides_plan`、先出一页封面让你确认、再跑全�
 
 欢迎大家有问题一起交流讨论。
 
-<img src="docs/assets/wechat.jpg" width="300" alt="微信交流群">
+<img src="docs/assets/wechat.png" width="300" alt="微信交流群">
 
 ## ⭐ Star History
 

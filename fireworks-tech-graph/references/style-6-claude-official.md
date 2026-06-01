@@ -1,7 +1,6 @@
 # Style 6: Claude Official
 
 Inspired by Anthropic's Claude blog technical diagrams — warm, approachable, professional.
-s
 
 ```
 Background:     #f8f6f3  (warm cream)
@@ -16,14 +15,16 @@ Text primary:   #1a1a1a  (near black)
 Text secondary: #6a6a6a  (medium gray)
 Text labels:    #5a5a5a  (arrow labels)
 
-Semanode colors:
+Semantic colors:
   Input/Source:    #a8c5e6  (soft blue)
   Agent/Process:   #9dd4c7  (soft teal-green)
   Infrastructure:  #f4e4c1  (warm beige)
   Storage/State:   #e8e6e3  (light gray)
   
 Arrow color:     #5a5a5a  (consistent dark gray)
-`ypography
+```
+
+## Typography
 
 ```
 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue',
@@ -149,10 +150,12 @@ Position: bottom-right, 20px margin from edges.
 ## Layout Principles
 
 - **Generous spacing**: Minimum 80px between node edges
-- **Horizontal alignment same layer align perfectly
+- **Horizontal alignment**: Same-layer nodes align perfectly
 - **Vertical flow**: Top-to-bottom preferred
-- **Symmetry**: Balaight composition
-- **Clean lines**: Orthogonal rotical then horizontal, or vice# SVG Template
+- **Symmetry**: Balanced composition
+- **Clean lines**: Orthogonal routing — vertical then horizontal, or vice versa
+
+## SVG Template
 
 ```xml
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" 
@@ -181,11 +184,11 @@ Position: bottom-right, 20px margin from edges.
   
   <!-- Nodes -->
   <!-- Agent node example -->
-  <rect x="100" y=" width="180" height="80" rx="12" ry="12"
+  <rect x="100" y="100" width="180" height="80" rx="12" ry="12"
         fill="#9dd4c7" stroke="#4a4a4a" stroke-width="2.5" 
         filter="url(#shadow-soft)"/>
   <text x="190" y="145" text-anchor="middle" fill="#1a1a1a" 
-        16" font-weight="600">Agent name</text>
+        font-size="16" font-weight="600">Agent name</text>
   
   <!-- Edges -->
   <line x1="190" y1="180" x2="190" y2="240" 
@@ -197,8 +200,8 @@ Position: bottom-right, 20px margin from edges.
 ## Design Philosophy
 
 Claude's official style emphasizes:
-- **Warmth**: Cream background, ls
-- ty**: High contrast text, generous spacing
+- **Warmth**: Cream background, soft fills
+- **Clarity**: High contrast text, generous spacing
 - **Professionalism**: Consistent stroke weights, aligned elements
 - **Approachability**: Rounded corners, friendly colors
 

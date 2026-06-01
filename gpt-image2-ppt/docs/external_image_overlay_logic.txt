@@ -1,0 +1,136 @@
+gpt-image2-ppt external real-image overlay logic
+================================================
+
+Goal:
+  Generate the PPT background with gpt-image-2, then insert real images as
+  independent PPT picture objects without covering generated text/graphics.
+
+Core rule:
+  The skeleton reference image is not the planner.
+  Slot planning must happen before the skeleton is drawn.
+
+
++---------------------------+        +---------------------------+
+| slide content profile     |        | real asset profile        |
+|---------------------------|        |---------------------------|
+| title length              |        | image count               |
+| body text load            |        | width / height ratio      |
+| page type                 |        | photo / chart / document  |
+| template media slots      |        | high-detail / critical    |
+| layout/style tendency     |        |                           |
++-------------+-------------+        +-------------+-------------+
+              |                                    |
+              +----------------+-------------------+
+                               |
+                               v
+                 +-------------+-------------+
+                 | slot planning             |
+                 |---------------------------|
+                 | read template candidates  |
+                 | score candidate regions   |
+                 | preserve template rhythm  |
+                 | choose text-safe region   |
+                 | enlarge high-detail image |
+                 | compact text if needed    |
+                 | write planning metadata   |
+                 |                           |
+                 | output:                   |
+                 | - position                |
+                 | - computed_bbox           |
+                 | - auto_layout_reason      |
+                 | - layout_planning_profile |
+                 +-------------+-------------+
+                               |
+                               v
+                 +-------------+-------------+
+                 | transparent skeleton       |
+                 |---------------------------|
+                 | draw only corner markers  |
+                 | no white canvas           |
+                 | no filled rectangle       |
+                 | no mask_placeholder shape |
+                 | no visible placeholder    |
+                 +-------------+-------------+
+                               |
+                               v
+          +--------------------+--------------------+
+          | prompt construction                     |
+          |-----------------------------------------|
+          | remove conflicting fake-photo/template  |
+          | directives                              |
+          | tell model to keep key content outside  |
+          | corner-marker area                      |
+          | high-detail page: left text rail +      |
+          | template-aware large asset panel         |
+          +--------------------+--------------------+
+                               |
+                               v
+                 +-------------+-------------+
+                 | gpt-image-2 generation    |
+                 |---------------------------|
+                 | generates background only |
+                 | no real image             |
+                 | no fake image             |
+                 | no placeholder card       |
+                 +-------------+-------------+
+                               |
+                               v
+                 +-------------+-------------+
+                 | deterministic overlay     |
+                 |---------------------------|
+                 | insert real image by code |
+                 | same computed_bbox        |
+                 | independent PPT picture   |
+                 | user can drag/edit image  |
+                 +-------------+-------------+
+                               |
+                               v
+                 +-------------+-------------+
+                 | multimodal overlay review |
+                 |---------------------------|
+                 | compare background vs     |
+                 | final overlay preview     |
+                 |                           |
+                 | check:                    |
+                 | - text/graphic coverage   |
+                 | - white placeholder issue |
+                 | - high-detail readability |
+                 +-------------+-------------+
+                               |
+                    +----------+----------+
+                    |                     |
+                    v                     v
+           +--------+--------+    +-------+---------+
+           | pass            |    | fail            |
+           |-----------------|    |-----------------|
+           | write PPTX      |    | choose suggested|
+           | report success  |    | or fallback slot|
+           +-----------------+    | regenerate page |
+                                  | max 3 rounds    |
+                                  +-------+---------+
+                                          |
+                                          v
+                                  +-------+---------+
+                                  | still fail      |
+                                  |-----------------|
+                                  | exit nonzero    |
+                                  | do not claim OK |
+                                  +-----------------+
+
+
+Planning policy summary
+-----------------------
+
+1. Photos can be moderate-size visual anchors.
+2. Charts/documents need larger readable panels.
+3. Template/profile image slots are preferred over generic right/bottom slots.
+   If a template says this page is left-image/right-text, centered visual, or
+   bottom chart, the planner uses that composition first.
+4. Dense diagrams / architecture images are critical assets. If the template
+   slot is too small for readability, the planner can reject it and fall back to
+   a larger readable region.
+5. Multi-image pages use grids or paired panels after preserving the text area.
+6. Long titles on high-detail pages are wrapped into short lines, and body text
+   is compacted to short bullets.
+7. The transparent skeleton is created from the final computed_bbox so the
+   reference, generated background, overlay preview, and PPTX object all agree.

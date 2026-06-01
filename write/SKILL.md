@@ -1,6 +1,6 @@
 ---
 name: write
-description: "Strips AI writing patterns and rewrites prose to sound natural in Chinese or English, including artifact-grounded release, launch, and social copy. Not for code comments, commit messages, or inline docs."
+description: "Rewrites and polishes prose in Chinese or English, removing AI-like wording while preserving intent for drafts, docs, release notes, launch copy, and social posts. Use when users ask 帮我写/改稿/润色/去AI味/写一段/审稿/tweet/rewrite/proofread. Not for code comments, commit messages, or inline docs."
 when_to_use: "帮我写, 改稿, 润色, 去AI味, 写一段, 审稿, 文档review, check this document, 推特, twitter, X推文, tweet, social post, 连贯性, 段落连贯, draft, edit text, proofread, sound natural, polish, rewrite"
 dispatch_intent: "Writing, editing prose, polish, release notes, launch/social copy, remove AI tone"
 ---
@@ -10,6 +10,13 @@ dispatch_intent: "Writing, editing prose, polish, release notes, launch/social c
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
 Strip AI patterns from prose and rewrite it to sound human. Do not improve vocabulary; remove the performance of improvement.
+
+## Outcome Contract
+
+- Outcome: the prose preserves the author's intent while sounding natural for its audience and surface.
+- Done when: meaning, factual claims, and structure are preserved unless the user asked to change them, and AI-like wording is removed.
+- Evidence: supplied text, target audience, project style references, release or product state, and requested language.
+- Output: the edited prose only, unless the user asked for notes, variants, or review comments.
 
 ## Pre-flight
 
@@ -34,6 +41,7 @@ For `/write`, voice and format constraints are `decision`, `preference`, and `pr
 - **Meaning first, style second.** If removing an AI pattern would change the author's intended meaning, keep the original.
 - **No silent restructuring.** Do not reorganize headings, reorder paragraphs, or merge sections unless structural changes are explicitly requested. Edit in place.
 - **Artifact-grounded claims.** For launch copy, release notes, social posts, product pages, and public replies, ground factual claims in real source material: current app behavior, screenshots, product page, release page, changelog, issue/PR, or user-provided draft. Do not turn concrete product evidence into generic marketing language.
+- **No em-dash.** Never produce em-dash (U+2014 `—`) or en-dash (U+2013 `–`) in Chinese or English output. Em-dash is the strongest AI-tone fingerprint in this style of writing. Use commas, periods, colons, semicolons, or parentheses to break clauses. Hyphen-minus (`-`) inside compound words is allowed; replace it with a space or a period when possible. When editing a draft that contains em-dashes, replace every one before returning the text.
 - **Stop after output.** Deliver the rewritten text. Do not append a list of changes, a justification, or a closer.
 
 ## Bilingual Review Mode
@@ -66,10 +74,39 @@ Format: target-project style by default. If no project style is available, use n
 Before drafting, gather style references:
 
 1. Read the target project's `CLAUDE.md` for its Release Convention / Release Flow section.
-2. Run `gh release view --json body -R <owner>/<repo>` to read the most recent release as a style, length, and density reference.
-3. If the user mentions comparing with a sibling project's release style, ask for the `owner/repo` to fetch it: `gh release view --json body -R <owner>/<sibling>`.
-4. Match the reference release's item count, sentence length, and tone. Do not invent a new format.
-5. Keep each release-note item to one sentence unless the reference project clearly does otherwise. Do not add emoji to release prose unless the target surface is explicitly a reaction or celebratory social surface.
+2. Read the target project's existing release source as a style, length, and density reference: changelog, release notes, registry page, appcast, or platform release page.
+3. For GitHub projects, `gh release view --json body -R <owner>/<repo>` is the preferred way to read the most recent release when `gh` is available. If the project is not on GitHub, use the release source named by the project docs or user request.
+4. If the user mentions comparing with a sibling project's release style, ask for the target identifier or release URL before fetching it.
+5. Match the reference release's item count, sentence length, and tone. Do not invent a new format.
+6. Keep each release-note item to one sentence unless the reference project clearly does otherwise. Do not add emoji to release prose unless the target surface is explicitly a reaction or celebratory social surface.
+
+### Release Notes Content Rules
+
+- **Group by user-perceivable feature**, not by internal taxonomy. "Polish", "细节打磨", "Misc improvements", "Chores" are not categories users can act on. Group by product surface (Clean / Uninstall / Status / Settings) or by user-visible verb (Faster startup / New keyboard shortcut / Fixed crash on M3).
+- **Extract from `git log <last-tag>..HEAD`** rather than from memory. Read every `feat:` and `fix:` commit; do not omit small items just because they look minor in commit form (iOS wrapper support, Dock cleanup, AV-vendor protection boundary are not "minor" from a user point of view).
+- **One sentence per item, naming the user-visible change**, not the implementation. "Use `CKDownloadQueue` observer for App Store updates" is not a release note; "App Store updates now run inside the app instead of opening App Store" is.
+- **Bilingual structure**: when the project ships bilingual release notes, put the English block and the Chinese block as two parallel sections inside the same release item; do not interleave per bullet. For Sparkle appcast CDATA, separate with `<h4>Changelog</h4>` and `<h4>更新日志</h4>` so the rendered update window shows both.
+- **No em-dash** in release prose (covered by the Hard Rule). Use Chinese full-width punctuation in Chinese blocks, ASCII in English blocks.
+
+## Public Reply Mode (GitHub issue / PR)
+
+Activate when: "回复 issue", "reply to PR", "comment on #N", "回 issue", or the user asks for the text of a GitHub issue / PR comment.
+
+Five hard rules for the reply body:
+
+1. **Open with `@<reporter>` + one thanks line.** Match the reporter's language (Chinese → "感谢反馈" / English → "thanks for the detailed report"). No exclamation mark. No emoji. No "🙏".
+2. **Then state the cause in one sentence, the impact in one sentence.** No multi-paragraph background, no internal symbol names, no walk-through of the fix.
+3. **Then state the ship state**, exactly one of: already shipped in v<X.Y.Z>, fixed on `main` and going out in the next release, planned for v<X.Y.Z>, not planned (with one-line reason and an alternative path). Do not write "already shipped" without release evidence in the current turn.
+4. **Two paragraphs maximum**, separated by one blank line. No bullet lists, no section headers, no code blocks except a one-line command when actually needed.
+5. **No em-dash.** Use commas, periods, colons. (Covered by the Hard Rule, surfaced again because issue replies attract this pattern.)
+
+The reply is the final user-facing text, not an agent log. Do not write "刚才我判断错了", "前面回复有误", "I re-read it and changed the comment", or any meta narration about your own process. If editing an existing maintainer comment, replace it with the clean final wording as if it were the only comment the user will read.
+
+Before posting, re-read the live issue / PR with `gh issue view <num>` or `gh pr view <num>`. Do not reply from memory; titles, states, and author languages change between sessions.
+
+For paid / subscribed users, acknowledge the purchase relationship and the inconvenience in one phrase, then state the boundary. Do not over-explain. When the current product cannot support their setup, suggest the safest practical path (upgrade macOS, wait for the next release, provide logs, refund route) without arguing.
+
+Closing rule: when closing as `completed`, the comment must independently explain what was fixed and the expected release. When closing as `not planned`, the comment must independently explain the current boundary and an alternative path. Do not rely on prior thread context as the explanation.
 
 ## Document Review Mode
 

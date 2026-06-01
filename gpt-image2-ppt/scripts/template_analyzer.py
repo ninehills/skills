@@ -26,9 +26,9 @@ from typing import Any, Dict, List, Optional, Tuple
 import requests
 
 
-VISION_TIMEOUT_SECS = 180
-VISION_MAX_RETRIES = 3
-VISION_RETRY_DELAY = 4
+VISION_TIMEOUT_SECS = int(os.getenv("VISION_TIMEOUT_SECS", "90"))
+VISION_MAX_RETRIES = int(os.getenv("VISION_MAX_RETRIES", "2"))
+VISION_RETRY_DELAY = int(os.getenv("VISION_RETRY_DELAY", "4"))
 
 CACHE_DIR_NAME = "template_cache"
 PROFILE_VERSION = "1"
@@ -193,9 +193,9 @@ class VisionClient:
         self.api_key = os.getenv("VISION_API_KEY", "")
         self.model = os.getenv("VISION_MODEL_NAME", "gemini-3.1-pro-preview")
         if not self.base_url:
-            raise ValueError("缺少 VISION_BASE_URL（请在 .env 里配置）")
+            raise ValueError("缺少 VISION_BASE_URL（请通过 agent 配置 / 系统环境变量注入）")
         if not self.api_key:
-            raise ValueError("缺少 VISION_API_KEY（请在 .env 里配置）")
+            raise ValueError("缺少 VISION_API_KEY（请通过 agent 配置 / 系统环境变量注入）")
         # 端点 URL：base 已包含 /v1 时不再追加
         if "/chat/completions" in self.base_url:
             self.endpoint = self.base_url
@@ -294,6 +294,14 @@ GLOBAL_USER_TPL = """请基于下方 {n_images} 张 PPT 页的缩略图（按从
       "page_index": 0,
       "page_type": "cover|agenda|section|content|data|quote|closing|other",
       "summary": "用 60-120 字描述这页的视觉布局和内容编排方式，重点描写位置、装饰、文字层级，不要描述具体的文字内容",
+      "external_image_slots": [
+        {
+          "id": "hero-image",
+          "purpose": "这块区域在模板里适合替换为真实图片/截图/图表",
+          "bbox": [0.52, 0.14, 0.40, 0.68],
+          "priority": 1
+        }
+      ],
       "reuse_friendly": true,
       "reuse_reason": "用 30-60 字解释为什么这页适合 / 不适合在同一份 deck 里被多次复用",
       "json_schema": {{
@@ -312,6 +320,9 @@ GLOBAL_USER_TPL = """请基于下方 {n_images} 张 PPT 页的缩略图（按从
 要求：
 - layouts 数组的长度必须等于 {n_images}，每页一个，按图片顺序。
 - 每个 layout.json_schema 必须严格按 JSON Schema 规范，properties 字段名用英文 key 但 description 用中文。
+- 如果模板页里有明显照片区、图片区、图表区、截图区、主视觉空区、卡片图片区，请在 external_image_slots 中给出 1-3 个候选区域。
+- external_image_slots[].bbox 使用归一化坐标 [x, y, w, h]，左上角为 0,0，右下角为 1,1；只表示适合放真实图的区域，不要写文字区。
+- 如果模板页没有适合放真实图片的区域，external_image_slots 返回空数组 []。
 - 字段长度 (minLength/maxLength) 要根据该页可容纳的字数实际给出，不要给死值。
 - 如果某页含数据图表，必须有 "metrics" 这种 array 字段；如果是列表页要有 "items" array；
   封面要有 title/subtitle；目录页要有 items；数据页要有 metrics 或 stats。
@@ -393,6 +404,8 @@ def vision_analyze(images: List[str], client: VisionClient, pptx_meta: Dict[str,
         else:
             layout.setdefault("reuse_friendly", True)
             layout.setdefault("reuse_reason", "")
+        slots = layout.get("external_image_slots")
+        layout["external_image_slots"] = slots if isinstance(slots, list) else []
     return result
 
 
@@ -500,6 +513,104 @@ def match_layout(slide: Dict[str, Any], profile: Dict[str, Any]) -> Optional[Dic
     return layouts[idx]
 
 
+def assign_layouts(slides: List[Dict[str, Any]], profile: Dict[str, Any]) -> Dict[int, Dict[str, Any]]:
+    """Assign template layouts to slides while preferring one layout per page.
+
+    Explicit `layout_id` always wins, including intentional reuse. Slides without
+    an explicit layout get the best unused layout for their page_type before
+    falling back to the older match_layout behavior.
+    """
+    layouts = profile.get("layouts", [])
+    if not layouts:
+        return {}
+
+    assigned: Dict[int, Dict[str, Any]] = {}
+    used_ids = set()
+
+    def layout_id_of(layout: Dict[str, Any], idx: int) -> str:
+        return str(layout.get("id") or f"layout-{idx + 1:02d}")
+
+    def mark(slide: Dict[str, Any], layout: Dict[str, Any]) -> None:
+        slide_number = int(slide.get("slide_number", len(assigned) + 1))
+        assigned[slide_number] = layout
+        try:
+            idx = layouts.index(layout)
+        except ValueError:
+            idx = 0
+        used_ids.add(layout_id_of(layout, idx))
+
+    # Pass 1: honor explicit layout choices exactly.
+    for slide in slides:
+        layout_id = slide.get("layout_id")
+        if not layout_id:
+            continue
+        chosen = None
+        for lay in layouts:
+            if lay.get("id") == layout_id:
+                chosen = lay
+                break
+        if chosen is None:
+            m = re.search(r"(\d+)\s*$", str(layout_id))
+            if m:
+                idx = int(m.group(1)) - 1
+                if 0 <= idx < len(layouts):
+                    print(f"(!)  slide {slide.get('slide_number')} 的 layout_id={layout_id} 缺失，按编号回退 layouts[{idx}]")
+                    chosen = layouts[idx]
+        if chosen is None:
+            print(f"(!)  slide {slide.get('slide_number')} 指定的 layout_id={layout_id} 在模板中不存在，自动分配未使用 layout")
+            continue
+        mark(slide, chosen)
+
+    # Pass 2: assign unused layouts, preserving page_type where possible.
+    for slide in slides:
+        slide_number = int(slide.get("slide_number", len(assigned) + 1))
+        if slide_number in assigned:
+            continue
+
+        page_type = slide.get("page_type", "content")
+        chosen = None
+
+        idx = max(0, min(slide_number - 1, len(layouts) - 1))
+        indexed = layouts[idx]
+        indexed_id = layout_id_of(indexed, idx)
+        if indexed.get("page_type") == page_type and indexed_id not in used_ids:
+            chosen = indexed
+
+        if chosen is None:
+            for i, lay in enumerate(layouts):
+                lid = layout_id_of(lay, i)
+                if lay.get("page_type") == page_type and lid not in used_ids:
+                    chosen = lay
+                    break
+
+        same_type = [lay for lay in layouts if lay.get("page_type") == page_type]
+        if chosen is None and same_type:
+            for lay in same_type:
+                if lay.get("reuse_friendly", True):
+                    chosen = lay
+                    break
+            if chosen is None:
+                chosen = same_type[0]
+
+        if chosen is None:
+            for i, lay in enumerate(layouts):
+                lid = layout_id_of(lay, i)
+                if lid not in used_ids:
+                    chosen = lay
+                    break
+
+        if chosen is None:
+            # All layouts are already used; reuse the best old-style match.
+            tmp = dict(slide)
+            tmp.pop("layout_id", None)
+            chosen = match_layout(tmp, profile)
+
+        if chosen:
+            mark(slide, chosen)
+
+    return assigned
+
+
 def check_layout_reuse(slides: List[Dict[str, Any]], profile: Dict[str, Any]) -> List[str]:
     """检测 plan 里同一 layout 被多次使用的情况，并指出未被使用的"备胎"。
 
@@ -516,10 +627,11 @@ def check_layout_reuse(slides: List[Dict[str, Any]], profile: Dict[str, Any]) ->
         return warnings
 
     # 收集每个 layout_id 被哪些 slide 用了
+    assigned = assign_layouts(slides, profile)
     usage: Dict[str, List[int]] = {}
     layout_meta: Dict[str, Dict[str, Any]] = {}
     for slide in slides:
-        lay = match_layout(slide, profile)
+        lay = assigned.get(int(slide.get("slide_number", 0)))
         if not lay:
             continue
         lid = lay.get("id", "?")

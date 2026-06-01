@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "a3eba389-faf0-4536-b4c9-c93ed58dbb4f",
+  "path": "handoff",
+  "path_key": "handoff",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "handoff",
+    "branch": null
+  }
+}

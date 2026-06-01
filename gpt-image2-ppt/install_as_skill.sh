@@ -4,7 +4,7 @@
 # gpt-image2-ppt-skills -- Claude Code / Codex Skill 安装脚本
 #
 # 把当前仓库内容拷贝到目标 skill 目录
-# 并安装 Python 依赖、引导配置 .env。
+# 并安装 Python 依赖、提示环境变量注入方式。
 #
 # 用法：bash install_as_skill.sh [--target auto|claude|codex|openclaw]
 ##############################################################################
@@ -134,14 +134,26 @@ main() {
     print_info "复制项目文件..."
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-    # 拷贝核心文件，排除 .git / outputs / venv / .env / __pycache__
+    # 拷贝核心文件，排除本地运行产物、凭据、缓存和测评代码。
     rsync -a \
         --exclude='.git' \
         --exclude='outputs' \
+        --exclude='output' \
+        --exclude='outputs_cache' \
+        --exclude='results' \
+        --exclude='logs' \
+        --exclude='template_cache' \
+        --exclude='template_renders' \
+        --exclude='test_runs' \
+        --exclude='tmp' \
         --exclude='venv' \
         --exclude='.venv' \
         --exclude='__pycache__' \
+        --exclude='.pytest_cache' \
         --exclude='.env' \
+        --exclude='tests' \
+        --exclude='scripts/gen_demo_images.py' \
+        --exclude='scripts/gen_edit_case_images.py' \
         "$SCRIPT_DIR/" "$SKILL_DIR/"
 
     print_success "文件复制完成"
@@ -165,17 +177,15 @@ main() {
     else
         pip install -q -r "$SKILL_DIR/requirements.txt"
     fi
-    print_success "依赖安装完成（requests + python-dotenv）"
+    print_success "依赖安装完成"
 
-    print_header "配置 API 密钥"
+    print_header "环境变量配置提示"
 
     if [ -f "$SKILL_DIR/.env" ]; then
-        print_info "已存在 .env，跳过"
+        print_info "已存在 skill 安装目录 .env（standalone CLI fallback），保留不改"
     else
-        cp "$SKILL_DIR/.env.example" "$SKILL_DIR/.env"
-        print_success "已生成 $SKILL_DIR/.env"
-        print_warning "请编辑该文件填入 OPENAI_API_KEY："
-        print_info "  nano $SKILL_DIR/.env"
+        print_info "未自动创建 .env。推荐通过 agent 配置 / 系统环境变量注入 OPENAI_API_KEY"
+        print_info "standalone CLI 如需私有 env 文件，可复制 .env.example 后用 GPT_IMAGE2_PPT_ENV 指向它"
     fi
 
     print_header "安装完成"
@@ -183,7 +193,8 @@ main() {
     print_success "已装到 $SKILL_DIR"
     echo ""
     print_info "下一步："
-    print_info "  1. 如需 API 直连，编辑 .env 填 API key:  nano $SKILL_DIR/.env"
+    print_info "  1. 如需 API 直连，通过 agent 配置 / 系统环境变量注入 OPENAI_API_KEY"
+    print_info "     standalone CLI 可设置 GPT_IMAGE2_PPT_ENV=/path/to/private.env"
     print_info "  2. 重启 $AGENT_LABEL 让 skill 生效"
     if [ "$INSTALL_TARGET" = "codex" ]; then
         print_info "  3. 在 Codex 里直接说：'帮我用 gpt-image2-ppt 生成一份 5 页 PPT'"

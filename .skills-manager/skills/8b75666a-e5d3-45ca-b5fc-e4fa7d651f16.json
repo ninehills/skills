@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "8b75666a-e5d3-45ca-b5fc-e4fa7d651f16",
+  "path": "jupytext",
+  "path_key": "jupytext",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "jupytext",
+    "branch": null
+  }
+}

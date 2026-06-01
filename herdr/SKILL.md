@@ -1,6 +1,6 @@
 ---
 name: herdr
-description: "Control herdr from inside it. Manage workspaces and tabs, split panes, spawn agents, read output, and wait for state changes — all via CLI commands that talk to the running herdr instance over a local unix socket. Use when running inside herdr (HERDR_ENV=1)."
+description: "Control herdr from inside it. Manage workspaces and tabs, split panes, run commands, read output, and wait for state changes — all via CLI commands that talk to the running herdr instance over a local unix socket. Use when running inside herdr (HERDR_ENV=1)."
 ---
 
 # herdr — agent skill
@@ -19,7 +19,11 @@ this means you can:
 
 the `herdr` binary is available in your PATH. its workspace, tab, pane, and wait commands talk to the running herdr instance over a local unix socket.
 
-if you need the raw protocol or full api reference, read [`SOCKET_API.md`](./SOCKET_API.md).
+if you need the raw protocol or full api reference, read the [socket api docs](https://herdr.dev/docs/socket-api/).
+
+## verified version
+
+this skill documents herdr **v0.5.8**. commands were verified against the actual binary. do not assume newer features (like `herdr agent` subcommands) exist unless confirmed.
 
 ## concepts
 
@@ -37,9 +41,7 @@ if you need the raw protocol or full api reference, read [`SOCKET_API.md`](./SOC
 
 plain shells still exist as panes, but herdr's sidebar agent section intentionally focuses on detected agents rather than listing every shell.
 
-**ids** — workspace ids look like `1`, `2`. tab ids look like `1:1`, `1:2`, `2:1`. pane ids look like `1-1`, `1-2`, `2-1`. these are compact public ids for the current live session.
-
-important: ids can compact when tabs, panes, or workspaces are closed. do not treat them as durable ids. re-read ids from `workspace list`, `tab list`, `pane list`, or create/split responses when you need a current id. do not guess that an older `1-3` is still the same pane later.
+**ids** — herdr v0.5.8 uses opaque workspace-scoped pane ids like `w651d456f8444f3-2`. tab ids look like `w651d456f8444f3:2`. workspace ids look like `w651d456f8444f3`. always re-read ids from `herdr pane list` before using them — do not hardcode or guess.
 
 ## discover yourself
 
@@ -49,7 +51,7 @@ see what panes exist and which one is focused:
 herdr pane list
 ```
 
-the focused pane is yours. other panes are your neighbors.
+the focused pane is yours (look for `"focused": true`). other panes are your neighbors.
 
 list workspaces:
 
@@ -57,171 +59,187 @@ list workspaces:
 herdr workspace list
 ```
 
-## tab management
+## do not redirect pane output to files
 
-list tabs in the current workspace:
+**do not** use shell redirection like `> /tmp/output.txt` or `2>&1 | tee /tmp/log` when running commands in a herdr pane via `herdr pane run`. herdr's value is seeing the live terminal stream — the agent's own output, colours, formatting, and progress indicators. redirecting hides all of that and makes the pane appear frozen.
+
+instead, observe output with:
+
+- `herdr pane read <id> --source recent --lines N` — read what is already in the scrollback
+- `herdr wait output <id> --match "pattern" --timeout N` — block until expected output appears
+- `herdr pane read <id> --source visible --ansi` — get an ANSI snapshot for TUI feedback loops
+
+## pane commands (the only way to interact with panes)
+
+herdr v0.5.8 does **not** have `herdr agent` commands. all interaction goes through `herdr pane`:
+
+- `herdr pane list` — list all panes, find your pane id and neighbors
+- `herdr pane read <id> --source recent --lines N` — read what is on the screen
+- `herdr pane send-text <id> "text"` — send text without pressing enter
+- `herdr pane send-keys <id> Enter` — press a key (Enter, CtrlC, Escape, etc.)
+- `herdr pane run <id> "command"` — send text + enter atomically
+- `herdr pane split <id> --direction right|down [--no-focus] [--cwd PATH]` — split and create a new pane
+- `herdr pane close <id>` — close a pane
+- `herdr pane rename <id> "label"|--clear` — assign or clear a pane label
+- `herdr pane get <id>` — get detailed info about a pane
+
+## sending messages to a pane
+
+`herdr pane run <id> "text"` sends text + Enter atomically and returns immediately. it does not wait for the receiving side to process the message.
 
 ```bash
-herdr tab list --workspace 1
+# send a complete message — runs "npm test" in the pane's shell
+herdr pane run w651d456f8444f3-3 "npm test"
+
+# send text to an agent in the pane
+herdr pane run w651d456f8444f3-3 "review the test coverage in src/api/"
 ```
 
-create a new tab:
+`herdr pane send-text <id> "text"` sends raw text without pressing enter. use `herdr pane send-keys <id> Enter` to press enter separately:
 
 ```bash
-herdr tab create --workspace 1
+# send text without enter
+herdr pane send-text w651d456f8444f3-3 "hello"
+
+# press enter
+herdr pane send-keys w651d456f8444f3-3 Enter
 ```
 
-without `--label`, the new tab keeps the default numbered tab name.
+**important**: `pane run` appends `\r` (carriage return) to the text, equivalent to pressing enter. the command runs in the pane's existing shell process — it does not start a new shell. if the pane is at an agent prompt (e.g. `>` or the pi input line), the command text will be sent to the agent, not executed as a shell command.
 
-create and name it in one step:
+**there is no built-in delay or `--wait` flag on `pane run` or `pane send-text`.** both return immediately. to pace messages to an agent, use `herdr wait agent-status --status idle` between sends:
 
 ```bash
-herdr tab create --workspace 1 --label "logs"
+# send a message
+herdr pane run w651d456f8444f3-3 "review the test coverage"
+
+# wait until the agent is idle again
+herdr wait agent-status w651d456f8444f3-3 --status idle --timeout 120000
+
+# now send the next message
+herdr pane run w651d456f8444f3-3 "also check src/utils/"
 ```
 
-rename it:
+## spawn a new agent
+
+split a new pane, then run the agent in it:
 
 ```bash
-herdr tab rename 1:2 "logs"
+# split to the right without stealing focus
+herdr pane split w651d456f8444f3-2 --direction right --no-focus
+
+# parse the new pane id from the JSON response
+# the response is: {"result":{"pane":{"pane_id":"w651d456f8444f3-6", ...}}, ...}
+
+# run the agent in the new pane
+herdr pane run w651d456f8444f3-6 "pi"
+
+# wait for the agent prompt to appear (adjust match pattern for your agent)
+herdr wait output w651d456f8444f3-6 --match "thinking" --timeout 30000
+
+# give it a task
+herdr pane run w651d456f8444f3-6 "review the test coverage in src/api/"
 ```
 
-focus it:
+**do not pipe the agent's output** (e.g. `pi | tee /tmp/log`) when starting — the command text is sent to the pane's shell, not as a pipe target. let the agent's output flow naturally to the pane.
+
+## wait patterns
+
+`herdr wait output` watches for text in a pane's terminal output. useful for servers, builds, logs:
 
 ```bash
-herdr tab focus 1:2
+herdr wait output w651d456f8444f3-3 --match "ready on port 3000" --timeout 30000
+herdr wait output w651d456f8444f3-3 --match "test result" --timeout 60000
+herdr wait output w651d456f8444f3-3 --match "server.*ready" --regex --timeout 30000
 ```
 
-close it:
+`herdr wait agent-status` watches for the agent status field on a pane. useful for coding agents:
 
 ```bash
-herdr tab close 1:2
+herdr wait agent-status w651d456f8444f3-3 --status done --timeout 60000
+herdr wait agent-status w651d456f8444f3-3 --status idle --timeout 60000
+herdr wait agent-status w651d456f8444f3-3 --status blocked --timeout 300000
 ```
 
-## read another pane
+**tip**: `wait output` matches against unwrapped recent terminal text. pane width and soft wrapping do not break matches. if you want to inspect the same transcript that the waiter matched, use `pane read --source recent-unwrapped`.
 
-see what is on another pane's screen:
+both commands exit code `1` on timeout.
 
-```bash
-herdr pane read 1-1 --source recent --lines 50
-```
-
-- `--source visible` = current viewport
-- `--source recent` = recent scrollback as rendered in the pane
-- `--source recent-unwrapped` = recent terminal text with soft wraps joined back together
-
-## split a pane and run a command
-
-split your pane to the right and keep focus on your current pane:
+## reading output
 
 ```bash
-herdr pane split 1-2 --direction right --no-focus
-```
+# current viewport (what is visible right now)
+herdr pane read w651d456f8444f3-3 --source visible --lines 80
 
-that prints json with the new pane nested at `result.pane.pane_id`. parse that value, then run a command in that pane:
+# recent scrollback (what was printed recently)
+herdr pane read w651d456f8444f3-3 --source recent --lines 50
 
-```bash
-NEW_PANE=$(herdr pane split 1-2 --direction right --no-focus | python3 -c 'import sys,json; print(json.load(sys.stdin)["result"]["pane"]["pane_id"])')
-herdr pane run "$NEW_PANE" "npm run dev"
-```
+# without soft wrapping (best for logs)
+herdr pane read w651d456f8444f3-3 --source recent-unwrapped --lines 120
 
-split downward instead:
-
-```bash
-herdr pane split 1-2 --direction down --no-focus
-```
-
-## wait for output
-
-block until specific text appears in a pane. useful for waiting on servers, builds, and tests.
-
-for `--source recent`, matching uses unwrapped recent terminal text, so pane width and soft wrapping do not break matches. `pane read --source recent` still shows the pane as rendered. if you want to inspect the same transcript that the waiter matches, use `pane read --source recent-unwrapped`.
-
-```bash
-herdr wait output 1-3 --match "ready on port 3000" --timeout 30000
-```
-
-with regex:
-
-```bash
-herdr wait output 1-3 --match "server.*ready" --regex --timeout 30000
-```
-
-if it times out, exit code is `1`.
-
-## wait for an agent status
-
-block until another agent reaches a specific status:
-
-```bash
-herdr wait agent-status 1-1 --status done --timeout 60000
-```
-
-use this when you want the same `done` / `idle` distinction the UI shows.
-
-## send text or keys to a pane
-
-send text without pressing Enter:
-
-```bash
-herdr pane send-text 1-1 "hello from claude"
-```
-
-press Enter or other keys:
-
-```bash
-herdr pane send-keys 1-1 Enter
-```
-
-`pane run` sends the text and then a real `Enter` key in one request:
-
-```bash
-herdr pane run 1-1 "echo hello"
+# with ANSI colours preserved
+herdr pane read w651d456f8444f3-3 --source visible --ansi
 ```
 
 ## workspace management
 
-create a new workspace:
-
 ```bash
+herdr workspace list
 herdr workspace create --cwd /path/to/project
-```
-
-without `--label`, the new workspace keeps the default cwd-based name.
-
-create and name one in one step:
-
-```bash
 herdr workspace create --cwd /path/to/project --label "api server"
-```
-
-create one without focusing it:
-
-```bash
 herdr workspace create --no-focus
+herdr workspace focus w651d456f8444f3
+herdr workspace rename w651d456f8444f3 "api server"
+herdr workspace close w651d456f8444f3
 ```
 
-focus a workspace:
+## tab management
 
 ```bash
-herdr workspace focus 2
-```
-
-rename:
-
-```bash
-herdr workspace rename 1 "api server"
-```
-
-close:
-
-```bash
-herdr workspace close 2
+herdr tab list --workspace w651d456f8444f3
+herdr tab create --workspace w651d456f8444f3
+herdr tab create --workspace w651d456f8444f3 --label "logs"
+herdr tab rename w651d456f8444f3:2 "logs"
+herdr tab focus w651d456f8444f3:2
+herdr tab close w651d456f8444f3:2
 ```
 
 ## close a pane
 
 ```bash
-herdr pane close 1-3
+herdr pane close w651d456f8444f3-3
+```
+
+## integrations
+
+install built-in agent integrations for more precise state detection:
+
+```bash
+herdr integration install pi
+herdr integration install claude
+herdr integration install codex
+herdr integration install opencode
+herdr integration status
+```
+
+uninstall:
+
+```bash
+herdr integration uninstall pi
+```
+
+## named sessions
+
+```bash
+herdr session list
+herdr session attach work
+herdr session stop work
+```
+
+select a session for CLI commands:
+
+```bash
+HERDR_SESSION=side-project herdr workspace list
 ```
 
 ## recipes
@@ -229,69 +247,123 @@ herdr pane close 1-3
 ### run a server and wait until it is ready
 
 ```bash
-NEW_PANE=$(herdr pane split 1-2 --direction right --no-focus | python3 -c 'import sys,json; print(json.load(sys.stdin)["result"]["pane"]["pane_id"])')
+# split a new pane
+RESPONSE=$(herdr pane split w651d456f8444f3-2 --direction right --no-focus)
+NEW_PANE=$(echo "$RESPONSE" | python3 -c 'import sys,json; print(json.load(sys.stdin)["result"]["pane"]["pane_id"])')
+
+# start the server
 herdr pane run "$NEW_PANE" "npm run dev"
+
+# wait for it to be ready
 herdr wait output "$NEW_PANE" --match "ready" --timeout 30000
+
+# read the output
 herdr pane read "$NEW_PANE" --source recent --lines 20
 ```
 
 ### run tests in a separate pane and inspect the result
 
 ```bash
-herdr pane split 1-2 --direction down --no-focus
-herdr pane run 1-3 "cargo test"
-herdr wait output 1-3 --match "test result" --timeout 60000
-herdr pane read 1-3 --source recent --lines 30
+herdr pane split w651d456f8444f3-2 --direction down --no-focus
+herdr pane run w651d456f8444f3-3 "cargo test"
+herdr wait output w651d456f8444f3-3 --match "test result" --timeout 60000
+herdr pane read w651d456f8444f3-3 --source recent --lines 30
 ```
 
 ### check what another agent is working on
 
 ```bash
 herdr pane list
-herdr pane read 1-1 --source recent --lines 80
+herdr pane read w651d456f8444f3-3 --source recent --lines 80
 ```
 
 ### watch another pane robustly
 
-use this pattern when you need to coordinate with a sibling pane:
-
 ```bash
 # inspect what is already there
-herdr pane read 1-3 --source recent --lines 40
+herdr pane read w651d456f8444f3-3 --source recent --lines 40
 
-# wait only for the next output you expect
-herdr wait output 1-3 --match "ready" --timeout 30000
+# wait for specific output
+herdr wait output w651d456f8444f3-3 --match "ready" --timeout 30000
 
-# if you need to inspect the same transcript the waiter matched,
-# read the unwrapped recent text directly
-herdr pane read 1-3 --source recent-unwrapped --lines 40
+# read unwrapped transcript that the waiter matched
+herdr pane read w651d456f8444f3-3 --source recent-unwrapped --lines 40
 ```
 
 ### spawn a new agent and give it a task
 
 ```bash
-herdr pane split 1-2 --direction right --no-focus
-herdr pane run 1-3 "claude"
-herdr wait output 1-3 --match ">" --timeout 15000
-herdr pane run 1-3 "review the test coverage in src/api/"
+# split pane and start the agent
+herdr pane split w651d456f8444f3-2 --direction right --no-focus
+herdr pane run w651d456f8444f3-3 "pi"
+
+# wait for the agent prompt
+herdr wait output w651d456f8444f3-3 --match "thinking" --timeout 30000
+
+# give it a task
+herdr pane run w651d456f8444f3-3 "review the test coverage in src/api/"
+
+# wait for it to finish
+herdr wait agent-status w651d456f8444f3-3 --status idle --timeout 120000
+
+# read the result
+herdr pane read w651d456f8444f3-3 --source recent --lines 100
+
+# close when done
+herdr pane close w651d456f8444f3-3
 ```
 
 ### coordinate with another agent
 
 ```bash
-herdr wait agent-status 1-1 --status done --timeout 120000
-herdr pane read 1-1 --source recent --lines 100
+# wait for the agent to finish
+herdr wait agent-status w651d456f8444f3-3 --status done --timeout 120000
+
+# read its output
+herdr pane read w651d456f8444f3-3 --source recent --lines 100
+```
+
+### multi-turn conversation with an agent
+
+```bash
+# send first message
+herdr pane run w651d456f8444f3-3 "review the test coverage"
+
+# wait until idle
+herdr wait agent-status w651d456f8444f3-3 --status idle --timeout 120000
+
+# read response
+herdr pane read w651d456f8444f3-3 --source recent --lines 80
+
+# send follow-up
+herdr pane run w651d456f8444f3-3 "also check src/utils/"
+
+# wait again
+herdr wait agent-status w651d456f8444f3-3 --status idle --timeout 120000
+
+# read again
+herdr pane read w651d456f8444f3-3 --source recent --lines 80
 ```
 
 ## notes
 
-- `workspace list`, `workspace create`, `tab list`, `tab create`, `tab get`, `tab focus`, `tab rename`, `tab close`, `pane list`, `pane get`, `pane split`, `wait output`, and `wait agent-status` print json on success.
-- `pane read` prints text, not json.
-- `pane read --source recent-unwrapped` is useful when you want to inspect the same unwrapped transcript that `wait output --source recent` matches against.
-- `pane send-text`, `pane send-keys`, and `pane run` print nothing on success.
-- parse ids from `workspace create`, `tab create`, and `pane split` responses when you need new ids. `workspace create` returns `result.workspace`, `result.tab`, and `result.root_pane`. `tab create` returns `result.tab` and `result.root_pane`. for `pane split`, the new pane id is at `result.pane.pane_id`.
-- use `pane read` for current output that already exists. use `wait output` for future output you expect next.
-- `--no-focus` on split, tab create, and workspace create keeps your current terminal context focused.
-- without `--label`, workspace create keeps cwd-based naming and tab create keeps numbered naming.
-- `--label` on tab create and workspace create applies the custom name immediately.
+- `herdr pane list` prints json. parse `result.panes[].pane_id` for pane ids and `result.panes[].focused` to find your pane.
+- `herdr pane split` prints json. the new pane id is at `result.pane.pane_id`.
+- `herdr workspace create` prints json with `result.workspace`, `result.tab`, and `result.root_pane`.
+- `herdr tab create` prints json with `result.tab` and `result.root_pane`.
+- `herdr pane read` prints text, not json.
+- `herdr pane send-text`, `herdr pane send-keys`, and `herdr pane run` print nothing on success.
+- `herdr pane read --ansi` or `herdr pane read --format ansi` returns a rendered ANSI snapshot.
+- `herdr pane read --source recent-unwrapped` joins soft wraps — use it to inspect the same transcript that `wait output` matches against.
+- `herdr pane run <id> "cmd"` sends text + `\r` (enter). the command runs in the pane's **existing** shell process — it does not start a new shell.
+- `herdr pane send-text <id> "text"` sends text without enter. use `herdr pane send-keys <id> Enter` to press enter.
+- `herdr pane send-keys` accepts special keys: Enter, Up, Down, Left, Right, Backspace, Tab, etc.
+- `--no-focus` on `pane split`, `tab create`, and `workspace create` keeps your current terminal context focused.
+- use `herdr pane read` for current output that already exists. use `herdr wait output` for future output you expect next.
 - if you are running inside herdr, the `HERDR_ENV` environment variable is set to `1`.
+- `HERDR_SESSION=<name>` selects a named session for CLI commands. `HERDR_SOCKET_PATH` is a low-level override.
+- there is **no** built-in delay or `--wait` flag on `pane run` or `pane send-text`. to pace messages to an agent, use `herdr wait agent-status --status idle` between sends.
+- pane ids in herdr v0.5.8 are opaque workspace-scoped strings like `w651d456f8444f3-2`. always re-read ids from `herdr pane list` — do not hardcode or guess.
+- **do not** redirect pane output with `> file` or `| tee`. use `herdr pane read` and `herdr wait output` instead.
+- `herdr wait output` exit code is `1` on timeout.
+- `herdr agent` subcommands do **not** exist in v0.5.8. use `herdr pane` commands for all pane interaction.

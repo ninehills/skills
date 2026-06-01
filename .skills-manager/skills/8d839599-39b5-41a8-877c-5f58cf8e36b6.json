@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "8d839599-39b5-41a8-877c-5f58cf8e36b6",
+  "path": "better-goal",
+  "path_key": "better-goal",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "better-goal",
+    "branch": null
+  }
+}

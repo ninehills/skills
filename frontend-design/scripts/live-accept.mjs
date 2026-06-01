@@ -16,6 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { isGeneratedFile } from './is-generated.mjs';
+import { readBuffer as readManualEditsBuffer, writeBuffer as writeManualEditsBuffer } from './live-manual-edits-buffer.mjs';
 
 const EXTENSIONS = ['.html', '.jsx', '.tsx', '.vue', '.svelte', '.astro'];
 
@@ -38,6 +39,9 @@ Modes:
 Required:
   --id SESSION_ID    Session ID of the variant wrapper
 
+Options:
+  --page-url URL     Current browser page URL; scopes staged copy-edit cleanup
+
 Output (JSON):
   { handled, file, carbonize }`);
     process.exit(0);
@@ -46,6 +50,7 @@ Output (JSON):
   const id = argVal(args, '--id');
   const variantNum = argVal(args, '--variant');
   const paramValuesRaw = argVal(args, '--param-values');
+  const pageUrl = argVal(args, '--page-url');
   const isDiscard = args.includes('--discard');
 
   if (!id) { console.error('Missing --id'); process.exit(1); }
@@ -86,14 +91,86 @@ Output (JSON):
     console.log(JSON.stringify({ handled: true, file: relFile, carbonize: false, ...result }));
   } else {
     const result = handleAccept(id, variantNum, lines, targetFile, paramValues);
+    const acceptedOriginalText = result.acceptedOriginalText || '';
+    delete result.acceptedOriginalText;
     // Single-line attention-grabber when cleanup is required. The full
     // five-step checklist lives in reference/live.md (loaded once per
     // session); repeating it per-event would waste tokens.
     if (result.carbonize) {
       result.todo = 'REQUIRED before next poll: carbonize cleanup in ' + relFile + '. See reference/live.md "Required after accept".';
     }
+    // Scrub stash entries whose text appeared inside the just-replaced
+    // original wrap block. The accept embodies those manual edits (wrap was
+    // buffer-aware), so only those scoped ops are redundant.
+    if (result.handled !== false) {
+      try {
+        scrubManualEditsAgainstOriginalBlock(acceptedOriginalText, process.cwd(), pageUrl);
+      } catch {
+        // Non-fatal; the buffer stays as-is and the user can discard later.
+      }
+    }
     console.log(JSON.stringify({ handled: true, file: relFile, ...result }));
   }
+}
+
+/**
+ * After a variant accept rewrites one wrapper, drop only buffer ops whose
+ * text appeared inside that wrapper's original block. The previous file-wide
+ * scrub dropped unrelated staged edits from other components/files whenever
+ * their originalText wasn't present in the just-accepted file.
+ *
+ * Match both originalText and newText because live-wrap rewrites the original
+ * preview block to reflect pending manual edits before variants are generated.
+ */
+function scrubManualEditsAgainstOriginalBlock(originalBlockText, cwd = process.cwd(), pageUrl = null) {
+  const originalBlock = String(originalBlockText || '');
+  if (!originalBlock) return;
+  if (!pageUrl) return;
+  const buffer = readManualEditsBuffer(cwd);
+  if (buffer.entries.length === 0) return;
+  let mutated = false;
+  for (const entry of buffer.entries) {
+    if (entry.pageUrl !== pageUrl) continue;
+    const before = entry.ops.length;
+    entry.ops = entry.ops.filter((op) => {
+      return !manualEditOpAppearsInBlock(op, originalBlock);
+    });
+    if (entry.ops.length !== before) mutated = true;
+  }
+  buffer.entries = buffer.entries.filter((entry) => entry.ops.length > 0);
+  if (mutated) writeManualEditsBuffer(cwd, buffer);
+}
+
+function manualEditOpAppearsInBlock(op, originalBlock) {
+  const candidates = [op?.newText, op?.originalText]
+    .filter((text) => typeof text === 'string' && text.length > 0);
+  return candidates.some((text) => originalBlockHasExactManualText(originalBlock, text));
+}
+
+function originalBlockHasExactManualText(originalBlock, text) {
+  const needle = normalizeManualEditText(text);
+  if (!needle) return false;
+  return manualEditTextSegments(originalBlock).some((segment) => segment === needle);
+}
+
+function manualEditTextSegments(source) {
+  return String(source || '')
+    .replace(/<[^>]*>/g, '\n')
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, '\n')
+    .replace(/<!--[\s\S]*?-->/g, '\n')
+    .split(/\n+/)
+    .map(normalizeManualEditText)
+    .filter(Boolean);
+}
+
+function normalizeManualEditText(text) {
+  return String(text || '').replace(/\s+/g, ' ').trim();
+}
+
+// Compatibility export for older tests/callers. The unsafe file-wide scrub was
+// removed; callers must pass accepted original-block text for scoped cleanup.
+function scrubManualEditsAgainstFile(_targetFile, cwd = process.cwd(), originalBlockText = '', pageUrl = null) {
+  return scrubManualEditsAgainstOriginalBlock(originalBlockText, cwd, pageUrl);
 }
 
 // ---------------------------------------------------------------------------
@@ -146,6 +223,7 @@ function handleAccept(id, variantNum, lines, targetFile, paramValues) {
   // Extract the chosen variant's inner content
   const variantContent = extractVariant(lines, block, variantNum);
   if (!variantContent) return { handled: false, error: 'Variant ' + variantNum + ' not found' };
+  const originalContent = extractOriginal(lines, block);
 
   // Extract CSS block if present
   const cssContent = extractCss(lines, block, id);
@@ -204,7 +282,7 @@ function handleAccept(id, variantNum, lines, targetFile, paramValues) {
   ];
   fs.writeFileSync(targetFile, newLines.join('\n'), 'utf-8');
 
-  return { carbonize: needsCarbonize };
+  return { carbonize: needsCarbonize, acceptedOriginalText: originalContent.join('\n') };
 }
 
 // ---------------------------------------------------------------------------
@@ -226,7 +304,7 @@ function findMarkerBlock(id, lines) {
     if (lines[i].includes(endPattern)) { end = i; break; }
   }
 
-  return (start !== -1 && end !== -1) ? { start, end } : null;
+  return (start !== -1 && end !== -1) ? { start, end, id } : null;
 }
 
 /**
@@ -253,11 +331,14 @@ function expandReplaceRange(block, lines, isJsx) {
   // Walk back for the wrapper `<div data-impeccable-variants="..."` opener.
   // The attr may sit on a continuation line of a multi-line opening tag, so
   // also walk to the line that actually contains `<div`.
-  for (let i = start - 1; i >= Math.max(0, start - 12); i--) {
-    if (/data-impeccable-variants=/.test(lines[i])) {
+  for (let i = start - 1; i >= 0; i--) {
+    if (isVariantEndMarkerLine(lines[i], block.id)) break;
+    if (hasVariantWrapperAttr(lines[i], block.id)) {
       let opener = i;
-      while (opener > 0 && !/<div\b/.test(lines[opener])) opener--;
-      start = opener;
+      while (opener > 0 && !/<div\b/.test(lines[opener]) && !isVariantEndMarkerLine(lines[opener], block.id)) {
+        opener--;
+      }
+      if (/<div\b/.test(lines[opener])) start = opener;
       break;
     }
   }
@@ -293,6 +374,19 @@ function expandReplaceRange(block, lines, isJsx) {
   }
 
   return { start, end };
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isVariantEndMarkerLine(line, id) {
+  return new RegExp('impeccable-variants-end\\s+' + escapeRegExp(id) + '(?:\\s|--|\\*/|$)').test(line);
+}
+
+function hasVariantWrapperAttr(line, id) {
+  const escaped = escapeRegExp(id);
+  return new RegExp(`data-impeccable-variants\\s*=\\s*(?:"${escaped}"|'${escaped}'|\\{["']${escaped}["']\\})`).test(line);
 }
 
 /**
@@ -592,4 +686,4 @@ if (_running?.endsWith('live-accept.mjs') || _running?.endsWith('live-accept.mjs
   acceptCli();
 }
 
-export { findMarkerBlock, extractOriginal, extractVariant, extractCss, deindentContent, detectCommentSyntax };
+export { findMarkerBlock, extractOriginal, extractVariant, extractCss, deindentContent, detectCommentSyntax, scrubManualEditsAgainstFile, scrubManualEditsAgainstOriginalBlock };

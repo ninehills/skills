@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Project audit signals (Phase 1) for /check audit mode.
 
-Walks a project root and emits 10 structured signal blocks to stdout.
-Each block ends with `status: PASS|WARN|FAIL` so the LLM driving the
+Walks a project root and emits structured signal blocks to stdout.
+Each block ends with `status: PASS|WARN|FAIL|N/A` so the LLM driving the
 4-axis Linus-style scorecard can skim quickly.
 
 Pure stdlib. Read-only. Exits 0 even on WARN/FAIL so the harness does
@@ -14,6 +14,7 @@ Run as: python3 skills/check/scripts/audit_signals.py --root <path>
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -54,6 +55,34 @@ DENYLIST_HINT_RE = re.compile(
     re.IGNORECASE,
 )
 MINIFIED_RE = re.compile(r"\.min\.[a-z]+$", re.IGNORECASE)
+CLI_CONTRACT_BUCKETS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("help_or_usage", re.compile(r"(--help|\busage\b|\bhelp output\b)", re.IGNORECASE)),
+    ("version", re.compile(r"(--version|\bversion output\b)", re.IGNORECASE)),
+    ("exit_code", re.compile(r"\b(exit code|exit status|return code|exit_code|\$\?)\b", re.IGNORECASE)),
+    ("stdout", re.compile(r"\b(stdout|standard output)\b|>\s*\"\$?[A-Za-z0-9_./-]*stdout", re.IGNORECASE)),
+    ("stderr", re.compile(r"\b(stderr|standard error)\b|2>\s*\"\$?[A-Za-z0-9_./-]*stderr", re.IGNORECASE)),
+    ("non_interactive_or_tty", re.compile(r"\b(non-interactive|noninteractive|tty|isatty|/dev/null|CI=1)\b", re.IGNORECASE)),
+    (
+        "install_run",
+        re.compile(
+            r"(\binstall\s+-m\b|\binstalled command\b|\binstalled-runtime\b|"
+            r"\binstall/run\b|\binstall run\b|\btemp prefix\b|\bPATH shim\b|"
+            r"\bpackage-manager path\b|\bnpm link\b|\bpipx install\b|"
+            r"\bcargo install\b|\bbrew install\b|\bmake install\b)",
+            re.IGNORECASE,
+        ),
+    ),
+    ("json_or_schema", re.compile(r"\b(json|schema)\b", re.IGNORECASE)),
+    ("completion", re.compile(r"\bcompletion\b", re.IGNORECASE)),
+)
+CLI_CORE_BUCKETS = (
+    "help_or_usage",
+    "version",
+    "exit_code",
+    "stdout",
+    "stderr",
+    "install_run",
+)
 
 
 def is_excluded(path: Path, root: Path) -> bool:
@@ -212,6 +241,156 @@ def block_test_ci(files: list[Path], root: Path) -> None:
         status("WARN")
     else:
         status("PASS")
+
+
+def _package_bin_entrypoints(root: Path) -> list[str]:
+    path = root / "package.json"
+    if not path.is_file():
+        return []
+    text = read_text(path, 200_000)
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return []
+    bin_field = data.get("bin")
+    name = str(data.get("name") or "package")
+    if isinstance(bin_field, str):
+        return [f"package.json bin:{name} -> {bin_field}"]
+    if isinstance(bin_field, dict):
+        return [
+            f"package.json bin:{cmd} -> {target}"
+            for cmd, target in sorted(bin_field.items())
+            if isinstance(cmd, str) and isinstance(target, str)
+        ]
+    return []
+
+
+def _pyproject_script_entrypoints(root: Path) -> list[str]:
+    path = root / "pyproject.toml"
+    if not path.is_file():
+        return []
+    text = read_text(path, 200_000)
+    entries: list[str] = []
+    in_scripts = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("[") and stripped.endswith("]"):
+            in_scripts = stripped in {
+                "[project.scripts]",
+                "[tool.poetry.scripts]",
+            }
+            continue
+        if not in_scripts or not stripped or stripped.startswith("#"):
+            continue
+        m = re.match(r'([A-Za-z0-9_.-]+)\s*=\s*["\']([^"\']+)["\']', stripped)
+        if m:
+            entries.append(f"pyproject.toml script:{m.group(1)} -> {m.group(2)}")
+    return entries
+
+
+def _cargo_entrypoints(root: Path) -> list[str]:
+    entries: list[str] = []
+    cargo = root / "Cargo.toml"
+    if cargo.is_file():
+        text = read_text(cargo, 200_000)
+        if "[[bin]]" in text:
+            names = re.findall(r'(?m)^\s*name\s*=\s*["\']([^"\']+)["\']', text)
+            if names:
+                entries.extend(f"Cargo.toml bin:{name}" for name in sorted(set(names)))
+            else:
+                entries.append("Cargo.toml [[bin]]")
+    if (root / "src" / "main.rs").is_file():
+        entries.append("src/main.rs")
+    return entries
+
+
+def cli_entrypoints(files: list[Path], root: Path) -> list[str]:
+    entries: set[str] = set()
+    entries.update(_package_bin_entrypoints(root))
+    entries.update(_pyproject_script_entrypoints(root))
+    entries.update(_cargo_entrypoints(root))
+
+    for path in files:
+        try:
+            parts = path.relative_to(root).parts
+        except ValueError:
+            continue
+        if not parts:
+            continue
+        if parts[0] == "bin" and len(parts) >= 2:
+            entries.add("/".join(parts[:2]))
+        if parts[0] == "cmd" and len(parts) >= 3 and path.suffix == ".go":
+            entries.add(f"cmd/{parts[1]}")
+    return sorted(entries)
+
+
+def _is_cli_contract_candidate(path: Path, root: Path) -> bool:
+    try:
+        parts = path.relative_to(root).parts
+    except ValueError:
+        return False
+    if not parts:
+        return False
+    lower_parts = tuple(p.lower() for p in parts)
+    name = lower_parts[-1]
+    if name in {"readme.md", "readme.txt", "agents.md", "claude.md"}:
+        return True
+    if lower_parts[0] in {"tests", "test", "spec", "scripts"}:
+        return True
+    if "test" in name or "spec" in name:
+        return True
+    if len(lower_parts) >= 3 and lower_parts[:2] == (".github", "workflows"):
+        return True
+    return False
+
+
+def cli_contract_evidence(files: list[Path], root: Path) -> dict[str, list[tuple[str, str]]]:
+    hits: dict[str, list[tuple[str, str]]] = {}
+    for path in files:
+        if not _is_cli_contract_candidate(path, root):
+            continue
+        text = read_text(path, 200_000)
+        if not text:
+            continue
+        for bucket, pattern in CLI_CONTRACT_BUCKETS:
+            m = pattern.search(text)
+            if m:
+                hits.setdefault(bucket, []).append((rel(path, root), m.group(0)))
+    return {bucket: sorted(values) for bucket, values in sorted(hits.items())}
+
+
+def block_cli_contract_surface(files: list[Path], root: Path) -> None:
+    header("CLI CONTRACT SURFACE")
+    entries = cli_entrypoints(files, root)
+    if not entries:
+        print("(no CLI entrypoints detected)")
+        status("N/A")
+        return
+
+    print(f"entrypoints={len(entries)}")
+    for entry in entries[:12]:
+        print(f"  entry: {entry}")
+    if len(entries) > 12:
+        print(f"  ... {len(entries) - 12} more")
+
+    evidence = cli_contract_evidence(files, root)
+    covered = tuple(bucket for bucket, _ in CLI_CONTRACT_BUCKETS if bucket in evidence)
+    missing = tuple(bucket for bucket in CLI_CORE_BUCKETS if bucket not in evidence)
+    print(f"covered={','.join(covered) if covered else 'none'}")
+    print(f"missing={','.join(missing) if missing else 'none'}")
+    printed = 0
+    for bucket in covered:
+        for path, signal in evidence[bucket][:3]:
+            print(f"  evidence: {bucket}  {path}  signal={signal}")
+            printed += 1
+            if printed >= 12:
+                break
+        if printed >= 12:
+            break
+    if not missing:
+        status("PASS")
+    else:
+        status("WARN")
 
 
 def _grep_version(path: Path, pattern: str) -> str | None:
@@ -471,6 +650,7 @@ def main() -> int:
     block_hotspots(files, root); print()
     block_heredoc(files, root); print()
     block_test_ci(files, root); print()
+    block_cli_contract_surface(files, root); print()
     block_version_sources(root); print()
     block_packaging_posture(root); print()
     block_install_url(root); print()

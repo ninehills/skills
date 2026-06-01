@@ -960,16 +960,15 @@ def marker_for_color(style: Dict[str, object], color: str, arrow_data: Dict[str,
     return "url(#arrowA)"
 
 
-def render_label_badge(x: float, y: float, text: str, style: Dict[str, object]) -> str:
+def render_label_badge(x: float, y: float, text: str, style: Dict[str, object], label_style: str = "offset") -> str:
     width = max(36, len(text) * 7 + 14)
-    bg = style_value(style, "arrow_label_bg")
-    opacity = style_value(style, "arrow_label_opacity")
-    return "\n".join(
-        [
-            f'  <rect x="{round(x - width / 2, 2)}" y="{round(y - 10, 2)}" width="{width}" height="20" rx="6" fill="{bg}" opacity="{opacity}"/>',
-            f'  <text x="{round(x, 2)}" y="{round(y + 4, 2)}" text-anchor="middle" class="arrow-label">{normalize_text(text)}</text>',
-        ]
-    )
+    parts: List[str] = []
+    if label_style == "badge":
+        bg = style_value(style, "arrow_label_bg")
+        opacity = style_value(style, "arrow_label_opacity")
+        parts.append(f'  <rect x="{round(x - width / 2, 2)}" y="{round(y - 10, 2)}" width="{width}" height="20" rx="6" fill="{bg}" opacity="{opacity}"/>')
+    parts.append(f'  <text x="{round(x, 2)}" y="{round(y + 4, 2)}" text-anchor="middle" class="arrow-label">{normalize_text(text)}</text>')
+    return "\n".join(parts)
 
 
 def rectangle_bounds(x: float, y: float, width: float, height: float) -> Bounds:
@@ -1419,7 +1418,7 @@ def render_arrow(
         label_x, label_y = choose_label_position_avoiding(route, label, label_obstacles)
         label_x += to_float(arrow.get("label_dx", 0))
         label_y += to_float(arrow.get("label_dy", -4))
-        label_svg = render_label_badge(label_x, label_y, label, style)
+        label_svg = render_label_badge(label_x, label_y, label, style, label_style=str(arrow.get("label_style", "badge")))
         label_bounds = estimate_label_bounds(label_x, label_y, label)
     return path, label_svg, label_bounds
 
@@ -1481,14 +1480,19 @@ def build_svg(template_type: str, data: Dict[str, object]) -> str:
     arrows_data = data.get("arrows", [])
     legend = data.get("legend", [])
 
-    normalized_nodes = [normalize_node(node, f"node-{idx}") for idx, node in enumerate(nodes_data)]
-    node_map = {node.node_id: node for node in normalized_nodes}
-
     defs = render_defs(style_index, style)
     canvas = render_canvas(style_index, style, width, height)
     title_block, content_start_y = render_title_block(style, data, width)
     window_controls = render_window_controls(data, style_index, width)
     header_meta = render_header_meta(data, style, width)
+
+    # Assign auto_place y before building node maps so arrows route correctly
+    for node_data in nodes_data:
+        if "y" not in node_data and node_data.get("auto_place"):
+            node_data["y"] = content_start_y + to_float(node_data.get("offset_y", 0))
+
+    normalized_nodes = [normalize_node(node, f"node-{idx}") for idx, node in enumerate(nodes_data)]
+    node_map = {node.node_id: node for node in normalized_nodes}
 
     lines = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {int(width)} {int(height)}" width="{int(width)}" height="{int(height)}">']
     lines.append(defs)
@@ -1531,8 +1535,6 @@ def build_svg(template_type: str, data: Dict[str, object]) -> str:
     lines.extend(path for path in arrow_paths if path)
 
     for node_data in nodes_data:
-        if "y" not in node_data and node_data.get("auto_place"):
-            node_data["y"] = content_start_y + to_float(node_data.get("offset_y", 0))
         lines.append(render_node(node_data, style))
 
     lines.extend(label for label in arrow_labels if label)

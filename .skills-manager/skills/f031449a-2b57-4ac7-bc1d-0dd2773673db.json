@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "f031449a-2b57-4ac7-bc1d-0dd2773673db",
+  "path": "herdr",
+  "path_key": "herdr",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "herdr",
+    "branch": null
+  }
+}

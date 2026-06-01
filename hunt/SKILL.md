@@ -1,6 +1,6 @@
 ---
 name: hunt
-description: "Finds root cause of errors, crashes, regressions, screenshot-reported defects, unexpected behavior, and failing tests before applying any fix. Not for code review or new features."
+description: "Finds root cause before applying fixes for errors, crashes, regressions, failing tests, broken behavior, and screenshot-reported defects. Use when users ask 排查/报错/崩溃/不工作/回归/判断为什么报错, or say something used to work and now fails. Not for code review or new features."
 when_to_use: "排查, 查查, 报错, 崩溃, 不工作, 不对, 跑不通, 以前是好的, 回归, 截图回归, 判断错误原因, 判断为什么报错, 反复修不好, debug, regression, used to work, broke after update, why broken, not working, what's wrong, fix error, stack trace"
 dispatch_intent: "Error, crash, regression, screenshot-reported defect, test failure, stale cache, runtime boundary, why broken"
 ---
@@ -10,6 +10,13 @@ dispatch_intent: "Error, crash, regression, screenshot-reported defect, test fai
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
 A patch applied to a symptom creates a new bug somewhere else.
+
+## Outcome Contract
+
+- Outcome: the root cause is identified before any fix is applied.
+- Done when: one sentence explains the cause, every observed symptom fits it, and the fix or handoff is verified against a reproducible check.
+- Evidence: source trace, repro command or UI path, logs or state, targeted test/build output, and runtime evidence for UI or native defects.
+- Output: root cause, fix or handoff, verification result, and any unswept sibling risks.
 
 **Do not touch code until you can state the root cause in one sentence:**
 > "I believe the root cause is [X] because [evidence]."
@@ -38,12 +45,19 @@ For `/hunt`, diagnostic constraints are `decision`, `preference`, and `principle
 - **External tool failure: diagnose before switching.** When an MCP tool or API fails, determine why first (server running? API key valid? Config correct?) before trying an alternative.
 - **Pay attention to deflection.** When someone says "that part doesn't matter," treat it as a signal. The area someone avoids examining is often where the problem lives.
 - **Visual/rendering bugs: static analysis first.** Trace paint layers, stacking contexts, and layer order in DevTools before adding console.log or visual debug overlays. Logs cannot capture what the compositor does. Only add instrumentation after static analysis fails.
+- **Behavioral / lifecycle bugs: log-debug first after one failed fix.** Window lifecycle, event delivery, navigation, focus, timer, and async-state bugs do *not* yield to static reading alone. After static analysis plus one failed hypothesis, stop guessing and add a runtime probe (Swift `#if DEBUG NSLog("[App.stage] state=...")`, JS `console.log`, Rust `eprintln!` / `tracing::debug!`) at the suspect boundary. Read its output before changing code again. "Looks reasonable but unverified" twice in a row is the hard-stop signal. Distinguish from the visual-rendering rule above: a compositor bug needs DevTools; a "the function was never called" / "the object was already destroyed" bug needs a log.
+- **Tuning magic numbers past round three: stop, unify.** When a spacing / sizing / threshold value has been adjusted three times and still looks wrong, the bug is structural, not numeric. Replace the N independent values with one named token (`Spacing.s4`, `--gap-content`, etc.) and verify the asymmetry was hiding a missing constraint. Asymmetry that survives tuning is structural; more tuning will not converge.
 - **Fix the cause, not the symptom.** If the fix touches more than 5 files, pause and confirm scope with the user.
+
+## Fix Scope Discipline
+
+If the bug genuinely needs a refactor first (e.g. the cause cannot be addressed without changing a shared interface), pause, name the refactor explicitly, and ask. Do not silently bundle it. A bug fix that grew into a refactor is a separate PR.
 
 ## Bisect Mode
 
 Activate when: "以前是好的", "之前是好的", "used to work", "上一次提交还是对的", "broke after update", or the user remembers a specific good commit or version.
 
+0. Protect the user's worktree first: run `git status --short --branch -uall`. If modified, staged, or untracked files exist, do not bisect in the current checkout. Create a temporary detached worktree from the same HEAD, run bisect there, then `git bisect reset` and remove the temporary worktree when done. If a temporary worktree is impossible, stop and ask for explicit cleanup/stash approval.
 1. Find candidate good tag: `git tag --sort=-version:refname | head -10` or ask the user for the last known-good commit.
 2. Define a non-interactive pass/fail test command before starting bisect. Bisect is worthless without a reproducible check.
 3. Run: `git bisect start && git bisect bad HEAD && git bisect good <tag-or-hash>`

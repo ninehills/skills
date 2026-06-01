@@ -216,6 +216,15 @@ scripts/generate_style_gallery.py
 .claude/
 results/
 logs/
-outputs/
 outputs_cache/
 output/
+test_codex_output.png
+test_runs/
+
+# Local evaluation / test harnesses are useful while developing, but should not
+# be published as part of the skill package.
+tests/
+evals/
+benchmarks/
+scripts/gen_demo_images.py
+scripts/gen_edit_case_images.py

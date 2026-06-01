@@ -1,11 +1,11 @@
 ---
 name: health
-description: "Runs a budget-aware Agent Health audit for Codex, Claude Code, agent instructions, verifier surfaces, and AI maintainability when agents ignore instructions, hooks/MCP fail, validation is missing, or AI-written code is hard to maintain. Flags issues by severity. Not for debugging code or reviewing PRs."
-when_to_use: "检查claude, 检查codex, Codex 配置, AGENTS.md, config.toml, agent instructions, 健康度, 配置检查, 配置对不对, AI coding 腐化, 代码变烂, 维护性, 上下文混乱, 验证缺失, 验证命令失真, Claude ignoring instructions, check config, settings not working, audit config"
-dispatch_intent: "Codex/Claude ignoring instructions, agent config audit, hooks/MCP broken, health token usage, AI coding code rot, hotspot ownership, unclear context, missing verification, stale verifier output"
+description: "Runs a budget-aware agent-assisted engineering health audit for instruction/config drift, hooks/MCP, verifier surfaces, and AI maintainability. Use when users ask 检查claude/检查codex/检查pi/配置检查/健康度 or report agents ignoring instructions, missing validation, or code becoming hard to maintain. Not for debugging code or reviewing PRs."
+when_to_use: "检查claude, 检查codex, 检查pi, Codex 配置, Pi 配置, AGENTS.md, config.toml, agent instructions, 健康度, 配置检查, 配置对不对, AI coding 腐化, 代码变烂, 维护性, 上下文混乱, 验证缺失, 验证命令失真, Claude ignoring instructions, Pi coding agent, check config, settings not working, audit config"
+dispatch_intent: "Codex/Claude/Pi ignoring instructions, agent config audit, hooks/MCP broken, health token usage, AI coding code rot, hotspot ownership, unclear context, missing verification, stale verifier output"
 ---
 
-# Health: Agent Config and AI Maintainability
+# Health: Agent-Assisted Engineering Health
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
@@ -13,6 +13,18 @@ Audit the current project's agent setup and AI coding maintainability against th
 `agent config → instruction surfaces → tools/runtime → verifiers → maintainability`
 
 Find violations. Identify the misaligned layer. Calibrate to project complexity only.
+
+## Outcome Contract
+
+- Outcome: a budget-aware health report that separates agent configuration risk from AI maintainability risk.
+- Done when: each finding names the misaligned layer, the concrete evidence, and a copy-pasteable action or diagnostic command.
+- Evidence: collected health script output, tracked project instructions, runtime config summaries, verifier logs, hooks/MCP surfaces, and live probes when needed.
+- Output: prioritized findings with status, impact, and next action, or a clear clean bill with residual risk.
+
+Two lanes share one report:
+
+- **Agent config health**: Codex/Claude/Pi instruction drift, permissions, hooks, MCP, skills, and memory supply chain.
+- **AI maintainability health**: project context surface, verifier wrapper, generated-artifact checks, hotspot ownership, and stale or misleading durable docs.
 
 **Output language:** Check in order: (1) project agent instructions (`AGENTS.md` before runtime-specific files); (2) global agent instructions; (3) user's recent language; (4) English.
 
@@ -67,12 +79,41 @@ Treat `(unavailable)` as insufficient data, not a finding. Do not flag those are
 
 The collector includes both runtime-specific and agent-agnostic surfaces:
 
-- `AGENT CONFIG SUMMARY` / `AGENT CONFIG DETAIL` for Codex, Claude, and project instruction files.
+- `AGENT CONFIG SUMMARY` / `AGENT CONFIG DETAIL` for Codex, Claude, Pi, and project instruction files.
 - `AI MAINTAINABILITY SUMMARY` / `AI MAINTAINABILITY DETAIL` for project shape, verification surface, hotspot ownership, wrappers, and doc links.
 
 ## Step 1b: MCP Live Check
 
 Test every MCP server: call one harmless tool per server. Record `live=yes/no` with error detail. Respect `enabled: false` (skip without flagging). For API keys, only check if the env var is set (`echo $VAR | head -c 5`), never print full keys.
+
+## Security Baseline Checks
+
+Run these on every audit, regardless of tier. They are the floor, not the ceiling.
+
+**Deny-list floor.** Apply this only when the project or runtime exposes agent permission settings, hook settings, MCP settings, allowed/denied tools, or a documented autonomous-agent launcher. In that case, the settings should deny, at minimum: credential and key directories (SSH, cloud providers, GPG, gh CLI), secret files (`.env`, `credentials*`, `secrets*`), pipe-to-shell installers (`curl ... | bash`, `wget ... | sh`), and outbound shells (`ssh`, `scp`, `nc`). Report this as one concise WARN with the missing categories and suggested fix; let the reviewer fill in exact local paths from the environment. If no agent settings surface exists, report the deny-list as not applicable rather than a failure.
+
+**Environment override surface.** Treat the following as attack surface, report when set in tracked files or shipped settings without a justification comment: API base-URL overrides (redirect all traffic to a third party), auto-trust flags for project-local MCP servers, wildcard tool allowlists (`allowedTools: ["*"]`), and permission-skip flags (`--dangerously-skip-permissions` or equivalents). Print file:line and the key name only; never print secrets.
+
+## Memory and Skill Supply Chain
+
+Treat agent memory and third-party skills as supply-chain artifacts. They run with the user's privileges.
+
+**Memory hygiene.** Audit the project's long-term agent memory store for secrets, tokens, or credentials (Critical), and for entries written by untrusted runs (subagent invoked on attacker-controlled input, /loop iteration over external content); recommend rotation after such runs. For high-risk one-off runs (untrusted PDFs, uncontrolled scraping, third-party scripts), recommend disabling memory persistence for that session entirely.
+
+**Skill supply chain.** Third-party skills, plugins, and MCP servers run with the user's privileges. For each one not authored in this repo, check: source pinned to a release tag (not `main` or a branch), hook handlers do not write to credential directories, MCP servers have explicit user consent (not auto-trusted by wildcard). Report unpinned sources or unreviewed hook handlers as Structural, not Critical, unless an active exploit signal is present.
+
+## Long-Running Agent Stop Conditions
+
+For projects that use `/loop`, autonomous agents, or any long-running agent flow, the project must define explicit stop conditions. An agent that never stops is a budget and safety incident waiting to happen.
+
+Audit for these four hard stop signals; flag the absence of each as a Structural finding:
+
+1. **No progress across two consecutive checkpoints.** Same files touched, same errors logged, no new commits/tests/output. Recommend killing the loop and surfacing the state, not retrying.
+2. **Repeated identical failure.** Same stack trace, same error message, same failed assertion three times in a row means the hypothesis is wrong; more attempts will not help.
+3. **Cost or token budget exceeded.** Project should declare a per-run budget (tokens, API spend, wall-clock minutes). Loop exits when the budget is hit, not when work is done.
+4. **External blockers.** Merge conflict on the target branch, dependency lock the agent cannot resolve, missing credential, network unreachable. Any of these halt the loop and ask the user, not retry forever.
+
+The stop conditions should live in tracked project docs (`AGENTS.md`, the loop's launch script, or a dedicated config), not only in the agent's prompt. Prompts are forgettable; tracked config is enforceable. Recommend hooks (PostToolUse on the relevant tools) over prompt instructions when the project supports them: a hook physically cannot be skipped, a prompt instruction can.
 
 ## Step 2: Analyze
 
@@ -116,7 +157,7 @@ Action: `git rm --cached .claude/settings.local.json && echo '.claude/settings.l
 
 Agent instructions in the wrong layer, missing hooks, oversized descriptions, verifier gaps.
 
-**Codex/Claude instruction drift.** Use `AGENT CONFIG SUMMARY` first. Report a Structural finding when `AGENTS.md` and runtime-specific files both contain substantial guidance without delegation, when Codex `config.toml` lacks trust for the current project, when project agent instructions are missing, or when runtime-specific instructions contradict the shared project source of truth. Also report when important rules live only in ignored or private local instruction overlays but the tracked/public docs lack them; those overlays are private context, not durable project source of truth. Do not print raw config values. Secrets, tokens, keys, and passwords must appear only as `[REDACTED]`.
+**Codex/Claude/Pi instruction drift.** Use `AGENT CONFIG SUMMARY` first. Report a Structural finding when `AGENTS.md` and runtime-specific files both contain substantial guidance without delegation, when Codex `config.toml` lacks trust for the current project, when Pi settings or package metadata point at missing skill roots, when project agent instructions are missing, or when runtime-specific instructions contradict the shared project source of truth. Also report when important rules live only in ignored or private local instruction overlays but the tracked/public docs lack them; those overlays are private context, not durable project source of truth. Do not print raw config values. Secrets, tokens, keys, and passwords must appear only as `[REDACTED]`.
 
 Quick check from the project root:
 

@@ -9,8 +9,9 @@ Endpoints (auto-routed):
 Auth resolution (first hit wins):
   1. OPENAI_API_KEY env var
   2. .env file (./.env, then ~/.env)
-  3. Codex/ChatGPT OAuth token (via Hermes auth store)
-  4. config.yaml → image_gen.openai.api_key
+  3. Pi agent auth (~/.pi/agent/auth.json → openai-codex)
+  4. Codex/ChatGPT OAuth token (via Hermes auth store)
+  5. config.yaml → image_gen.openai.api_key
 
 Usage:
   gpt-image -p "a cat astronaut"                                      # basic gen
@@ -199,26 +200,38 @@ def _generate_via_codex(
             "tools": [{"type": "image_generation"}],
         },
     ) as stream:
-        for event in stream:
-            event_type = getattr(event, "type", "")
-            if event_type == "response.output_item.done":
-                item = getattr(event, "item", None)
+        try:
+            for event in stream:
+                event_type = getattr(event, "type", "")
+                if event_type == "response.output_item.done":
+                    item = getattr(event, "item", None)
+                    if getattr(item, "type", None) == "image_generation_call":
+                        result = getattr(item, "result", None)
+                        if isinstance(result, str) and result:
+                            image_b64 = result
+                elif event_type == "response.image_generation_call.partial_image":
+                    partial = getattr(event, "partial_image_b64", None)
+                    if isinstance(partial, str) and partial:
+                        image_b64 = partial
+        except TypeError as e:
+            # OpenAI SDK may fail parsing trailing output items
+            # (e.g., text message after image_generation_call has None output).
+            # The image was already captured from earlier events.
+            if "not iterable" not in str(e) and "NoneType" not in str(e):
+                raise
+            logger.debug("suppressed stream parse error: %s", e)
+
+    # Final-response sweep (best-effort; may fail due to SDK parse issues)
+    if not image_b64:
+        try:
+            final = stream.get_final_response()
+            for item in getattr(final, "output", None) or []:
                 if getattr(item, "type", None) == "image_generation_call":
                     result = getattr(item, "result", None)
                     if isinstance(result, str) and result:
                         image_b64 = result
-            elif event_type == "response.image_generation_call.partial_image":
-                partial = getattr(event, "partial_image_b64", None)
-                if isinstance(partial, str) and partial:
-                    image_b64 = partial
-        final = stream.get_final_response()
-
-    # Final-response sweep
-    for item in getattr(final, "output", None) or []:
-        if getattr(item, "type", None) == "image_generation_call":
-            result = getattr(item, "result", None)
-            if isinstance(result, str) and result:
-                image_b64 = result
+        except Exception as e:
+            logger.debug("get_final_response sweep skipped: %s", e)
 
     if not image_b64:
         raise ValueError(
@@ -264,6 +277,22 @@ def _load_dotenv() -> None:
 # ──────────────────────────────────────────────
 
 
+def _read_pi_codex_token() -> Optional[str]:
+    """Try to read Codex OAuth token from pi agent auth.json."""
+    auth_file = Path.home() / ".pi" / "agent" / "auth.json"
+    if not auth_file.exists():
+        return None
+    try:
+        data = json.loads(auth_file.read_text())
+        codex = data.get("openai-codex", {})
+        token = codex.get("access", "")
+        if isinstance(token, str) and token.strip():
+            return token.strip()
+    except Exception:
+        pass
+    return None
+
+
 def _read_codex_token() -> Optional[str]:
     """Try to read Codex OAuth token from Hermes auth store."""
     try:
@@ -297,11 +326,14 @@ def _read_config_api_key() -> Optional[str]:
 
 
 def resolve_api_key() -> Optional[str]:
-    """Resolve API key: env → .env files → Codex token → config."""
+    """Resolve API key: env → .env files → pi auth → Codex token → config."""
     _load_dotenv()
     env_key = os.environ.get("OPENAI_API_KEY", "").strip()
     if env_key:
         return env_key
+    pi_token = _read_pi_codex_token()
+    if pi_token:
+        return pi_token
     codex_token = _read_codex_token()
     if codex_token:
         return codex_token
@@ -691,7 +723,7 @@ def main() -> None:
             "No API key found. Options:\n"
             "  • export OPENAI_API_KEY=...\n"
             "  • Create ~/.env with OPENAI_API_KEY=...\n"
-            "  • Run `hermes auth codex`\n"
+            "  • Run `hermes auth codex` or set up ~/.pi/agent/auth.json\n"
             "  • Pass --api-key"
         )
         sys.exit(2)

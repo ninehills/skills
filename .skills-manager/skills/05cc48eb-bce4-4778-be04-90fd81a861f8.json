@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "05cc48eb-bce4-4778-be04-90fd81a861f8",
+  "path": "review-code",
+  "path_key": "review-code",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/ninehills/public-skills",
+    "subpath": "review-code",
+    "branch": null
+  }
+}

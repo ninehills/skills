@@ -21,7 +21,7 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Union
 
 
 DEFAULT_CODEX_CMD = "codex exec --full-auto"
@@ -66,20 +66,52 @@ class CodexImageBackend:
             f"timeout={self.timeout}s)"
         )
 
+    def _normalize_reference_images(self, reference_image_path: Optional[Union[str, List[str]]]) -> List[str]:
+        if not reference_image_path:
+            return []
+        if isinstance(reference_image_path, (list, tuple)):
+            candidates = [str(p) for p in reference_image_path if p]
+        else:
+            candidates = [str(reference_image_path)]
+        return [p for p in candidates if os.path.exists(p)]
+
     def _build_instruction(
         self,
         prompt: str,
         output_path: str,
-        reference_image_path: Optional[str],
+        reference_image_path: Optional[Union[str, List[str]]],
     ) -> str:
         abs_out = str(Path(output_path).resolve())
         ref_line = ""
-        if reference_image_path and os.path.exists(reference_image_path):
-            abs_ref = str(Path(reference_image_path).resolve())
-            ref_line = (
-                f"- 把这张图作为视觉风格参考（配色 / 字体 / 装饰元素 / 布局氛围），"
-                f"不要复制其中文字：{abs_ref}\n"
-            )
+        reference_images = self._normalize_reference_images(reference_image_path)
+        if reference_images:
+            ref_lines = []
+            has_asset_skeleton = False
+            has_style_reference = False
+            for idx, ref_path in enumerate(reference_images, start=1):
+                abs_ref = str(Path(ref_path).resolve())
+                if "asset-skeleton" in os.path.basename(ref_path):
+                    has_asset_skeleton = True
+                    ref_lines.append(f"- 参考图 {idx} 是空间定位图，不是视觉风格参考：{abs_ref}")
+                else:
+                    has_style_reference = True
+                    ref_lines.append(
+                        f"- 参考图 {idx} 是视觉风格/模板参考（配色 / 字体 / 装饰元素 / 布局氛围），"
+                        f"不要复制其中文字：{abs_ref}"
+                    )
+            if has_asset_skeleton:
+                if has_style_reference:
+                    ref_lines.append("- 同时使用模板参考图学习风格，并使用空间定位图避让真实图片后贴区域。")
+                ref_lines.append(
+                    "- 空间定位图中的细角标表示后续会贴入真实图片的覆盖区；"
+                    "不要把标题、正文、数字、图标、人物或主体照片放进这些区域；"
+                    "覆盖区底下的背景要自然连续；"
+                    "严禁生成白色/浅色矩形、空卡片、图片占位框、边框、阴影、透明洞或任何可见预留块；"
+                    "如果页面布局或风格模板提到主体照片、产品照、人物照、场景摄影、photo crop、image crop、图片区或照片区，"
+                    "这些角色都由代码后贴真实图片完成，模型不要自行生成、仿造或重绘这些照片内容；"
+                    "不要复制、描摹、强化或保留角标。"
+                )
+            ref_line = "\n".join(ref_lines) + "\n"
 
         aspect_rule = {
             "16:9": "16:9 横版宽屏（landscape, widescreen, 宽度明显大于高度）",
@@ -88,9 +120,11 @@ class CodexImageBackend:
         }.get(self.aspect_ratio, "16:9 横版宽屏")
 
         return (
-            f"帮我用 OpenAI Images API 生成一张 PPT 幻灯片图片，并写到磁盘上。\n\n"
+            f"帮我生成一张 PPT 幻灯片图片，并写到磁盘上。\n\n"
             f"要求：\n"
-            f"- 模型：{self.model}\n"
+            f"- 必须使用当前 Codex 会话内置的图片生成能力 / image_generation 工具；"
+            f"不要写代码调用 OpenAI API，不要尝试访问网络 API，不要使用需要 DNS 的 HTTP 请求。\n"
+            f"- 目标图片模型：{self.model}\n"
             f"- 尺寸：{self.size}（{aspect_rule}）\n"
             f"- 质量：high\n"
             f"- 输出路径（绝对路径）：{abs_out}\n"
@@ -108,7 +142,7 @@ class CodexImageBackend:
         scene_data: Dict[str, Any],
         output_path: str,
         size: str = "auto",
-        reference_image_path: Optional[str] = None,
+        reference_image_path: Optional[Union[str, List[str]]] = None,
     ) -> str:
         scene_index = scene_data.get("index", 0)
         prompt = scene_data.get("image_prompt", "")

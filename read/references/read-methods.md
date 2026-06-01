@@ -69,7 +69,7 @@ pdftotext -layout /tmp/input.pdf -
 
 ```bash
 # Best quality (requires: pip install marker-pdf)
-marker_single /path/to/file.pdf --output_dir ~/Downloads/
+marker_single /path/to/file.pdf --output_dir "${READ_OUTPUT_DIR:-/tmp/waza-read}"
 
 # Fast, text-heavy PDFs (requires: brew install poppler)
 pdftotext -layout /path/to/file.pdf - | sed 's/\f/\n---\n/g'
