@@ -22,7 +22,7 @@ rules/ checks:
 
 Skill checks:
 - SIMPLE: 0–1 skills is fine.
-- ALL tiers: If skills exist, descriptions should be <12 words and say when to use.
+- ALL tiers: If skills exist, descriptions should be concise, triggerable, include `Use when`, include `Not for`, and avoid overlapping triggers.
 - STANDARD+: Low-frequency skills may use `disable-model-invocation: true`, but Claude Code plugin skills should not rely on it until upstream invocation bugs are fixed.
 
 MEMORY.md checks, STANDARD+:

@@ -40,7 +40,7 @@ For `/write`, voice and format constraints are `decision`, `preference`, and `pr
 
 - **Meaning first, style second.** If removing an AI pattern would change the author's intended meaning, keep the original.
 - **No silent restructuring.** Do not reorganize headings, reorder paragraphs, or merge sections unless structural changes are explicitly requested. Edit in place.
-- **Artifact-grounded claims.** For launch copy, release notes, social posts, product pages, and public replies, ground factual claims in real source material: current app behavior, screenshots, product page, release page, changelog, issue/PR, or user-provided draft. Do not turn concrete product evidence into generic marketing language.
+- **Artifact-grounded claims.** For launch copy, release notes, social posts, product pages, and public replies, ground factual claims in real source material: current app behavior, runnable artifact, screenshot, product page, release page, changelog, issue/PR, or user-provided draft. Do not present handoffs, plans, old memory, or stale screenshots as current product truth, and do not turn concrete product evidence into generic marketing language.
 - **No em-dash.** Never produce em-dash (U+2014 `—`) or en-dash (U+2013 `–`) in Chinese or English output. Em-dash is the strongest AI-tone fingerprint in this style of writing. Use commas, periods, colons, semicolons, or parentheses to break clauses. Hyphen-minus (`-`) inside compound words is allowed; replace it with a space or a period when possible. When editing a draft that contains em-dashes, replace every one before returning the text.
 - **Stop after output.** Deliver the rewritten text. Do not append a list of changes, a justification, or a closer.
 
@@ -157,7 +157,7 @@ For other engineering projects or English posts, apply the same structure (commu
 | Used formal register for a blog draft | Match the target audience's register. Blog is conversational, not academic. |
 | Applied Chinese/English spacing rules to a pure-English text | Bilingual spacing rules (半角/全角) only apply when the text mixes Chinese and English |
 | Polished the user's voice into generic launch copy | Preserve the author's cadence and stance. Use real product artifacts to sharpen facts, not to replace the voice. |
-| Drafted release or social copy from memory | Read the current release page, changelog, issue/PR, product page, screenshot, or supplied source before making factual claims. |
+| Drafted release or social copy from memory or a handoff | Read the current release page, changelog, issue/PR, runnable artifact, product page, screenshot, or supplied source before making factual claims. |
 | Wrote launch copy in one pass without checking the live screenshots | Iterate: draft, compare against the real product screenshot or page, tighten wording to match what ships, repeat until copy and artifact agree |
 | Polished a review report until it sounded timeless | Keep snapshots labeled as snapshots, or distill them into stable rules. Do not make dated claims sound evergreen |
 

@@ -2,9 +2,13 @@
 
 # gpt-image2-ppt-skills
 
-**Generate visually striking PPT decks with OpenAI `gpt-image-2` in one shot.**
+**Generate design-forward, highly polished PPT decks with OpenAI `gpt-image-2` in one shot.**
 
-A Claude Code / Codex / OpenClaw Skill. Once installed in your agent, a single natural-language prompt yields 16:9 high-res images + a ready-to-send `.pptx` — or clones any reference `.pptx` template and reskins it with new content.
+Works natively in Claude Code, Codex, OpenClaw, Hermes, and any other Skill-compatible agent. Once installed in your agent, a single natural-language prompt yields 16:9 high-res images + a ready-to-send `.pptx` — or clones any reference `.pptx` template and reskins it with new content.
+
+**Possibly one of the best-looking AI PPT Skills available today.** Instead of filling text into traditional templates, it uses the visual taste, composition, and layout strengths of `gpt-image-2` to generate each slide as a complete visual composition, aiming for decks that look polished, consistent, and presentation-ready from cover to inner pages.
+
+The project also includes dedicated optimization for editing image-based PPTs. You can describe the target slide and element in natural language, and the system regenerates that slide through image-to-image editing while trying to preserve the original style and layout. One important caveat: the background and text in these PPTs are full-slide images. If your workflow depends on manually editing native PowerPoint text boxes and individual objects, this may not be the right fit.
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](../LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
@@ -41,7 +45,7 @@ A Claude Code / Codex / OpenClaw Skill. Once installed in your agent, a single n
 
 - 🎨 **10 curated styles + an expanded style library** — built-ins include Spatial Glass / Tech Blue / Editorial Mono / Dark Aurora / Risograph / Wabi / Swiss Grid / Hand Sketch / Y2K Chrome / Vector Illustration; on 2026-05-26, 22 additional high-quality styles were selected from 500+ publicly available PPT templates
 - 🪄 **Template-clone mode** — drop in any `.pptx`; the agent follows its layout, palette, and illustration language, then swaps in your new content
-- 🎯 **Natural-language slide edits** — say "change slide 3's subtitle", "remove the footer", or "replace these three metrics", and the agent regenerates only the target slide
+- 🎯 **Precise natural-language edits** — say "change slide 3's subtitle", "remove the footer", or "replace these three metrics"; the agent regenerates only the target slide through image-to-image editing while trying to preserve the original style and layout
 - 🎮 **Dual output** — high-res PNG per slide + 16:9 `.pptx` ready to use
 - ⚡ **10-way concurrency by default** — a 10-page deck finishes in ~30s
 - 🧪 **Preview one slide first** — approve the cover before generating the full deck
@@ -114,7 +118,7 @@ Summary:
 
 ### Option 1: let your AI install it (recommended)
 
-Paste this prompt into your AI assistant (Claude Code / OpenClaw / Codex / Cursor / Trae / Hermes Agent — all work) and it will handle the install:
+Paste this prompt into your AI assistant (Claude Code / OpenClaw / Codex / Cursor / Trae / Hermes Agent, or any other agent that supports Skills) and it will handle the install:
 
 ```
 Please install gpt-image2-ppt-skills for me:

@@ -6,6 +6,10 @@ Instead of calling OpenAI Images API directly (which requires OPENAI_API_KEY),
 shell out to `codex exec` and let codex — authenticated via the user's ChatGPT
 login or its own configured API key — generate the image and write the PNG.
 
+This backend intentionally starts a separate Codex process. If the caller is
+already a Codex agent with native image generation tools, the agent should call
+those tools directly and use this repository only for planning / packaging.
+
 Interface is intentionally identical to `image_generator.GptImage2Generator`
 so `generate_ppt.py` can swap between them with a single flag.
 
@@ -62,7 +66,7 @@ class CodexImageBackend:
 
         print(
             f"🎨 初始化 codex backend "
-            f"(cmd={self.codex_cmd!r}, model={self.model}, size={self.size}, "
+            f"(separate subprocess, cmd={self.codex_cmd!r}, model={self.model}, size={self.size}, "
             f"timeout={self.timeout}s)"
         )
 

@@ -163,6 +163,8 @@ GPT_IMAGE_QUALITY=high                     # low / medium / high / auto
 
 **如果你自己就是 Codex**（正在运行本 skill 的 agent 就是 Codex CLI / Codex TUI），并且当前环境提供 `image_generation` tool 和 ChatGPT 登录态，此时**不要用 `generate_ppt.py` 或 `--backend codex` 负责出图**，直接用原生工具生成图片，最后只复用本仓库的 md 转换 / PPTX 打包逻辑即可。
 
+关键边界：Python 脚本运行在子进程里，拿不到当前 agent 会话里的原生 tool。`generate_ppt.py --backend codex` 能做的只有再启动一个 `codex exec` 子进程，让另一个 Codex 去出图；它不是“复用当前 Codex 的 image_generation tool”。所以当前 agent 已经能原生出图时，出图动作必须由 agent 本身完成，而不是交给 `generate_ppt.py`。
+
 ### 如何判断
 
 你能访问 `image_generation` tool，并且不需要手动配 `OPENAI_API_KEY` 就能出图——满足这两个条件就走原生路径。若当前 Codex 会话没有这个 tool，就按普通 agent 处理：走 API 直连、`--backend codex` 备用后端，或让用户补齐环境。
@@ -445,7 +447,7 @@ python3 scripts/generate_ppt.py \
 1. **拿到模板 .pptx**（用户提供 / 内部模板库 / 网络下载）
 2. **（可选）先单独渲染并人工挑选**----大模板（>15 页）建议先 `python3 scripts/render_template.py xxx.pptx`，再从 `template_renders/<stem>/` 里挑 8-12 张代表页复制到 `template_renders/<stem>_curated/`，供 vision 分析。页数越精，layout 命中越准
 3. **生成 slides_plan.md → 转 slides_plan.json**（见指定风格流程第 2-3 步）。每页 `slide_number` / `page_type` (`cover` / `content` / `data` / 等) / `content`；想精准对位时在 h2 里加 `layout=layout-NN`（NN = 模板第 N 页 / 你期望对应的模板页编号）
-4. **跑 generate_ppt.py**：
+4. **出图冒烟**。API 直连 / 非 Codex 原生路径跑 `generate_ppt.py`：
    ```bash
    python3 scripts/generate_ppt.py \
      --plan slides_plan.json \
@@ -460,7 +462,9 @@ python3 scripts/generate_ppt.py \
      --template-profile template_profile.json \
      --template-strict --slides 1
    ```
-   先 `--slides 1` 出封面冒烟，效果 OK 再跑全量
+   先 `--slides 1` 出封面冒烟，效果 OK 再跑全量。
+
+   如果当前 agent 就是带原生出图能力的 Codex，不要用上面的 `generate_ppt.py` 命令负责出图；先生成 / 读取 `template_profile.json`，再按“Codex 原生路径”直接调当前会话的图片生成 tool 输出第 1 页 PNG，用户确认后再生成全量页面并打包。
 5. **告知用户产物路径**
 
 ### 模板页面挑选 / 复用原则
@@ -489,11 +493,13 @@ Agent 在搭 plan 时的执行策略：
 1. **先问三件事**（不要直接动手）：
    - 内容 / 页数 / 观众是谁？
    - 风格偏好？按 `styles/` 和 `docs/distilled-styles.md` 的场景类目映射推荐 1-2 个；**或者用户上传自己的 .pptx 模板**（走 `--template-pptx`，自动渲染）
-   - 是否需要单页测试一张图先看效果（`--slides 1`）
+   - 是否需要单页测试一张图先看效果（API 直连用 `--slides 1`；Codex 原生路径直接生成第 1 页 PNG）
 2. **先写 slides_plan.md** 给用户确认文案（md 是 source of truth，人审阅友好）
 3. **转 slides_plan.json**：`python3 scripts/md_to_plan.py slides_plan.md -o slides_plan.json`（json 标为 generated，不手改；要改文案回到 md 改再转）
 4. **构造 slide_spec**（Agent 步骤）：读 `styles/<id>.md` 了解视觉规范，然后为 `slides_plan.json` 每页构造 `slide_spec`，写入每页的 `slide_spec` 字段（格式见"指哪改哪"章节）。这一步让后续修改能精确到每个元素
-5. **跑 generate_ppt.py**，先 `--slides 1` 出封面冒烟，效果 OK 再跑全量
+5. **出图冒烟**：
+   - API 直连 / 非 Codex 原生路径：跑 `generate_ppt.py --slides 1` 出封面冒烟，效果 OK 再跑全量
+   - 当前 agent 就是带原生出图能力的 Codex：按上方“Codex 原生路径”直接调当前会话的 `image_generation` tool 生成 `outputs/<timestamp>/images/slide-01.png`；不要用 `generate_ppt.py --backend codex`
 6. **告知用户产物路径**，产物在 `outputs/<timestamp>/`，`<title>.pptx` 可直接打开
 
 ### 面向用户的表达规范

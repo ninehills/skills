@@ -43,6 +43,7 @@ For `/hunt`, diagnostic constraints are `decision`, `preference`, and `principle
 - **After three failed hypotheses, stop.** Use the Handoff format below to surface what was checked, what was ruled out, and what is unknown. Ask how to proceed.
 - **Verify before claiming.** Never state versions, function names, or file locations from memory. Run `sw_vers` / `node --version` / grep first. No results = re-examine the path.
 - **External tool failure: diagnose before switching.** When an MCP tool or API fails, determine why first (server running? API key valid? Config correct?) before trying an alternative.
+- **System/tooling symptoms need a lower-layer baseline.** Before blaming the visible app, generated file, or top-level feature, measure the raw lower layer first: OS capture versus post-processing, runtime service versus UI, compiler/toolchain versus test assertion, network/API versus client handling. Retire hypotheses that the baseline disproves instead of circling them.
 - **Pay attention to deflection.** When someone says "that part doesn't matter," treat it as a signal. The area someone avoids examining is often where the problem lives.
 - **Visual/rendering bugs: static analysis first.** Trace paint layers, stacking contexts, and layer order in DevTools before adding console.log or visual debug overlays. Logs cannot capture what the compositor does. Only add instrumentation after static analysis fails.
 - **Behavioral / lifecycle bugs: log-debug first after one failed fix.** Window lifecycle, event delivery, navigation, focus, timer, and async-state bugs do *not* yield to static reading alone. After static analysis plus one failed hypothesis, stop guessing and add a runtime probe (Swift `#if DEBUG NSLog("[App.stage] state=...")`, JS `console.log`, Rust `eprintln!` / `tracing::debug!`) at the suspect boundary. Read its output before changing code again. "Looks reasonable but unverified" twice in a row is the hard-stop signal. Distinguish from the visual-rendering rule above: a compositor bug needs DevTools; a "the function was never called" / "the object was already destroyed" bug needs a log.
@@ -138,6 +139,7 @@ If adding logs changes the behavior, treat that as evidence of a timing, lifecyc
 |---------------|------|
 | Patched client pane instead of local pane | Trace the execution path backward before touching any file |
 | MCP not loading, switched tools instead of diagnosing | Check server status, API key, config before switching methods |
+| Blamed the visible app before measuring the raw system/tooling layer | Measure the lower layer first, then retire ruled-out hypotheses explicitly |
 | Orchestrator said RUNNING but TTS vendor was misconfigured | In multi-stage pipelines, test each stage in isolation |
 | Race condition diagnosed as a stale-state bug | For timing-sensitive issues, inspect event timestamps and ordering before state |
 | Added logs everywhere and still could not explain the bug | Rewrite each log as a yes/no question. Delete logs that do not rule a hypothesis in or out |

@@ -6,13 +6,13 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/code)
-[![7 种视觉风格](https://img.shields.io/badge/风格-7种-purple)]()
+[![8 种视觉风格](https://img.shields.io/badge/风格-8种-purple)]()
 [![14 种图类型](https://img.shields.io/badge/图类型-14种-green)]()
 [![UML 支持](https://img.shields.io/badge/UML-完整支持-orange)]()
 
 ## 概述
 
-`fireworks-tech-graph` 将自然语言描述转化为精美的 SVG 技术图，并通过 `cairosvg`（推荐）导出高分辨率 PNG，同时支持 `rsvg-convert` 与 `puppeteer` 作为备选方案。内置 **7 种视觉风格**，深度覆盖 AI/Agent 领域常见图类型（RAG、Agentic Search、Mem0、Multi-Agent、Tool Call 流程等），并完整支持全部 14 种 UML 图类型。
+`fireworks-tech-graph` 将自然语言描述转化为精美的 SVG 技术图，并通过 `cairosvg`（推荐）导出高分辨率 PNG，同时支持 `rsvg-convert` 与 `puppeteer` 作为备选方案。内置 **7 种模板风格** + **1 种 AI 手绘风格（Dark Luxury）**，深度覆盖 AI/Agent 领域常见图类型（RAG、Agentic Search、Mem0、Multi-Agent、Tool Call 流程等），并完整支持全部 14 种 UML 图类型。
 
 ```
 用户: "画一张 Mem0 的架构图，暗黑风格"
@@ -55,6 +55,10 @@
 ### 风格 7 — OpenAI 官方风格
 *API 集成流程图 — 纯白背景，OpenAI 品牌配色，现代极简设计*
 ![风格 7 — OpenAI 官方风格](assets/samples/sample-style7-openai.png)
+
+### 风格 8 — 暗黑奢华风 *(AI 手绘)*
+*Sopify 自适应工作流引擎 — 深黑背景，香槟金点缀，衬线体标题，六色桶色轮*
+![风格 8 — 暗黑奢华风](assets/samples/sample-style8-dark-luxury.png)
 
 ---
 
@@ -116,11 +120,21 @@
 整体保持纯白、精确、现代、极简，并使用干净的绿色语义箭头。
 ```
 
+### 风格 8 — 暗黑奢华风 *(AI 手绘)*
+> 风格 8 不是模板驱动风格。AI 读取 `references/style-8-dark-luxury.md` 手工绘制 SVG。
+
+```text
+画一张 style 8（Dark Luxury）的系统架构图。
+背景使用深黑色（#0a0a0a），标题和区块标签用香槟金（#d4a574），
+节点颜色分布在完整色轮上：翠绿、深紫、天空蓝、玫瑰红、琥珀黄、冷灰。
+标题和区块标签（≥11px）使用 Georgia 衬线体；节点文字和箭头标签全用无衬线体。
+```
+
 ---
 
 ## 功能特性
 
-- **7 种视觉风格** — 从白底极简到暗黑 Neon 再到磨砂玻璃，再到官方品牌风格
+- **8 种视觉风格** — 7 种模板驱动（Flat Icon 到 OpenAI Official）+ 1 种 AI 手绘（Dark Luxury）
 - **可执行风格系统** — 风格约束不仅写在文档里，也真正进入生成器逻辑
 - **14 种图类型** — 完整支持全部 UML 图类型（类图、组件图、部署图、包图、复合结构图、对象图、用例图、活动图、状态机图、序列图、通信图、时序图、交互概览图、ER 图）以及 AI/Agent 领域图
 - **AI/Agent 领域内建知识** — RAG、Agentic Search、Mem0、Multi-Agent、Tool Call 等常见 Pattern 开箱即用

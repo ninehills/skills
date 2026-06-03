@@ -67,7 +67,7 @@ GPT_IMAGE_MODEL_NAME=gpt-image-2
 GPT_IMAGE_QUALITY=high                    # low / medium / high / auto
 ```
 
-> 如果用户没有 OpenAI 官方 key，agent 可以告诉用户：本 skill 也支持 `--backend codex` 复用本地 codex CLI 登录，不需要在本 skill 配 key；或者用任意 OpenAI 兼容中转站（把 `OPENAI_BASE_URL` 改成中转站地址即可）。
+> 如果用户没有 OpenAI 官方 key：当前 agent 若是带原生出图能力的 Codex，优先走 `SKILL.md` 的 Codex 原生路径；否则可以告诉用户本 skill 支持 `--backend codex` 启动本地 `codex exec` 子进程复用登录态，或使用任意 OpenAI 兼容中转站（把 `OPENAI_BASE_URL` 改成中转站地址即可）。
 
 ### 3.1 模板克隆的视觉分析
 
@@ -94,7 +94,7 @@ rm -rf /tmp/gpt-image2-ppt-skills
 
 > 帮我用 **gpt-image2-ppt** 生成一份关于「猫为什么是液体」的 3 页 PPT，风格用 `gradient-glass`。
 
-正常的话 agent 会自己写 `slides_plan.md`、转成 `slides_plan.json`、跑 `scripts/generate_ppt.py --slides 1` 先出封面、再跑全量，最后给出输出目录和 `.pptx` 的路径。
+正常的话 agent 会自己写 `slides_plan.md`、转成 `slides_plan.json`，然后按当前环境分流：API 直连路径跑 `scripts/generate_ppt.py --slides 1` 先出封面；Codex 原生路径直接用当前会话的图片生成 tool 先出封面 PNG。确认后再跑全量，最后给出输出目录和 `.pptx` 的路径。
 
 ## 常见问题（给 agent 参考）
 

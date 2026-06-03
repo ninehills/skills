@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code Skill](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/code)
-[![7 Visual Styles](https://img.shields.io/badge/Styles-7-purple)]()
+[![8 Visual Styles](https://img.shields.io/badge/Styles-8-purple)]()
 [![14 Diagram Types](https://img.shields.io/badge/Diagram%20Types-14-green)]()
 [![UML Support](https://img.shields.io/badge/UML-Full%20Support-orange)]()
 
@@ -14,7 +14,7 @@
 
 ## Overview
 
-`fireworks-tech-graph` turns natural language descriptions into polished SVG diagrams, then exports them as high-resolution PNG via `cairosvg` (recommended), with `rsvg-convert` and `puppeteer` available as alternatives. It ships with **7 visual styles** and deep knowledge of AI/Agent domain patterns (RAG, Agentic Search, Mem0, Multi-Agent, Tool Call flows), plus full support for all 14 UML diagram types.
+`fireworks-tech-graph` turns natural language descriptions into polished SVG diagrams, then exports them as high-resolution PNG via `cairosvg` (recommended), with `rsvg-convert` and `puppeteer` available as alternatives. It ships with **7 template styles** and **1 AI-authored style (Dark Luxury)** and deep knowledge of AI/Agent domain patterns (RAG, Agentic Search, Mem0, Multi-Agent, Tool Call flows), plus full support for all 14 UML diagram types.
 
 ```
 User: "Generate a Mem0 memory architecture diagram, dark style"
@@ -69,6 +69,10 @@ If you are building agent infrastructure, AI IDEs, internal copilots, developer 
 ### Style 7 — OpenAI Official
 *API Integration Flow — pure white background, OpenAI brand palette, modern minimalist design*
 ![Style 7 — OpenAI Official](assets/samples/sample-style7-openai.png)
+
+### Style 8 — Dark Luxury *(AI-authored)*
+*Sopify Adaptive Workflow Engine — deep black background, champagne gold accents, serif titles, six-bucket color wheel*
+![Style 8 — Dark Luxury](assets/samples/sample-style8-dark-luxury.png)
 
 ---
 
@@ -130,11 +134,21 @@ Include Application, OpenAI SDK Layer, Prompt Builder, Model Runtime, Tool Calls
 Keep the look minimal, white, precise, and modern with clean green-accented arrows.
 ```
 
+### Style 8 — Dark Luxury *(AI-authored)*
+> Style 8 is not a template-driven style. The AI reads `references/style-8-dark-luxury.md` and hand-crafts the SVG directly.
+
+```text
+Draw a system architecture diagram in style 8 (Dark Luxury).
+Use a deep black background (#0a0a0a), champagne gold (#d4a574) for titles and cluster labels,
+and spread node colors across the full color wheel: emerald, violet, sky blue, rose, amber, cool-gray.
+Apply Georgia serif only for the main title and section labels (≥11px); use sans-serif for all node text and arrow labels.
+```
+
 ---
 
 ## Features
 
-- **7 visual styles** — from clean white docs to dark neon to frosted glass to official brand styles
+- **8 visual styles** — 7 template-driven (Flat Icon to OpenAI Official) + 1 AI-authored (Dark Luxury)
 - **Executable style system** — style guides are encoded into the generator, not only documented in markdown
 - **14 diagram types** — Full UML support (Class, Component, Deployment, Package, Composite Structure, Object, Use Case, Activity, State Machine, Sequence, Communication, Timing, Interaction Overview, ER Diagram) plus AI/Agent domain diagrams
 - **AI/Agent domain patterns** — RAG, Agentic Search, Mem0, Multi-Agent, Tool Call, and more built-in

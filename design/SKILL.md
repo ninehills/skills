@@ -46,6 +46,10 @@ Flow:
 
 **Completion screen layout.** Operation-complete surfaces show the single result the user came for: the actual reclaimed size / processed count / changed state. Long explanations belong in a details overlay opened from a summary row, not in the primary completion line. Do not add a separate "Review" button next to the summary row when one tap on the row already opens details; do not show an empty "0 skipped" entry point. If there is no skipped or failed item, hide the details affordance entirely.
 
+**Safety-bound action design.** For cleanup, deletion, uninstall, reset, or permission-changing surfaces, do not make the UI feel simpler by hiding recoverability. Bulk select, auto-select, one-tap delete, or "recommended" destructive defaults are only appropriate when each row is understandable to the target user and carries enough identity to verify safety (name, source, owner, path, preview, or recovery implication as relevant). If rows are opaque identifiers, inferred leftovers, or machine-only paths, prefer review-first UI, current-target scoping, disabled destructive affordances, or explanatory grouping over faster batch controls. A feature request for fewer clicks is not enough to remove the user's ability to verify what will change.
+
+**Quiet product boundary.** Fewer clicks and richer controls are not automatically better. Remove misleading affordances before adding alternate controls, prefer quiet defaults for diagnostics and alerts, and fix unstable motion cadence before changing speed or adding a new motion preference. If the current UI implies an action, state, or promise it cannot support, remove that implication first.
+
 ## Screenshot Iteration Mode
 
 Activate when the user sends a screenshot or image alongside a complaint ("这里很丑", "这个不对", "fix this", "looks wrong"). The existing product is the direction. Skip the five-question direction lock.
@@ -137,6 +141,7 @@ Give at least 3 variations across genuinely different dimensions (density, typog
 | Chose glassmorphism, ignored the mobile constraint | `backdrop-filter` is expensive on low-power devices. Name the tradeoff. |
 | Light-mode app: white panel on white background, visually indistinguishable | Adjacent nested surfaces must differ visually. Either background step (sidebar vs main ≥4% lightness difference) or shadow minimum `0 1px 3px rgba(0,0,0,0.10)`. |
 | Fixed visual polish by redesigning the whole surface | Locate the concrete visual delta first, then make the smallest material, opacity, geometry, or typography change that addresses it. |
+| Added a setting or louder control to solve UI noise | Remove the misleading affordance or choose a quiet default first |
 | English looked fine, localized text overflowed | Test long words and localized strings before handoff, especially inside buttons, tabs, nav, and compact cards. |
 
 ## Aesthetic Review

@@ -2,9 +2,13 @@
 
 # gpt-image2-ppt-skills
 
-**用 OpenAI `gpt-image-2` 一键生成视觉强烈的 PPT。**
+**用 OpenAI `gpt-image-2` 一键生成高审美、高完成度的 PPT。**
 
-Claude Code / Codex / OpenClaw Skill。装进 agent 后，用一句自然语言生成 16:9 高清图片 + 打包好的 `.pptx`，也可以仿任意 `.pptx` 模板出全新内容。
+Claude Code / Codex / OpenClaw / Hermes 等支持 Skills 的 agent 均可原生使用。装进 agent 后，用一句自然语言生成 16:9 高清图片 + 打包好的 `.pptx`，也可以仿任意 `.pptx` 模板出全新内容。
+
+**可能是目前全网效果最好的 AI PPT Skill 之一。** 它不走传统“模板填字”的路线，而是充分发挥 `gpt-image-2` 的审美、构图和排版能力，把每一页都当成完整视觉稿生成，力求让输出从封面到内页都足够精美、统一、可直接展示。
+
+同时，项目对图片型 PPT 的后续编辑做了专门优化：你可以用自然语言精准描述要改的页和元素，系统会以“图生图”的方式重生成目标页，并尽量保留原有风格和布局。需要说明的是，这类 PPT 的背景和文字本质上是整页图片；如果你的工作流强依赖人工逐字、逐对象编辑原生 PPT 元素，它可能不是最合适的选择。
 
 [![GitHub stars](https://img.shields.io/github/stars/JuneYaooo/gpt-image2-ppt-skills?style=flat)](https://github.com/JuneYaooo/gpt-image2-ppt-skills/stargazers)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](./LICENSE)
@@ -41,7 +45,7 @@ Claude Code / Codex / OpenClaw Skill。装进 agent 后，用一句自然语言�
 
 - 🎨 **十套精选风格 + 扩展风格库** — 内置 Spatial Glass / Tech Blue / Editorial Mono / Dark Aurora / Riso / Wabi / Swiss Grid / Hand Sketch / Y2K Chrome / Vector Illustration，并持续补充优质风格
 - 🪄 **模板克隆模式** — 丢一个 `.pptx` 进去，AI 会参考原模板的版式、配色和插画语汇，像上面那张图一样换成新内容
-- 🎯 **自然语言改 PPT** — 直接说“改第 3 页副标题”“删掉页脚”“把三个数据换成新数字”，AI 会只重生成目标页
+- 🎯 **自然语言精准编辑** — 直接说“改第 3 页副标题”“删掉页脚”“把三个数据换成新数字”，AI 会通过图生图只重生成目标页，尽量保持原风格和版式不变
 - 🎮 **双产出** — 每页 PNG 高清原图 + 16:9 `.pptx` 直接用
 - ⚡ **默认 10 路并发出图** — 10 页 ~30 秒出完
 - 🧪 **先看一页再跑全量** — 默认建议先出封面给你确认，满意后再生成整套
@@ -124,7 +128,7 @@ Claude Code / Codex / OpenClaw Skill。装进 agent 后，用一句自然语言�
 
 ### 方式一：让 AI 自己装（推荐）
 
-把下面这段 prompt 丢给你的 AI 助手（Claude Code / OpenClaw / Codex / Cursor / Trae / Hermes Agent 都行），它会自动完成安装：
+把下面这段 prompt 丢给你的 AI 助手（Claude Code / OpenClaw / Codex / Cursor / Trae / Hermes Agent，或其他支持 Skills 的 agent 都行），它会自动完成安装：
 
 ```
 帮我安装 gpt-image2-ppt-skills：
@@ -215,7 +219,7 @@ Claude 会自己写 `slides_plan`、先出一页封面让你确认、再跑全�
 
 欢迎大家有问题一起交流讨论。
 
-<img src="docs/assets/wechat.png" width="300" alt="微信交流群">
+<img src="docs/assets/wechat.jpg" width="300" alt="微信交流群">
 
 ## ⭐ Star History
 

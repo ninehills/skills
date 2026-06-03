@@ -20,6 +20,7 @@ Use this template to compress repository context before running Waza `/check`. T
 - Protected files and directories.
 - Generated or bundled artifacts that must stay in sync with source changes.
 - Packaging source of truth: whether archives are built from `git ls-files`, explicit allowlists, generated manifests, or source directories.
+- Delivery surfaces: whether generated outputs are tracked, ignored, external release assets, registry uploads, appcasts, installer metadata, checksums, or site/download copy; how they are regenerated, inspected, staged, or uploaded.
 - CLI command surfaces: entrypoints, subcommands, flags, help/version behavior, exit codes, stdout/stderr contract, TTY and non-interactive paths, config/env precedence, and installed-runtime checks.
 - Runtime dependencies introduced by the diff: Python packages, CLIs, network services, package managers, or platform tools that are not already declared in CI/docs.
 - Domain-specific safety rules.
@@ -59,6 +60,7 @@ Use this template to compress repository context before running Waza `/check`. T
 
 - Do not modify `<protected path>` unless explicitly requested.
 - If `<artifact>` is generated from `<source>`, verify it was regenerated.
+- If `<artifact>` is ignored by git but required for release, verify the regeneration and force-stage, upload, or registry publish path named by the project.
 - If `<package script>` builds from tracked files or an allowlist, verify newly introduced helpers, references, templates, and scripts are included in `<archive>`.
 - If an installer fetches remote content, verify the default ref is pinned to a release tag or checksum-protected; floating `main` must be an explicit override.
 - If a helper introduces a non-stdlib package or external CLI, verify CI installs it or the helper fails with a clear setup path.
@@ -98,7 +100,7 @@ Fill this before claiming a change is release-ready. Use "n/a" only when the pro
 | Remote state | `origin/main` or release branch sync checked |
 | Version fields | Manifest, app config, changelog, appcast, and lockfile versions aligned |
 | Runtime dependencies | Newly introduced Python packages, CLIs, package managers, and network tools declared and available in CI |
-| Generated artifacts | Bundled/minified/archive outputs regenerated or proven not needed |
+| Generated artifacts | Tracked archives, ignored dist outputs, bundled/minified files, appcasts, installer metadata, checksums, and site/download copy regenerated or proven not needed |
 | Package/archive contents | Built package inspected for required files, newly introduced helpers/references, and missing extras |
 | Release assets | GitHub release, appcast, download archive, checksum, or installer assets verified |
 | Registry/appcast | npm/crates/Homebrew/appcast/App Store or equivalent state re-read after publish |

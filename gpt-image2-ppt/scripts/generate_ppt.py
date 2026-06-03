@@ -3254,7 +3254,7 @@ Environment variables:
         choices=["openai", "codex"],
         default=os.getenv("GPT_IMAGE_BACKEND", "openai"),
         help="图片生成后端：openai=直调 OpenAI API（需 OPENAI_API_KEY，默认）；"
-             "codex=走本地 codex CLI（复用 codex 登录，无需在本 skill 配 key，但更慢）",
+             "codex=启动本地 codex exec 子进程（非当前 Codex 原生 tool；更慢，仅作备用）",
     )
 
     # Edit / rollback / ingest commands

@@ -86,13 +86,32 @@ Use `marker` when layout matters (papers, tables). Use `pdftotext` for speed.
 
 ## Feishu / Lark Document
 
-Built-in script at `${CLAUDE_SKILL_DIR:-~/.agents/skills/read}/scripts/fetch_feishu.py`. Requires `requests` and Feishu app credentials:
+Resolve the built-in helper script directory once. This works from a single-skill install, the packaged dispatcher, or the source repo root:
+
+```bash
+READ_SCRIPT_DIR=""
+for candidate in \
+  "${CLAUDE_SKILL_DIR:+$CLAUDE_SKILL_DIR/scripts}" \
+  "${CLAUDE_SKILL_DIR:+$CLAUDE_SKILL_DIR/skills/read/scripts}" \
+  "./skills/read/scripts"; do
+  if [ -n "$candidate" ] && [ -f "$candidate/fetch_feishu.py" ]; then
+    READ_SCRIPT_DIR="$candidate"
+    break
+  fi
+done
+if [ -z "$READ_SCRIPT_DIR" ]; then
+  echo "read helper scripts not found; set CLAUDE_SKILL_DIR or run from the Waza repo root" >&2
+  exit 1
+fi
+```
+
+Requires `requests` and Feishu app credentials:
 
 ```bash
 pip install requests  # one-time setup
 export FEISHU_APP_ID=your_app_id
 export FEISHU_APP_SECRET=your_app_secret
-python3 "${CLAUDE_SKILL_DIR:-$HOME/.agents/skills/read}/scripts/fetch_feishu.py" "{url}"
+python3 "$READ_SCRIPT_DIR/fetch_feishu.py" "{url}"
 ```
 
 Supports: docx and wiki pages. Legacy `/docs/` pages are not supported by this script; convert them to docx first, or use a public-page fallback if the document is accessible without the API. App needs `docx:document:readonly` and `wiki:wiki:readonly` permissions.
@@ -106,5 +125,5 @@ If the proxy is blocked, use the built-in Playwright script as a last resort (re
 
 ```bash
 pip install playwright beautifulsoup4 lxml && playwright install chromium
-python3 "${CLAUDE_SKILL_DIR:-$HOME/.agents/skills/read}/scripts/fetch_weixin.py" "{url}"
+python3 "$READ_SCRIPT_DIR/fetch_weixin.py" "{url}"
 ```

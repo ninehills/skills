@@ -383,6 +383,16 @@ def normalize_text(value: object) -> str:
     return escape(str(value)) if value is not None else ""
 
 
+# Style 8 is AI-authored: the AI reads references/style-8-dark-luxury.md and hand-crafts
+# the SVG directly. It cannot be driven by this template generator.
+_AI_AUTHORED_STYLES: Dict[int, str] = {8: "Style 8 (Dark Luxury)"}
+_AI_AUTHORED_ALIASES: set = {"dark luxury", "dark-luxury"}
+_AI_AUTHORED_MSG = (
+    "{name} is an AI-authored style and cannot be used with generate-from-template.py. "
+    "Load references/style-8-dark-luxury.md for the full spec and hand-craft the SVG directly."
+)
+
+
 def parse_style(raw: object) -> Tuple[int, Dict[str, object]]:
     if raw is None:
         index = 1
@@ -393,8 +403,12 @@ def parse_style(raw: object) -> Tuple[int, Dict[str, object]]:
         if text.isdigit():
             index = int(text)
         else:
+            if text in _AI_AUTHORED_ALIASES:
+                raise ValueError(_AI_AUTHORED_MSG.format(name=_AI_AUTHORED_STYLES[8]))
             names = {profile["name"].lower(): key for key, profile in STYLE_PROFILES.items()}
             index = names.get(text, 1)
+    if index in _AI_AUTHORED_STYLES:
+        raise ValueError(_AI_AUTHORED_MSG.format(name=_AI_AUTHORED_STYLES[index]))
     if index not in STYLE_PROFILES:
         raise ValueError(f"Unsupported style: {raw}")
     return index, copy.deepcopy(STYLE_PROFILES[index])

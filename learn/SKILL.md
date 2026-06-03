@@ -81,9 +81,12 @@ When two sources contradict on a factual claim, note both positions and the evid
 
 When the input is a recent conversation, project review, scorecard, or diagnostic report, treat it as raw material:
 
+- Prefer already-distilled summaries, memory entries, and review outputs first; open raw transcripts only to verify a disputed detail or recover the exact source of a repeated pattern.
+- Build a candidate matrix before editing durable guidance: source/project, repeated failure, transferable rule, target layer, evidence count, and redaction risk. Promote only candidates with cross-source support or a repeated failure in the same project family.
 - Extract repeated workflow failures, invariants, and verifier surfaces.
 - Drop dated line numbers, current-score framing, private paths, one-machine setup, and repo-specific commands unless the output is explicitly for that same repo.
 - Map each durable lesson to its target layer: project docs, shared rules, skill references, or deterministic scripts.
+- Prefer references or existing skill sections for adaptive workflow guidance; use scripts only for deterministic checks that can fail reliably without project-specific context.
 - Keep evidence snippets only as notes for yourself; do not paste raw conversation history into the final artifact.
 
 ## Phase 3: Outline

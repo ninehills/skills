@@ -4,18 +4,18 @@
 
 ## 一分钟索引
 
-- **主入口 CLI**：`python3 scripts/generate_ppt.py --plan slides_plan.json --style styles/<id>.md`
+- **主入口 CLI（API 直连 / 非 Codex 原生出图路径）**：`python3 scripts/generate_ppt.py --plan slides_plan.json --style styles/<id>.md`
 - **内容源稿**：先写 `slides_plan.md`（人审阅），再 `python3 scripts/md_to_plan.py slides_plan.md -o slides_plan.json`；json 标为 derived，不手改
 - **十种内置风格**：见 `styles/` 目录 + `SKILL.md` 顶部表格
 - **模板克隆**：`--template-pptx path/to/xxx.pptx --template-strict`，vision 分析 + 缓存细节在 `SKILL.md` 的"模板克隆模式"一节；**如果你自己就是多模态 agent**(多模态 Claude / GPT / 原生 Codex 等)，可以直接 `Read` `template_renders/<stem>/page-*.png` 自己抽风格写 `template_profile.json`，用 `--template-profile` 传入，不用外挂 `VISION_*`
-- **冒烟策略**：先 `--slides 1` 出封面，确认后再跑全量
+- **冒烟策略**：API 直连 / 非 Codex 原生路径先 `--slides 1` 出封面；如果你自己就是带原生出图能力的 Codex，则直接用当前会话的 image_generation tool 生成第 1 页 PNG 做冒烟，不要经 `--backend codex`
 - **产物**：`<cwd>/outputs/<timestamp>/{images/, prompts.json, metadata.json, <title>.pptx}`
 
 ## 调用规范（对 agent 的硬约束）
 
-1. **先问三件事**：内容 / 观众、风格偏好（或是否带 .pptx 模板）、是否先 `--slides 1` 冒烟
+1. **先问三件事**：内容 / 观众、风格偏好（或是否带 .pptx 模板）、是否先单页冒烟
 2. **永远先 md 后 json**：用户改文案改 md，不手改 json
-3. **先冒烟再全量**：`--slides 1` 的封面效果用户认可后再跑余下页
+3. **先冒烟再全量**：API 直连用 `--slides 1`；Codex 原生出图用当前会话 image_generation tool 先生成封面 PNG
 4. **告知产物路径**：跑完把 `outputs/<timestamp>/` 和 `.pptx` 路径明确告诉用户
 
 ## 凭据 / backend
