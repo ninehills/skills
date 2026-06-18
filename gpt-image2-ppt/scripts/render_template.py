@@ -4,7 +4,7 @@
 Backends, in priority order (platform-dependent):
   macOS:   Keynote (AppleScript) > LibreOffice + pymupdf/pdf2image
   Windows: PowerPoint COM > LibreOffice + pymupdf/pdf2image
-  Linux:   LibreOffice + pymupdf/pdf2image
+  Linux:   executable LibreOffice + pymupdf/pdf2image
 
 Default output: <cwd>/template_renders/<pptx_stem>/page-NN.png
 Intermediate PDF (LibreOffice path only) goes to <out_dir>/_source.pdf
@@ -16,6 +16,7 @@ import argparse
 import hashlib
 import json
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -26,6 +27,7 @@ from typing import Optional
 
 DEFAULT_RENDERS_DIR_NAME = "template_renders"
 RENDER_MANIFEST = "_render_manifest.json"
+_LIBREOFFICE_PROBE_ERRORS: list[str] = []
 
 
 def _safe_stem(name: str) -> str:
@@ -138,10 +140,43 @@ def render_pptx_to_pngs(
     return out_dir
 
 
-def _find_libreoffice() -> Optional[str]:
-    cli = shutil.which("libreoffice") or shutil.which("soffice")
-    if cli:
-        return cli
+def _probe_executable(path: str, args: list[str], timeout: int = 8) -> tuple[bool, str]:
+    try:
+        result = subprocess.run(
+            [path, *args],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+    except FileNotFoundError:
+        return False, "file not found"
+    except PermissionError:
+        return False, "permission denied"
+    except subprocess.TimeoutExpired:
+        return False, f"timeout after {timeout}s"
+    except OSError as e:
+        return False, str(e)
+
+    output = (result.stdout or result.stderr or "").strip().splitlines()
+    detail = output[0] if output else f"exit code {result.returncode}"
+    return result.returncode == 0, detail
+
+
+def _libreoffice_candidates() -> list[str]:
+    seen: set[str] = set()
+    candidates: list[str] = []
+
+    for env_name in ("LIBREOFFICE", "SOFFICE", "LIBREOFFICE_PATH"):
+        value = os.environ.get(env_name)
+        if value:
+            candidates.append(value)
+
+    for name in ("libreoffice", "soffice"):
+        cli = shutil.which(name)
+        if cli:
+            candidates.append(cli)
+
     if sys.platform == "win32":
         for base in (
             os.environ.get("ProgramFiles", r"C:\Program Files"),
@@ -149,9 +184,82 @@ def _find_libreoffice() -> Optional[str]:
         ):
             for lo_dir in ("LibreOffice", "LibreOffice Fresh", "LibreOffice Still"):
                 candidate = os.path.join(base, lo_dir, "program", "soffice.exe")
-                if os.path.isfile(candidate):
-                    return candidate
+                candidates.append(candidate)
+
+    unique: list[str] = []
+    for candidate in candidates:
+        candidate = os.path.expanduser(candidate)
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        unique.append(candidate)
+    return unique
+
+
+def _find_libreoffice() -> Optional[str]:
+    global _LIBREOFFICE_PROBE_ERRORS
+    _LIBREOFFICE_PROBE_ERRORS = []
+
+    for candidate in _libreoffice_candidates():
+        if not os.path.isfile(candidate):
+            _LIBREOFFICE_PROBE_ERRORS.append(f"{candidate}: not a file")
+            continue
+        ok, detail = _probe_executable(candidate, ["--version"])
+        if ok:
+            return candidate
+        _LIBREOFFICE_PROBE_ERRORS.append(f"{candidate}: {detail}")
+
     return None
+
+
+def _runtime_label() -> str:
+    return f"{platform.system() or sys.platform} {platform.machine()} ({sys.platform})"
+
+
+def check_render_backend() -> tuple[bool, list[str]]:
+    """Return whether any local PPTX renderer is currently usable."""
+    messages: list[str] = [f"Runtime: {_runtime_label()}"]
+
+    if sys.platform == "win32":
+        app = None
+        try:
+            from win32com import client as _win32  # type: ignore
+            app = _win32.Dispatch("PowerPoint.Application")
+            messages.append("PowerPoint COM: OK")
+            return True, messages
+        except Exception as e:
+            messages.append(f"PowerPoint COM: unavailable ({e})")
+        finally:
+            if app is not None:
+                try:
+                    app.Quit()
+                except Exception:
+                    pass
+
+    if sys.platform == "darwin":
+        keynote_app = "/Applications/Keynote.app"
+        if os.path.isdir(keynote_app):
+            ok, detail = _probe_executable("/usr/bin/osascript", ["-e", 'tell application "Keynote" to version'])
+            if ok:
+                messages.append(f"Keynote: OK ({detail})")
+                return True, messages
+            messages.append(f"Keynote: found but AppleScript probe failed ({detail})")
+        else:
+            messages.append("Keynote: not found")
+
+    cli = _find_libreoffice()
+    if cli:
+        messages.append(f"LibreOffice: OK ({cli})")
+        return True, messages
+
+    messages.append("LibreOffice: unavailable")
+    if _LIBREOFFICE_PROBE_ERRORS:
+        messages.extend(f"  - {err}" for err in _LIBREOFFICE_PROBE_ERRORS)
+    messages.append(
+        "Fallback: manually export template slides as page-01.png, page-02.png, ... "
+        "and pass that directory with --template-images."
+    )
+    return False, messages
 
 
 def _try_powerpoint_render(pptx_path: Path, out_dir: Path) -> Optional[int]:
@@ -304,25 +412,43 @@ end tell
 def _convert_pptx_to_pdf(pptx_path: Path, out_pdf: Path) -> None:
     cli = _find_libreoffice()
     if cli:
-        subprocess.run(
-            [cli, "--headless", "--convert-to", "pdf",
-             "--outdir", str(out_pdf.parent), str(pptx_path)],
-            check=True, capture_output=True, text=True,
-        )
+        try:
+            subprocess.run(
+                [cli, "--headless", "--convert-to", "pdf",
+                 "--outdir", str(out_pdf.parent), str(pptx_path)],
+                check=True, capture_output=True, text=True,
+            )
+        except (PermissionError, OSError, subprocess.CalledProcessError) as e:
+            raise RuntimeError(_render_backend_error(f"LibreOffice 转 PDF 失败：{e}")) from e
         produced = out_pdf.parent / f"{pptx_path.stem}.pdf"
         if not produced.exists():
             raise RuntimeError(f"LibreOffice 未产出 PDF：{produced}")
         produced.replace(out_pdf)
         return
 
-    raise RuntimeError(
-        "没找到可用的 LibreOffice。请安装：\n"
-        "  Windows: winget install LibreOffice.LibreOffice\n"
-        "  macOS:   brew install --cask libreoffice\n"
-        "  Linux:   sudo apt-get install -y libreoffice\n"
-        "或者手动从 PowerPoint/Keynote 把每页导出 PNG，"
-        "命名 page-01.png 起按字典序对应页码。"
-    )
+    raise RuntimeError(_render_backend_error("没找到可用的 PPTX 渲染后端。"))
+
+
+def _render_backend_error(headline: str) -> str:
+    lines = [
+        headline,
+        f"当前运行环境：{_runtime_label()}",
+    ]
+    if _LIBREOFFICE_PROBE_ERRORS:
+        lines.append("LibreOffice 探测结果：")
+        lines.extend(f"  - {err}" for err in _LIBREOFFICE_PROBE_ERRORS)
+
+    lines.extend([
+        "可选处理方式：",
+        "  Windows: winget install LibreOffice.LibreOffice",
+        "  macOS:   brew install --cask libreoffice，或安装 Keynote",
+        "  Linux:   sudo apt-get install -y libreoffice",
+        "  鸿蒙 / Termux / 容器 / 特殊架构：不要假设 Linux aarch64 LibreOffice 二进制可运行；"
+        "请在桌面端把模板每页导出为 PNG，命名 page-01.png、page-02.png 后传 --template-images。",
+        "示例：python3 scripts/generate_ppt.py --plan slides_plan.json "
+        "--template-pptx template.pptx --template-images template_renders/template_manual --template-strict",
+    ])
+    return "\n".join(lines)
 
 
 def _rasterize_pdf(pdf_path: Path, out_dir: Path, dpi: int = 144) -> int:
@@ -364,11 +490,18 @@ def _rasterize_pdf(pdf_path: Path, out_dir: Path, dpi: int = 144) -> int:
 
 def _cli() -> None:
     p = argparse.ArgumentParser(description="Render .pptx -> per-page PNGs")
-    p.add_argument("pptx", help="path to .pptx file")
+    p.add_argument("pptx", nargs="?", help="path to .pptx file")
     p.add_argument("-o", "--out", help="output directory (default: <cwd>/template_renders/<stem>/)")
     p.add_argument("--dpi", type=int, default=144, help="PNG dpi (default: 144)")
     p.add_argument("--force", action="store_true", help="re-render even if PNGs exist")
+    p.add_argument("--check", action="store_true", help="check whether a local PPTX renderer is usable")
     args = p.parse_args()
+    if args.check:
+        ok, messages = check_render_backend()
+        print("\n".join(messages))
+        raise SystemExit(0 if ok else 1)
+    if not args.pptx:
+        p.error("the following arguments are required: pptx")
     out_dir = render_pptx_to_pngs(
         args.pptx, Path(args.out) if args.out else None,
         dpi=args.dpi, force=args.force,

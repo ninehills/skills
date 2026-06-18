@@ -179,7 +179,7 @@ def parse_codex_config(
         if "=" not in line:
             continue
         key, value = [part.strip() for part in line.split("=", 1)]
-        if section == "features" and value.lower() == "true":
+        if section == "features" and value.split("#", 1)[0].strip().strip('"').lower() == "true":
             features.append(key)
         elif section.startswith('projects."') and key == "trust_level":
             project = section[len('projects."'): -1]

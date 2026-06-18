@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "c83ffb62-48b0-486b-a113-5525a1f603b0",
+  "path": "check",
+  "path_key": "check",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/tw93/Waza",
+    "subpath": "skills/check",
+    "branch": null
+  }
+}

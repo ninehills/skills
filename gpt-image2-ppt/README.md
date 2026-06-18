@@ -171,7 +171,7 @@ GPT_IMAGE_QUALITY=high                    # low / medium / high / auto
 >
 > 🔒 **不会误吃密钥**：脚本只读取当前进程环境、平台注入变量、显式 `GPT_IMAGE2_PPT_ENV` 和 skill 安装目录 `.env` fallback，**不会**向上递归读调用者项目目录的 `.env`。
 >
-> 🪄 模板克隆模式额外需要本机 `libreoffice`（用来把 `.pptx` 渲染成 PNG）。
+> 🪄 模板克隆模式额外需要本机可执行的 PPTX 渲染后端（Windows PowerPoint / macOS Keynote / LibreOffice）。先用 `python3 scripts/render_template.py --check` 检查；鸿蒙 / Termux / 容器 / 特殊架构不要假设 Linux aarch64 LibreOffice 二进制可运行。
 
 ### 模板克隆的 Vision 分析（可选）
 

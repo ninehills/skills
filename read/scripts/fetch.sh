@@ -35,12 +35,15 @@ PROXY="${2:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+LOCAL_ERR="$(mktemp)"
+trap 'rm -f "$LOCAL_ERR"' EXIT
+
 # shellcheck disable=SC2329,SC2317  # called indirectly via _with_retry / _try_once
 _curl() {
   if [ -n "$PROXY" ]; then
-    https_proxy="$PROXY" http_proxy="$PROXY" curl -sfL "$@"
+    https_proxy="$PROXY" http_proxy="$PROXY" curl -sfL --connect-timeout 10 --max-time 30 "$@"
   else
-    curl -sfL "$@"
+    curl -sfL --connect-timeout 10 --max-time 30 "$@"
   fi
 }
 
@@ -70,14 +73,12 @@ _with_retry() {
 }
 
 # Tier 1: local extractor. Always tried first.
-if OUT=$(python3 "$SCRIPT_DIR/fetch_local.py" "$URL" 2>/tmp/fetch-local.err); then
-  cat /tmp/fetch-local.err >&2 2>/dev/null || true
+if OUT=$(python3 "$SCRIPT_DIR/fetch_local.py" "$URL" 2>"$LOCAL_ERR"); then
+  cat "$LOCAL_ERR" >&2 2>/dev/null || true
   echo "$OUT"
-  rm -f /tmp/fetch-local.err
   exit 0
 fi
-cat /tmp/fetch-local.err >&2 2>/dev/null || true
-rm -f /tmp/fetch-local.err
+cat "$LOCAL_ERR" >&2 2>/dev/null || true
 
 # Without --use-proxy, stop here. URL never leaves the machine.
 if [ "$USE_PROXY" -eq 0 ]; then

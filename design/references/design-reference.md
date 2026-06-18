@@ -123,6 +123,13 @@ When extending an existing interface, first spend time understanding its visual 
 
 If swapping in different content would make the new component look out of place, the vocabulary was not matched closely enough.
 
+### Responsive & Screen Verification
+- Verify the rendered surface, not a type check or CSS-balance read. Several regressions (early wraps, orphaned separator dots, table overflow) are invisible in source and only show in the render. Screenshot at phone (375px, plus 320px for buttons) and desktop (1280px), in every shipped locale.
+- Line widows: eliminate 1-2 word last lines by trimming the copy so the block rebalances, not by adding a `max-width` cap (a cap narrower than its container wraps early and leaves empty space on the right, which reads as a premature break). Detect objectively: flag any text block whose last line is under ~13% of its widest line; eyeballing misses them, and nested `<code>` hides them from greps.
+- Mobile CTA resting state: natural width, left-aligned to the surrounding text edge, height unchanged. Centering reads as floating; full-width `flex: 1` reads heavy; dropping button height to relieve a "too full" feel treats a width problem as a height one.
+- Spacing is a system, not a per-gap value. Run section spacing as one responsive ladder; when a page reads too airy or too tight, scale the whole set by a single factor across all breakpoints rather than tuning one gap. Asymmetry that survives tuning is structural.
+- Long-form and documentation surfaces stay light: a borderless prev/next text pager (not bordered cards), a sidebar active state as a thin rail rather than a filled block, and build-time zero-runtime-JS code highlighting (bake static spans, plain code stays the source) over a shipped highlighter.
+
 ## Data Visualization Surfaces
 
 For dashboards, analytics views, chart-heavy interfaces, or number-dense displays, load `references/design-data-viz.md`. It owns dashboard defaults, chart selection, number alignment, and product-benchmark extraction.
@@ -139,6 +146,16 @@ Reject: Inter, DM Sans, DM Serif Display, DM Serif Text, Outfit, Plus Jakarta Sa
 2. Name the three fonts you would reach for reflexively.
 3. Reject all three.
 4. Pick a typeface from a named foundry (Klim, Commercial Type, Colophon, Grilli Type, OH no Type, Village, etc.) or an open-source option with a clear personality that matches the brand words. Be able to explain why that specific typeface in one sentence.
+
+## CJK & Multilingual Type
+
+When the interface mixes Chinese, Japanese, or Korean with Latin, Latin-only type rules silently break the CJK text. Apply these before handoff:
+
+- **Latin face first, system CJK face after** in the stack, so each script renders with correct glyphs: `font-family: -apple-system, "SF Pro Text", "PingFang SC", "Noto Sans SC", sans-serif;`. Latin runs use the Latin face; Han characters fall through to the CJK face.
+- **Give CJK body text more line-height than Latin**: roughly 1.7–1.8 for reading. Dense Hanzi needs more vertical room than the 1.4–1.5 that suits Latin body copy.
+- **Tag runs with `lang="zh"` / `lang="ja"` / `lang="en"`** so the browser picks the right font and line-breaking. Mixed-language paragraphs break badly without it.
+- **Serif reading modes need an explicit CJK serif fallback.** Most Latin "reading serif" webfonts carry no CJK glyphs, so a serif toggle silently drops Chinese back to a sans and looks broken. Pair them: `"Newsreader", "Songti SC", "Noto Serif SC", serif`.
+- **Do not apply negative letter-spacing to CJK runs.** The display-type tracking rule above is Latin-only; tightening tracking on Hanzi cramps the glyphs and reads as a rendering bug. Scope tracking to `lang="en"` runs.
 
 ## Color System: OKLCH Rules
 

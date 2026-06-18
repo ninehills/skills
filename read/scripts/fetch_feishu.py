@@ -31,6 +31,7 @@ except ImportError:
     sys.exit(1)
 
 API = "https://open.feishu.cn/open-apis"
+TIMEOUT = 20
 
 
 def yaml_string(value):
@@ -43,7 +44,8 @@ def get_token():
     if not app_id or not app_secret:
         return None, "FEISHU_APP_ID or FEISHU_APP_SECRET not set"
     resp = requests.post(f"{API}/auth/v3/tenant_access_token/internal",
-                         json={"app_id": app_id, "app_secret": app_secret})
+                         json={"app_id": app_id, "app_secret": app_secret},
+                         timeout=TIMEOUT)
     d = resp.json()
     if d.get("code") != 0:
         return None, f"Auth failed: {d.get('msg', resp.text)}"
@@ -69,7 +71,8 @@ def parse_url(url):
 def resolve_wiki(token, wiki_token):
     resp = requests.get(f"{API}/wiki/v2/spaces/get_node",
                         headers={"Authorization": f"Bearer {token}"},
-                        params={"token": wiki_token})
+                        params={"token": wiki_token},
+                        timeout=TIMEOUT)
     d = resp.json()
     if d.get("code") == 0:
         node = d["data"]["node"]
@@ -85,7 +88,8 @@ def get_blocks(token, doc_id):
             params["page_token"] = page_token
         resp = requests.get(f"{API}/docx/v1/documents/{doc_id}/blocks",
                             headers={"Authorization": f"Bearer {token}"},
-                            params=params)
+                            params=params,
+                            timeout=TIMEOUT)
         d = resp.json()
         if d.get("code") != 0:
             return None, f"Blocks fetch failed: {d.get('msg', resp.text)}"
@@ -141,7 +145,7 @@ def blocks_to_md(blocks):
             key = f"heading{level}"
             data = block.get(key) or block.get("heading", {})
             text = extract_text(data.get("elements", []))
-            lines.append(f"{'#' * level} {text}")
+            lines.append(f"{'#' * min(level, 6)} {text}")
         elif bt == 10:
             text = extract_text(block.get("bullet", {}).get("elements", []))
             lines.append(f"- {text}")
@@ -203,8 +207,9 @@ def fetch_feishu(url):
         doc_id, doc_type = real_id, real_type or "docx"
 
     info_resp = requests.get(f"{API}/docx/v1/documents/{doc_id}",
-                             headers={"Authorization": f"Bearer {token}"})
-    doc_info = info_resp.json().get("data", {}).get("document", {})
+                             headers={"Authorization": f"Bearer {token}"},
+                             timeout=TIMEOUT)
+    doc_info = (info_resp.json().get("data") or {}).get("document") or {}
     title = doc_info.get("title", "")
 
     blocks, err = get_blocks(token, doc_id)

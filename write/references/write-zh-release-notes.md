@@ -20,6 +20,8 @@
 
 **长度参考**：和上一个版本 release 的条目数、句子长度、密度匹配。不要自创新格式。
 
+**边界**：GitHub Release 正文和社交公告是两份 artifact。Release notes 解释用户会感受到什么，默认不写 CI、tap、registry、API 名称、fallback 路径等机制细节；公告另按社交发文规则挑 2 到 4 个亮点。
+
 ## 对外发文专项检查
 
 公开发文交出去之前，扫三件事：

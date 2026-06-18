@@ -66,6 +66,12 @@ VERIFICATION_WORD_RE = re.compile(
 )
 
 
+# The file-walk helpers below are deliberately duplicated in
+# skills/check/scripts/audit_signals.py. Both scripts ship standalone
+# (see packaging.allowlist) and run inside an arbitrary target project, so
+# they import only stdlib. Do not hoist them into a shared scripts/
+# module: it is dev-only, not on the ship allowlist, and would couple a
+# standalone tool to the install layout.
 def rel(path: Path, root: Path) -> str:
     try:
         return path.resolve().relative_to(root).as_posix()

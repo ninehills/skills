@@ -8,7 +8,7 @@
 #   python3 not on PATH     -> MCP/hooks/allowedTools sections print "(unavailable)"; do not flag those areas
 #   settings.local.json absent -> hooks, MCP, allowedTools all show "(unavailable)"; normal for global-settings-only projects
 #   MEMORY.md path          -> built via sed on pwd; unusual chars produce wrong project key; verify manually if (none) seems wrong
-#   Conversation scope      -> only 2 most recent .jsonl files sampled; fewer than 2 = [LOW CONFIDENCE]
+#   Conversation scope      -> 2 most recent PREVIOUS .jsonl sampled (live session skipped); fewer than 2 = [LOW CONFIDENCE]
 #   MCP token estimate      -> assumes ~25 tools/server, ~200 tokens/tool; treat as directional, not precise
 #   Tier misclassification  -> .next/, __pycache__, .turbo/ can inflate file count; recheck manually if tier feels wrong
 set -euo pipefail
@@ -293,9 +293,10 @@ sample_jsonl_prefix() {
   ' "$file"
 }
 
-extract_messages_from_file() {
-  local file="$1"
-  sample_jsonl_prefix "$file" | jq -r '
+# Shared jq filter: collapse one transcript record to a single trimmed text
+# line, dropping meta and tool-result noise. Defined once and prepended to both
+# extract_* programs below so the flattening logic lives in exactly one place.
+JQ_FLATTEN='
     def flatten:
       if (.isMeta // false) or (.toolUseResult? != null) then
         empty
@@ -311,6 +312,11 @@ extract_messages_from_file() {
         | sub("^ "; "")
         | sub(" $"; "")
       end;
+'
+
+extract_messages_from_file() {
+  local file="$1"
+  sample_jsonl_prefix "$file" | jq -r "$JQ_FLATTEN"'
     (.type // .role // "") as $kind
     | (flatten) as $text
     | if ($text | length) == 0 then
@@ -329,22 +335,7 @@ extract_messages_from_file() {
 
 extract_signals_from_file() {
   local file="$1"
-  sample_jsonl_prefix "$file" | jq -r '
-    def flatten:
-      if (.isMeta // false) or (.toolUseResult? != null) then
-        empty
-      else
-        (.message.content // .content // .text // "")
-        | if type == "array" then
-            [ .[] | if type == "object" and .type == "text" then .text elif type == "string" then . else empty end ] | join(" ")
-          elif type == "string" then .
-          else empty
-          end
-        | gsub("[\\r\\n]+"; " ")
-        | gsub("  +"; " ")
-        | sub("^ "; "")
-        | sub(" $"; "")
-      end;
+  sample_jsonl_prefix "$file" | jq -r "$JQ_FLATTEN"'
     def is_correction:
       test("(?i)(\\bdon'\''t\\b|\\bdo not\\b|\\bplease don'\''t\\b|\\binstead\\b|\\bnext time\\b|\\bremember\\b|\\buse\\b.*\\binstead\\b|\\bnot\\b.*\\bbut\\b)")
       or test("(不要再|请不要|不要|别再|下次|记得|改成|改为|而不是|别用|去掉|统一成)");

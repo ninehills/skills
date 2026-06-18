@@ -162,7 +162,7 @@ GPT_IMAGE_QUALITY=high                    # low / medium / high / auto
 >
 > 🔒 **Won't accidentally eat your secrets**: the script only reads the current process env, platform-injected variables, an explicit `GPT_IMAGE2_PPT_ENV`, and the skill install directory `.env` fallback. It does **not** walk up into caller project directories.
 >
-> 🪄 Template-clone mode additionally needs native `libreoffice` (to render `.pptx` → PNG).
+> 🪄 Template-clone mode additionally needs an executable PPTX renderer: Windows PowerPoint, macOS Keynote, or LibreOffice. Run `python3 scripts/render_template.py --check` first; HarmonyOS / Termux / containers / unusual architectures should not assume Linux aarch64 LibreOffice binaries are runnable.
 
 ### Vision analysis for template clone (optional)
 

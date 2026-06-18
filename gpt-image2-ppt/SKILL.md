@@ -72,11 +72,14 @@ skill 自带 `render_template.py`，把 .pptx 自动渲染成每页 PNG，存到
 
 检查方式：
 
-- macOS：优先检查 `/Applications/Keynote.app`，否则检查 `which libreoffice || which soffice`
-- Windows：优先检查本机 PowerPoint；否则 `where libreoffice 2>nul & where soffice 2>nul`
-- Linux：`which libreoffice || which soffice`
+- 首选：在 skill 目录运行 `python3 scripts/render_template.py --check`。它会验证后端是否真的可执行，而不是只看路径是否存在。
+- macOS：优先检查 `/Applications/Keynote.app` 且 AppleScript 可执行；否则检查 `libreoffice --version || soffice --version`
+- Windows：优先检查本机 PowerPoint COM 可启动；否则检查 `libreoffice --version` / `soffice --version`
+- Linux / 兼容层：检查 `libreoffice --version || soffice --version`，不要只用 `which`
 
-如果都没有可用后端，先告知用户模板渲染需要安装 LibreOffice，或让用户手动把模板每页导出为 `page-01.png`、`page-02.png` 后通过 `--template-images` 传入。可选安装命令：
+注意：鸿蒙 / Termux / 容器 / 特殊架构环境可能看起来像 Linux，但不能假设 Linux aarch64 的 LibreOffice 二进制可运行；必须以 `render_template.py --check` 或 `soffice --version` 的实际执行结果为准。不要把 `aspose-slides` 当默认兜底，它在很多移动/特殊 Python 环境没有可安装 wheel。
+
+如果都没有可用后端，先告知用户模板渲染需要安装可执行的 LibreOffice，或让用户在桌面端手动把模板每页导出为 `page-01.png`、`page-02.png` 后通过 `--template-images` 传入。可选安装命令：
 
 | 平台 | 安装命令 |
 | --- | --- |
@@ -93,7 +96,7 @@ skill 自带 `render_template.py`，把 .pptx 自动渲染成每页 PNG，存到
 `render_template.py` 的渲染后端按优先级自动挑：
 1. **Windows**：PowerPoint COM（本机有 Office 时优先，直出 PNG，跳过 PDF 步骤）> LibreOffice
 2. **macOS**：Keynote AppleScript（本机有 Keynote 时优先，直出 PNG）> LibreOffice
-3. **Linux**：LibreOffice / soffice 命令
+3. **Linux / 兼容层**：通过 `--version` 探测确认可运行的 LibreOffice / soffice 命令
 4. PDF -> PNG 走 `pymupdf`（已在 requirements）；没装就用 `pdf2image` + poppler
 
 跑 `generate_ppt.py --template-pptx ...` 时如果省略 `--template-images` 会自动调一次渲染；也可以手动先跑一次：
@@ -107,7 +110,7 @@ python3 scripts/render_template.py company-template.pptx
 
 | 资料 | 路径 | 用途 |
 | --- | --- | --- |
-| 模板每页 PNG | `<cwd>/template_renders/<stem>/page-NN.png` | LibreOffice 一次渲染长期复用 |
+| 模板每页 PNG | `<cwd>/template_renders/<stem>/page-NN.png` | 本机渲染后端一次渲染长期复用 |
 | 模板风格分析 | `<cwd>/template_cache/<sha256>.json` 或手写 `template_profile.json` | 多模态 agent 自己看图生成；纯文本 agent 才需要外挂 vision |
 | 生成产物 | `<cwd>/outputs/<timestamp>/` | 每次新跑都新目录 |
 

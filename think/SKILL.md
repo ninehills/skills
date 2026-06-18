@@ -9,6 +9,8 @@ dispatch_intent: "New feature, architecture, how should I design this, value jud
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
+**Update check (non-blocking).** Before starting, run `bash ../../scripts/check-update.sh` once; if it prints a line, relay it to the user, then continue. It runs at most once a day, only reads a public version file, sends no data, and fails silently.
+
 Turn a rough idea into an approved plan. No code, no scaffolding, no pseudo-code until the user approves.
 
 Give opinions directly. Take a position and state what evidence would change it. Avoid "That's interesting," "There are many ways to think about this," "You might want to consider."
@@ -19,6 +21,14 @@ Give opinions directly. Take a position and state what evidence would change it.
 - Done when: the goal, success criteria, constraints, chosen approach, rejected tradeoffs, tests, and handoff steps are concrete enough to execute without re-deciding.
 - Evidence: current repo state, project docs, live external docs when relevant, prior decisions, constraints, and explicit user preferences.
 - Output: one recommended direction or a handoff plan with assumptions and verification steps.
+
+## Durable Context Preflight
+
+See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping (planning constraints, reusable patterns, facts that need re-verification against current state).
+
+For `/think`, planning constraints are `decision`, `preference`, and `principle` entries; current repo state, live docs, logs, tests, and remote state override memory. Lock durable decisions and preferences before asking questions. Do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
+
+Before outputting any plan, scan the project's `AGENTS.md`, `CLAUDE.md`, `.claude/rules/*.md`, and any local agent-memory summary if the user pointed at one. If the proposed plan contradicts a "hard rule", "never X", "must Y", or "prefer Z" stated in those files, surface the contradiction in the plan output (one sentence: which rule, which step contradicts it, recommended resolution). Do not silently override the rule. If the rule blocks the plan, stop and ask before continuing.
 
 ## Lightweight Mode
 
@@ -50,6 +60,22 @@ Do not use a build-plan template here. Do not list options. Give one verdict.
 
 Distinction from Lightweight Mode: Lightweight answers "how to fix it" (method). Evaluation answers "should it exist" (value judgment).
 
+## Triage Mode
+
+Activate when the user forwards a bundle of asks: an issue with multiple requests, a batch of screenshots, a user saying "看看这几个需求", or any input containing 3+ distinct items that could each be accepted or rejected independently.
+
+Do not treat the bundle as a to-do list. Classify each item first:
+
+| Bucket | Meaning | Action |
+|--------|---------|--------|
+| **Bug** | Broken behavior with evidence | Fix |
+| **Already works** | The feature exists but the reporter missed it | Point to the existing affordance |
+| **Accepted improvement** | Genuine gap, low-risk, aligns with product direction | Implement |
+| **Cosmetic / preference** | Subjective, no functional impact | Note it, do not implement unless the maintainer agrees |
+| **Out of scope** | Conflicts with product boundary or adds unjustified complexity | Decline with one sentence |
+
+Output the classification table first. Wait for the user to confirm the accepted subset before implementing anything. "Already works" misidentified as missing is the most common waste; grep for the existing affordance before classifying an item as a gap.
+
 **Negative-user feedback is not automatic scope.** When a user evaluation is triggered by a refund customer, a churn report, or a "competitor X is more intuitive" comparison, do not convert the complaint into a rework plan by default. First check whether the current behavior is intentional product differentiation, not an oversight: read the project's own AGENTS.md / CLAUDE.md / product notes for phrases like "review-first", "verifiability over speed", "evidence-driven", "explicit confirmation". If the behavior the user criticized is named there as a deliberate choice, the verdict is **Keep**, with one sentence on why the differentiation matters, and a note that the maintainer can override. Do not write a "fix the friction" plan that quietly removes the differentiator. The signal-to-respect ratio for refund / competitor-comparison feedback on a deliberately-designed surface is low.
 
 ## Before Reading Any Code
@@ -58,17 +84,11 @@ Distinction from Lightweight Mode: Lightweight answers "how to fix it" (method).
 - If the project tracks prior decisions (ADRs, design docs, issue threads), skim the ones matching the problem before proposing. Skip if none exist.
 - If the plan involves a default value, env var, or config field, open the project's actual config file (e.g. `app.config.json`, `tauri.conf.json`, `package.json`, `.env`) and lift the live value. Never quote a default from memory or docs.
 
-## Durable Context Preflight
-
-See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping (planning constraints, reusable patterns, facts that need re-verification against current state).
-
-For `/think`, planning constraints are `decision`, `preference`, and `principle` entries; current repo state, live docs, logs, tests, and remote state override memory. Lock durable decisions and preferences before asking questions. Do not ask the user to restate an intent that the durable context already establishes unless it is risky, stale, or contradicted by current state.
-
-Before outputting any plan, scan the project's `AGENTS.md`, `CLAUDE.md`, `.claude/rules/*.md`, and any local agent-memory summary if the user pointed at one. If the proposed plan contradicts a "hard rule", "never X", "must Y", or "prefer Z" stated in those files, surface the contradiction in the plan output (one sentence: which rule, which step contradicts it, recommended resolution). Do not silently override the rule. If the rule blocks the plan, stop and ask before continuing.
-
 ## Check for Official Solutions First
 
 Before proposing custom implementations, search for framework built-ins, official patterns, and ecosystem standards. Use Context7 MCP tools to query latest docs when available. If an official solution exists, it is the default recommendation unless you can articulate why it is insufficient for this specific case.
+
+For a hard problem, or one you have already tuned several times and it still feels off, study how mature open-source projects or direct competitors solve the same thing before designing. Fetch their approach, read the actual implementation, and extract the transferable mechanism. Designing from first principles when a proven implementation exists discards the iterations someone else already paid for. Name which projects you studied and what you took from each.
 
 ## Propose Approaches
 

@@ -9,6 +9,8 @@ dispatch_intent: "Error, crash, regression, screenshot-reported defect, test fai
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
+**Update check (non-blocking).** Before starting, run `bash ../../scripts/check-update.sh` once; if it prints a line, relay it to the user, then continue. It runs at most once a day, only reads a public version file, sends no data, and fails silently.
+
 A patch applied to a symptom creates a new bug somewhere else.
 
 ## Outcome Contract
@@ -46,7 +48,7 @@ For `/hunt`, diagnostic constraints are `decision`, `preference`, and `principle
 - **System/tooling symptoms need a lower-layer baseline.** Before blaming the visible app, generated file, or top-level feature, measure the raw lower layer first: OS capture versus post-processing, runtime service versus UI, compiler/toolchain versus test assertion, network/API versus client handling. Retire hypotheses that the baseline disproves instead of circling them.
 - **Pay attention to deflection.** When someone says "that part doesn't matter," treat it as a signal. The area someone avoids examining is often where the problem lives.
 - **Visual/rendering bugs: static analysis first.** Trace paint layers, stacking contexts, and layer order in DevTools before adding console.log or visual debug overlays. Logs cannot capture what the compositor does. Only add instrumentation after static analysis fails.
-- **Behavioral / lifecycle bugs: log-debug first after one failed fix.** Window lifecycle, event delivery, navigation, focus, timer, and async-state bugs do *not* yield to static reading alone. After static analysis plus one failed hypothesis, stop guessing and add a runtime probe (Swift `#if DEBUG NSLog("[App.stage] state=...")`, JS `console.log`, Rust `eprintln!` / `tracing::debug!`) at the suspect boundary. Read its output before changing code again. "Looks reasonable but unverified" twice in a row is the hard-stop signal. Distinguish from the visual-rendering rule above: a compositor bug needs DevTools; a "the function was never called" / "the object was already destroyed" bug needs a log.
+- **Behavioral / lifecycle / async bugs: instrument first, not after failure.** Window lifecycle, event delivery, navigation, focus, timer, state-machine, and async-ordering bugs almost never yield to static reading alone. Do not wait for a failed fix to add logs. The moment your hypothesis involves "this callback fires before/after that one", "this state should be X when Y runs", or "this object should still be alive here", **add the log immediately as part of forming the hypothesis**, before writing any fix. A hypothesis without runtime evidence is a guess; two guesses in a row is the hard-stop signal. Distinguish from visual-rendering bugs (compositor behavior needs DevTools, not logs) and pure-logic bugs (wrong formula, off-by-one) where static analysis is sufficient.
 - **Tuning magic numbers past round three: stop, unify.** When a spacing / sizing / threshold value has been adjusted three times and still looks wrong, the bug is structural, not numeric. Replace the N independent values with one named token (`Spacing.s4`, `--gap-content`, etc.) and verify the asymmetry was hiding a missing constraint. Asymmetry that survives tuning is structural; more tuning will not converge.
 - **Fix the cause, not the symptom.** If the fix touches more than 5 files, pause and confirm scope with the user.
 
@@ -60,6 +62,7 @@ Activate when: "以前是好的", "之前是好的", "used to work", "上一次�
 
 0. Protect the user's worktree first: run `git status --short --branch -uall`. If modified, staged, or untracked files exist, do not bisect in the current checkout. Create a temporary detached worktree from the same HEAD, run bisect there, then `git bisect reset` and remove the temporary worktree when done. If a temporary worktree is impossible, stop and ask for explicit cleanup/stash approval.
 1. Find candidate good tag: `git tag --sort=-version:refname | head -10` or ask the user for the last known-good commit.
+1b. If the last-good version is only one or a few releases back, `git diff <last-good-tag>..HEAD -- <suspect path>` and read the delta directly first. The regression is usually visible in that diff, and reading it costs far less than driving a full bisect. Fall through to bisect only when the diff is too large or the culprit is not obvious.
 2. Define a non-interactive pass/fail test command before starting bisect. Bisect is worthless without a reproducible check.
 3. Run: `git bisect start && git bisect bad HEAD && git bisect good <tag-or-hash>`
 4. At each step bisect checks out a commit. Run the test command. Mark: `git bisect good` or `git bisect bad`.
@@ -102,7 +105,7 @@ If the blast surfaces unrelated bugs, list them but do not fix in this PR unless
 
 ## Confirm or Discard
 
-Add one targeted instrument: a log line, a failing assertion, or the smallest test that would fail if the hypothesis is correct. Run it. If the evidence contradicts the hypothesis, discard it completely and re-orient with what was just learned. Do not preserve a hypothesis the evidence disproves.
+The instrument-first rule lives in Hard Rules (behavioral/async bugs) above; this is what to do with its result. Run the one probe that would fail if the hypothesis were wrong, then read it. If the evidence contradicts the hypothesis, discard it completely and re-orient on what the probe just showed. Do not stack a fix onto a disproven hypothesis, and do not keep one just because the code "looks like" the cause.
 
 ## Runtime Evidence Ladder
 
@@ -117,6 +120,26 @@ Use this ladder before claiming a bug is fixed:
 Compile-only is not enough for UI, native-app, visual, rendering, or generated-artifact bugs. If the runtime check is impossible in the environment, say why and hand off the exact screen, command, or artifact to verify.
 
 For recurring classes of failures, load `references/failure-patterns.md` before adding a second fix.
+
+## Native App Freeze Mode
+
+Activate when a desktop or mobile native app reports beachball, not responding, tab-switch freeze, first-open lag, idle wake stall, overlay lockup, or a screenshot shows a frozen app.
+
+Evidence to collect before changing code:
+
+1. Exact user path and version: first launch versus warm launch, the tab or window transition, idle duration, permissions, display count, and any setting that makes the freeze disappear.
+2. Runtime capture while frozen: `sample <process>`, recent app logs, CPU and memory footprint, thread count, and whether the main thread is blocked, spinning, or allocating.
+3. First-frame surface: view body work, first `.task`, synchronous icon or metadata lookup, filesystem scans, URL parent walks, notification callbacks, and app/window wake handlers.
+4. Blast search after the fix: grep the same API shape across the repo, especially path parent walks, synchronous icon loading, metadata reads in render paths, and callbacks that run on the main thread.
+
+Common native freeze traps:
+
+- Launch, terminate, permission, audio, display, or workspace notifications doing path walks, icon lookup, filesystem scans, or process enumeration on the main thread.
+- First paint hydrating a full app list, directory tree, media thumbnail set, or system status table before showing an interactive shell.
+- An input-lock or full-screen overlay without a guaranteed teardown path for Escape, app deactivation, permission denial, process termination, and window close.
+- Timer or sampler work that survives hidden windows, long idle periods, sleep/wake, or app reactivation.
+
+Compile-only and source-only checks are insufficient for this mode. The outcome must include the runtime capture, the root-cause frame or state transition, the focused regression guard, and any sibling matches that were fixed or explicitly left safe.
 
 ## Targeted Logging
 

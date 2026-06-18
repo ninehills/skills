@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "5bb9a9d6-fd36-4167-b3ca-c34f995cffb3",
+  "path": "grill-me",
+  "path_key": "grill-me",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/mattpocock/skills/tree/main/skills/productivity",
+    "subpath": "skills/productivity/grill-me",
+    "branch": "main"
+  }
+}

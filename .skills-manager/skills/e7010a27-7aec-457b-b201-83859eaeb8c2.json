@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "e7010a27-7aec-457b-b201-83859eaeb8c2",
+  "path": "writing-great-skills",
+  "path_key": "writing-great-skills",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/mattpocock/skills/tree/main/skills/productivity",
+    "subpath": "skills/productivity/writing-great-skills",
+    "branch": "main"
+  }
+}

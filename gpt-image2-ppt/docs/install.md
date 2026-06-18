@@ -13,9 +13,9 @@
 ## 前置依赖（agent 请先检查）
 
 - **必需**：`git`、`python3`（3.8+）、`pip`
-- **可选**：`libreoffice` 本机命令（仅模板克隆模式需要，用来把 `.pptx` 渲染成 PNG）
+- **可选**：本机可执行的 PPTX 渲染后端（Windows PowerPoint / macOS Keynote / LibreOffice，仅模板克隆模式需要，用来把 `.pptx` 渲染成 PNG）
 
-如果缺 `git` / `python3`，先用系统包管理器装好；`libreoffice` 可以留到用户要用模板克隆模式时再装。
+如果缺 `git` / `python3`，先用系统包管理器装好；PPTX 渲染后端可以留到用户要用模板克隆模式时再装。鸿蒙 / Termux / 容器 / 特殊架构不要只看 `which libreoffice`，必须用 `python3 scripts/render_template.py --check` 确认二进制真的可运行。
 
 ## 安装步骤
 
@@ -99,7 +99,7 @@ rm -rf /tmp/gpt-image2-ppt-skills
 ## 常见问题（给 agent 参考）
 
 - **`ModuleNotFoundError: pymupdf`** → 在实际安装目录里重跑 `pip install -r requirements.txt`
-- **`libreoffice: command not found`**（仅模板克隆模式）→ Linux: `apt install libreoffice`；macOS: `brew install --cask libreoffice`；或让用户切换到内置 10 套风格之一，不走模板克隆
+- **`libreoffice: command not found` / `permission denied` / `Exec format error`**（仅模板克隆模式）→ 先跑 `python3 scripts/render_template.py --check`；Linux 桌面可装 `apt install libreoffice`，macOS 可装 Keynote 或 `brew install --cask libreoffice`；鸿蒙 / Termux / 容器 / 特殊架构建议在桌面端把模板每页导出为 `page-01.png`、`page-02.png` 后用 `--template-images`，不要依赖 `aspose-slides` 兜底
 - **`OPENAI_API_KEY 未设置`** → 如果你不是走 Codex 原生路径，回到步骤 3，检查 agent / 系统环境变量是否已注入；standalone CLI 再检查 `GPT_IMAGE2_PPT_ENV` 或 skill 安装目录 `.env`
 - **agent 识别不到 skill** → 确认目录装到了对应 agent 的技能目录，并且完全重启过当前 agent
 
