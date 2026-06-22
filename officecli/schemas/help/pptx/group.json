@@ -1,0 +1,72 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "group",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/slide[N]/group[M]"]
+  },
+  "note": "Groups existing shapes on a slide. 'shapes' takes comma-separated shape indices or DOM paths. Group bounding box auto-computed from member transforms. Shapes inside a group are addressable via /slide[N]/group[M]/shape[K] for direct Set/Get. zorder is emitted only when the group appears as a child in slide Query results, not via direct Get on /slide[N]/group[N]. This is a known C# Query/Get inconsistency.",
+  "properties": {
+    "shapes": {
+      "type": "string",
+      "description": "comma-separated shape indices (1,2,3) or paths (/slide[N]/shape[M] or /slide[N]/shape[@id=ID]). Required. NOTE: bare numeric indices count ALL top-level shapes in z-order — including existing groups, pictures, and charts — NOT the <p:sp>-only shape[N] address space. So on a slide whose tree is [group, shapeC, shapeD], `shapes=1,2` selects the group + shapeC (z-order positions 1,2). This is intentional (lets you group any element type, incl. nesting groups); use explicit @id= paths when you need an unambiguous target.",
+      "add": true, "set": false, "get": false,
+      "examples": ["--prop shapes=1,2"],
+      "readback": "n/a (structural)",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "group name. Defaults to 'Group N'.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop name=\"Logos\""],
+      "readback": "name string",
+      "enforcement": "report"
+    },
+    "zorder": {
+      "type": "number",
+      "description": "1-based z-order in slide shape tree. On add, positions the group within the shape tree (1 = back). Post-creation reordering is not supported via Set; use Move/Swap on the group, or raw-set the spTree child order.",
+      "aliases": ["z-order", "order"],
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop zorder=1"],
+      "readback": "1-based integer (1 = back)",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "description": "horizontal offset (group origin). Readback in cm via EmuConverter.",
+      "add": false, "set": false, "get": true,
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "description": "vertical offset.",
+      "add": false, "set": false, "get": true,
+      "readback": "length in cm",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "length",
+      "description": "group bounding box width.",
+      "add": false, "set": false, "get": true,
+      "readback": "length in cm",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "description": "group bounding box height.",
+      "add": false, "set": false, "get": true,
+      "readback": "length in cm",
+      "enforcement": "report"
+    }
+  }
+}

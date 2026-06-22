@@ -1,0 +1,52 @@
+{
+  "$schema": "../_schema.json",
+  "element": "paragraph",
+  "shared_base": true,
+  "properties": {
+    "indent": {
+      "type": "length",
+      "description": "left indentation. Routed through SpacingConverter — accepts twips int or unit-qualified (2cm/0.5in/24pt). Aliases: leftindent/leftIndent/indentleft.",
+      "aliases": [
+        "leftindent",
+        "leftIndent"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop indent=2cm"
+      ],
+      "readback": "length string (cm or twips, format-dependent)",
+      "enforcement": "report"
+    },
+    "lineSpacing": {
+      "type": "string",
+      "description": "multiplier (e.g. 1.5x, 150%) or fixed length (e.g. 18pt)",
+      "aliases": [
+        "linespacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineSpacing=1.5x",
+        "--prop lineSpacing=18pt"
+      ],
+      "readback": "\"<N>x\" for multiplier or \"<N>pt\" for fixed",
+      "enforcement": "strict"
+    },
+    "text": {
+      "type": "string",
+      "description": "Sets plain text on the paragraph by creating an implicit single run. Do not also add a 'run' child with text on the same paragraph — they will duplicate.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop text=\"Hello\"",
+        "--prop text=\"Hello world\""
+      ],
+      "readback": "plain text content of paragraph",
+      "enforcement": "strict"
+    }
+  }
+}

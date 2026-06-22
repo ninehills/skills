@@ -1,0 +1,318 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "picture",
+  "parent": "sheet",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/SheetName/picture[N]"
+    ]
+  },
+  "note": "Aliases: image, img. Anchor via ParseAnchorBoundsEmu — accepts cell counts or unit-qualified lengths. SVG sources get a PNG fallback.",
+  "extends": [
+    "_shared/picture",
+    "_shared/picture.docx-xlsx",
+    "_shared/picture.pptx-xlsx"
+  ],
+  "properties": {
+    "crop": {
+      "type": "string",
+      "description": "Crop in percent (0-100). 1 value = symmetric, 2 values = vertical,horizontal, 4 values = left,top,right,bottom. Excel reads but does not write crops — overrides shared base which marks add/set true (pptx-only writability).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop crop=10"
+      ],
+      "readback": "comma-separated percentages (left,top,right,bottom)",
+      "enforcement": "report"
+    },
+    "title": {
+      "type": "string",
+      "description": "OOXML @title attribute on cNvPr (distinct from alt).",
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop title=\"Logo\""
+      ],
+      "enforcement": "report"
+    },
+    "decorative": {
+      "type": "bool",
+      "description": "Mark the picture as decorative (a16:decorative ext under cNvPr). Excludes it from screen-reader alt-text traversal.",
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop decorative=true"
+      ],
+      "enforcement": "report"
+    },
+    "rotation": {
+      "type": "string",
+      "description": "Rotation in degrees (positive = clockwise). Stored OOXML-internal as 60000ths of a degree on Transform2D @rot.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop rotation=45"
+      ],
+      "enforcement": "report"
+    },
+    "flip": {
+      "type": "string",
+      "description": "Compact flip token: 'h' / 'v' / 'both' / 'hv' / 'vh' / 'horizontal' / 'vertical'.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop flip=h",
+        "--prop flip=both"
+      ],
+      "enforcement": "report"
+    },
+    "flipH": {
+      "type": "bool",
+      "description": "Flip horizontally (Office-API-style alias of flip=h).",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop flipH=true"
+      ],
+      "enforcement": "report"
+    },
+    "flipV": {
+      "type": "bool",
+      "description": "Flip vertically (Office-API-style alias of flip=v).",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop flipV=true"
+      ],
+      "enforcement": "report"
+    },
+    "flipBoth": {
+      "type": "bool",
+      "description": "Flip both axes (alias of flip=both).",
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop flipBoth=true"
+      ],
+      "enforcement": "report"
+    },
+    "opacity": {
+      "type": "string",
+      "description": "Picture opacity. Accepts percent (50, '50%') or fraction (0.5). 100 / 100% / 1.0 = fully opaque.",
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop opacity=50",
+        "--prop opacity=0.5"
+      ],
+      "enforcement": "report"
+    },
+    "hyperlink": {
+      "type": "string",
+      "description": "Picture-level hyperlink. External URL (https://...) or in-document jump (#SheetName!A1).",
+      "aliases": [
+        "link"
+      ],
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop hyperlink=https://example.com"
+      ],
+      "enforcement": "report"
+    },
+    "anchor": {
+      "type": "string",
+      "description": "Cell-range anchor (e.g. 'B2:E6') or anchorMode token ('oneCell'/'twoCell'/'absolute'). Cell-range form implies twoCell mode.",
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop anchor=B2:E6",
+        "--prop anchor=oneCell"
+      ],
+      "enforcement": "report"
+    },
+    "anchorMode": {
+      "type": "string",
+      "description": "Explicit anchor mode: 'oneCell' / 'twoCell' / 'absolute'. Overrides any anchor= mode token.",
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop anchorMode=oneCell"
+      ],
+      "enforcement": "report"
+    },
+    "shadow": {
+      "type": "string",
+      "description": "Outer shadow effect. 'none' to clear, or a color/spec accepted by DrawingEffectsHelper.",
+      "add": false,
+      "set": true,
+      "examples": [
+        "--prop shadow=#808080"
+      ],
+      "enforcement": "report"
+    },
+    "glow": {
+      "type": "string",
+      "description": "Glow effect color/spec. 'none' to clear.",
+      "add": false,
+      "set": true,
+      "examples": [
+        "--prop glow=#4472C4"
+      ],
+      "enforcement": "report"
+    },
+    "reflection": {
+      "type": "string",
+      "description": "Reflection effect. 'none' to clear.",
+      "add": false,
+      "set": true,
+      "examples": [
+        "--prop reflection=true"
+      ],
+      "enforcement": "report"
+    },
+    "softEdge": {
+      "type": "string",
+      "aliases": [
+        "softedge"
+      ],
+      "description": "Soft edge effect radius. 'none' to clear.",
+      "add": false,
+      "set": true,
+      "examples": [
+        "--prop softEdge=5"
+      ],
+      "enforcement": "report"
+    },
+    "crop.l": {
+      "type": "string",
+      "description": "Crop from left edge as a percentage (e.g. 10 = 10%, '10%' also accepted). Internally stored in 1/1000 percent units.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop crop.l=10",
+        "--prop crop.l=50%"
+      ],
+      "enforcement": "report"
+    },
+    "crop.r": {
+      "type": "string",
+      "description": "Crop from right edge as a percentage.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop crop.r=10"
+      ],
+      "enforcement": "report"
+    },
+    "crop.t": {
+      "type": "string",
+      "description": "Crop from top edge as a percentage.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop crop.t=10"
+      ],
+      "enforcement": "report"
+    },
+    "crop.b": {
+      "type": "string",
+      "description": "Crop from bottom edge as a percentage.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop crop.b=10"
+      ],
+      "enforcement": "report"
+    },
+    "srcRect": {
+      "type": "string",
+      "description": "Compound crop spec, e.g. 'l=10,r=10,t=5,b=5'. Equivalent to crop.l/crop.r/crop.t/crop.b.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop srcRect=l=10,r=10,t=5,b=5"
+      ],
+      "enforcement": "report"
+    },
+    "anchoredTo": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "anchor descriptor — sheet/cell-range path the picture is anchored to.",
+      "readback": "`/SheetName/A1[:Z9]` anchor path",
+      "enforcement": "report"
+    },
+    "mergeAnchor": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "true when the picture is anchored to a merged-cell region.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "description": "x as TwoCellAnchor column/row index (xlsx cell-anchor positioning, integer).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=0",
+        "--prop x=1in"
+      ],
+      "readback": "integer column/row index",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "description": "y as TwoCellAnchor column/row index (xlsx cell-anchor positioning, integer).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=0",
+        "--prop y=1in"
+      ],
+      "readback": "integer column/row index",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "integer",
+      "description": "width — TwoCellAnchor column/row span (xlsx cell-anchor positioning, integer)",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop width=5",
+        "--prop width=3in"
+      ],
+      "readback": "integer column/row span",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "integer",
+      "description": "height — TwoCellAnchor column/row span (xlsx cell-anchor positioning, integer)",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop height=5",
+        "--prop height=2in"
+      ],
+      "readback": "integer column/row span",
+      "enforcement": "report"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "alpha": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "series fill alpha readback in OOXML units (0..100000 = 0..100%). Distinct from chart-level `transparency` which is the percent input on Add/Set.",
+      "readback": "integer 0..100000 (OOXML alpha units)",
+      "enforcement": "report"
+    },
+    "outlineColor": {
+      "type": "color",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "per-series outline color readback.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    }
+  }
+}

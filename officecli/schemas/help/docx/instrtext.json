@@ -1,0 +1,29 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "instrText",
+  "parent": "paragraph",
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/body/p[@paraId=X]/r[N]", "/header[N]/p[M]/r[K]", "/footer[N]/p[M]/r[K]"]
+  },
+  "note": "Field-instruction text (w:instrText) — the body of a complex field that holds the instruction string (e.g. 'PAGE \\\\* MERGEFORMAT', 'DATE \\\\@ \"yyyy-MM-dd\"'). Atomic add is intentionally NOT supported because instrText outside a field is invalid; use --type field to insert a complete sequence. Set is supported so audit→fix workflows can rewrite a field's instruction (e.g. PAGE → DATE) without touching the surrounding fldChar markers.",
+  "properties": {
+    "instruction": {
+      "type": "string",
+      "description": "The Word field instruction. Leading/trailing spaces inside the value are significant — they form the OOXML separator between switches. Alias: instr.",
+      "aliases": ["instr"],
+      "add": false, "set": true, "get": true,
+      "required": true,
+      "examples": ["--prop 'instruction= PAGE \\\\* MERGEFORMAT '", "--prop 'instr= DATE \\\\@ \"yyyy-MM-dd\" '"],
+      "readback": "instrText element text content",
+      "enforcement": "report"
+    }
+  }
+}

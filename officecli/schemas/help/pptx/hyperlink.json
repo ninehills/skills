@@ -1,0 +1,50 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "hyperlink",
+  "parent": "shape",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/shape[M]/hyperlink",
+      "/slide[N]/shape[M]/p[K]/r[L]/hyperlink"
+    ]
+  },
+  "note": "Aliases: link. add attaches a shape-wide link only; inline run links are created via `set /slide[N]/shape[M]/p[K]/r[L] link=...`. Internal slide jumps use link=slide[N]; named actions use link=firstslide|lastslide|nextslide|previousslide|endshow.",
+  "extends": "_shared/hyperlink",
+  "properties": {
+    "link": {
+      "type": "string",
+      "description": "external URL or internal target. pptx Set/Get canonical key on shape/run is 'link'. Alias: url.",
+      "aliases": [
+        "url"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop link=https://example.com"
+      ],
+      "readback": "URL string or internal target",
+      "enforcement": "report"
+    },
+    "tooltip": {
+      "type": "string",
+      "description": "hover-text shown by PowerPoint when the link is moused over. Usually paired with 'link'; a tooltip-only set on a run that already has a link updates the existing tooltip.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop link=https://example.com --prop tooltip=\"Open docs\""
+      ],
+      "readback": "tooltip text",
+      "enforcement": "report"
+    }
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "revision",
+  "parent": "paragraph|run|table|row|cell|section",
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": false,
+    "note": "`set: true` covers the action verb (revision.action on a /revision selector or native path). `add: false` here means the *revision element itself* has no Add surface — tracked changes are created indirectly via `revision.type` / `revision.author` / `revision.date` / `revision.id` on the host run/paragraph/table/row/cell/section, where they read as `add: true` / `set: true`. Per-property add/set flags below describe behavior on the synthetic /revision node, not on the host."
+  },
+  "paths": {
+    "positional": ["/revision[N]", "/body/p[N]/ins[M]", "/body/p[N]/del[M]"],
+    "selector": ["/revision", "/revision[@id=N]", "/revision[@id=N][@type=moveFrom|moveTo]", "/revision[@author=NAME]", "/revision[@type=ins|del|format|moveFrom|moveTo]", "/revision[@author=NAME][@type=TYPE]"]
+  },
+  "note": "Tracked-change marker. `query revision` enumerates every w:ins / w:del / w:moveFrom / w:moveTo / w:*PrChange in the document. The synthetic Path is `/revision[@id=N]` when the marker carries a stable w:id (true for everything Word/WPS writes), falling back to positional `/revision[N]` only for markers without an id — same precedence as paragraphs (`p[@paraId=…]` → `p[N]`). When the same w:id is shared by more than one marker (canonical case: a moveFrom/moveTo pair binds via shared id), the Path is disambiguated as `/revision[@id=N][@type=moveFrom]` / `[@type=moveTo]` so single-end addressing stays unique. `set /revision[@id=N]` without the type segment still acts on both ends together (pair-wise accept/reject, the usual move-revision intent). Use the @id= form in scripts; positional indexes shift after accept/reject. Both `get /revision[@id=N]` and `set /revision[@id=N] --prop revision.action=…` accept the same path. Two disjoint property namespaces: `revision.type=ins|del|format|moveFrom|moveTo` creates a tracked change (used with add/set on the host run/paragraph/table/row/cell/section), while `revision.action=accept|reject` acts on existing markers via /revision selectors or native paths (/body/p[N], /body/p[N]/r[M], etc.). The two namespaces are mutually exclusive — mixing revision.action with any revision.type/.author/.date/.id key is rejected as ambiguous. Bare `revision=…` is no longer accepted. **Find + revision** (matches Word's Find&Replace with Track Changes on): `set <path> --prop find=PATTERN [--prop regex=true] --prop revision.author=NAME` infers the marker shape from the operation — `--prop replace=NEW` produces a w:del(old) + w:ins(new) pair, `--prop replace=` (empty) produces w:del only, format props (bold, font.color, …) produce one w:rPrChange per matched run, and paragraph-scope props (align, indent, …) produce one w:pPrChange per matched paragraph. The handler auto-allocates a fresh revision.id per marker, so `--prop revision.id=…` is rejected on find (would collide across markers). `revision.type=ins|del|moveFrom|moveTo` and `revision.action=…` are also rejected on find — the shape is inferred and the action verb belongs on the selector, not the creation context. `find` / `replace` / `regex` themselves are cross-cutting Set keywords (not revision-specific properties; not listed below) — pairing any of them with `revision.author` routes the find pass through the track-changes pipeline. Separate from `revisionNumber` on / (document save counter) and `trackChanges` on /settings (track-mode toggle).",
+  "properties": {
+    "type": {
+      "type": "enum",
+      "values": ["ins", "del", "moveTo", "moveFrom", "format"],
+      "add": false, "set": false, "get": true,
+      "examples": ["query /revision[@type=ins]"],
+      "readback": "revision type (read-only on the revision node; create with --prop revision.type=… on the host element)",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "text content for ins / content marker for del (read-only).",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "concatenated text (read-only)",
+      "enforcement": "report"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author of the revision. Surfaced on `query revision` nodes and on host elements (run/paragraph/…) that carry an ins/del/*PrChange ancestor. Supply via --prop revision.author=… on the host element to create. **Run host is stricter:** `set <run> --prop revision.author=X` alone is rejected — without an action to attribute, the legacy fallback wrote an empty-snapshot rPrChange (recording no change). Either pair revision.author with a real format prop (`--prop bold=true`), or pass `--prop revision.type=ins|del|moveFrom|moveTo` so the wrap itself is the action. The same strictness applies to bare `revision.type=format` on Run. Non-Run hosts (paragraph/table/row/cell/section) still accept bare attribution and emit an empty-snapshot *PrChange — needed for dump→batch round-trip of table-level markers whose pre-change baseline can't be reconstructed. Also accepted alongside `find` (and `replace` / format / paragraph props) — the find dispatch wraps each match in the matching marker shape and attributes it to this author.",
+      "add": false, "set": false, "get": true,
+      "examples": [
+        "query /revision[@author=Alice]",
+        "set /body --prop find=fox --prop replace=cat --prop revision.author=Alice",
+        "set /body --prop find=red --prop bold=true --prop revision.author=Bob",
+        "set /body --prop find=BAD --prop replace= --prop revision.author=Carol",
+        "set /body --prop 'find=\\$\\d+' --prop regex=true --prop bold=true --prop revision.author=Dave"
+      ],
+      "readback": "revision author (read-only on the revision node)",
+      "enforcement": "report"
+    },
+    "date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp (read-only on the revision node). Supply via --prop revision.date=… on the host element to create.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "Date attribute (read-only)",
+      "enforcement": "report"
+    },
+    "id": {
+      "type": "integer",
+      "description": "w:id attribute. Stable across save; pair moveFrom/moveTo by reusing the same id. Supply via --prop revision.id=… on the host element.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "revision id (read-only on the revision node)",
+      "enforcement": "report"
+    },
+    "nativePath": {
+      "type": "string",
+      "description": "Path to the underlying w:ins/w:del/w:moveFrom/w:moveTo/w:*PrChange element in document DOM terms (e.g. /body/p[2]/ins[1]). Use it to address the revision via the action native-path form: `set <nativePath> --prop revision.action=accept|reject`. Emitted on `query revision` synthetic nodes only.",
+      "add": false, "set": false, "get": true,
+      "examples": ["set /body/p[2]/ins[1] --prop revision.action=accept"],
+      "readback": "DOM path to the revision element (read-only)",
+      "enforcement": "report"
+    },
+    "action": {
+      "type": "enum",
+      "values": ["accept", "reject"],
+      "description": "Accept / reject verb. Lives in a disjoint namespace from the creation keys above; mixing with revision.type/.author/.date/.id throws. Walks matching elements in reverse document order so /revision[N] paths don't shift mid-batch.",
+      "add": false, "set": true, "get": false,
+      "examples": [
+        "set /revision --prop revision.action=accept",
+        "set '/revision[@author=Alice]' --prop revision.action=reject",
+        "set '/revision[@type=ins]' --prop revision.action=accept",
+        "set /revision[@id=42] --prop revision.action=accept",
+        "set '/revision[@id=42][@type=moveTo]' --prop revision.action=reject",
+        "set /revision[3] --prop revision.action=accept",
+        "set /body/p[1]/r[2] --prop revision.action=reject"
+      ],
+      "readback": "(action is a verb — not surfaced on get)",
+      "enforcement": "strict"
+    },
+    "paraMarkIns.author": {
+      "type": "string",
+      "description": "Author of a paragraph-mark-only insertion (w:rPr/w:ins inside the paragraph's pPr/rPr — the ¶ mark itself is part of the inserted change, distinct from a run-level w:ins wrapping content). Surfaced on paragraph nodes via get/query; on dump→batch the emitter rewrites it to bare revision.author on the synthetic paragraph + strips revision.type so the bare-attribution path defaults the type to ins.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "paragraph-mark insertion author (read-only)",
+      "enforcement": "report"
+    },
+    "paraMarkIns.date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp companion to paraMarkIns.author.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "paragraph-mark insertion date (read-only)",
+      "enforcement": "report"
+    },
+    "paraMarkIns.id": {
+      "type": "int",
+      "description": "w:id of the paragraph-mark insertion. Get-only companion to paraMarkIns.author/.date.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "paraMarkDel.author": {
+      "type": "string",
+      "description": "Author of a paragraph-mark deletion (w:rPr/w:del in pPr/rPr — the ¶ join is tracked as a deletion). Deletion counterpart of paraMarkIns.author. Get-only.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "paraMarkDel.date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp companion to paraMarkDel.author.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "paraMarkDel.id": {
+      "type": "int",
+      "description": "w:id of the paragraph-mark deletion. Get-only.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "revision.beforeLost": {
+      "type": "bool",
+      "description": "Get-only signal: true when a *PrChange 'before' property snapshot cannot round-trip through dump→batch (the prior-formatting baseline is lost on replay). Lets the batch emitter warn rather than silently drop it.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "sectPrChange.author": {
+      "type": "string",
+      "description": "Author of a w:sectPrChange on a section (revision.type=format equivalent at section scope; surfaced as a distinct key because the snapshot lives in a different OOXML wrapper than rPrChange/pPrChange).",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "section property-change author (read-only)",
+      "enforcement": "report"
+    },
+    "sectPrChange.date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp companion to sectPrChange.author.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "section property-change date (read-only)",
+      "enforcement": "report"
+    },
+    "sectPrChange.id": {
+      "type": "string",
+      "description": "Stable w:id companion to sectPrChange.author; preserved across dump→batch so the marker's identity survives the round-trip.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "section property-change id (read-only)",
+      "enforcement": "report"
+    },
+    "tblPrChange.author": {
+      "type": "string",
+      "description": "Author of a w:tblPrChange on a table (table-properties revision — borders/style/layout snapshot).",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "table property-change author (read-only)",
+      "enforcement": "report"
+    },
+    "tblPrChange.date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp companion to tblPrChange.author.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "table property-change date (read-only)",
+      "enforcement": "report"
+    },
+    "trPrChange.author": {
+      "type": "string",
+      "description": "Author of a w:trPrChange on a table row (row-properties revision — row height/header/cantSplit snapshot). Separate from w:trPr/w:ins (= row insertion as tracked change).",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "row property-change author (read-only)",
+      "enforcement": "report"
+    },
+    "trPrChange.date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp companion to trPrChange.author.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "row property-change date (read-only)",
+      "enforcement": "report"
+    },
+    "tcPrChange.author": {
+      "type": "string",
+      "description": "Author of a w:tcPrChange on a table cell (cell-properties revision — borders/shading/width snapshot). Separate from w:tcPr/w:cellIns/w:cellDel (= cell insertion/deletion).",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "cell property-change author (read-only)",
+      "enforcement": "report"
+    },
+    "tcPrChange.date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp companion to tcPrChange.author.",
+      "add": false, "set": false, "get": true,
+      "examples": [],
+      "readback": "cell property-change date (read-only)",
+      "enforcement": "report"
+    }
+  }
+}

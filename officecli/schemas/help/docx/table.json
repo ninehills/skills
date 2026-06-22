@@ -1,0 +1,209 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "table",
+  "elementAliases": [
+    "tbl"
+  ],
+  "parent": "body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/body/tbl[N]"
+    ]
+  },
+  "note": "Tables default to Single/Size=4 borders on all sides. Length props use twips (raw int) or unit-qualified. Data can be seeded via 'data' (semicolon rows, comma cells) or per-cell 'r{R}c{C}' props.",
+  "children": [
+    {
+      "element": "row",
+      "pathSegment": "tr",
+      "cardinality": "1..n"
+    },
+    {
+      "element": "cell",
+      "pathSegment": "tc",
+      "cardinality": "1..n (per row)"
+    }
+  ],
+  "extends": [
+    "_shared/table",
+    "_shared/table.docx-pptx"
+  ],
+  "properties": {
+    "colWidths": {
+      "type": "string",
+      "description": "comma-separated per-column widths in twips. Aliases: colwidths.",
+      "aliases": [
+        "colwidths"
+      ],
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop colWidths=3000,2000,5000"
+      ],
+      "readback": "comma-separated column widths in OOXML units",
+      "enforcement": "strict"
+    },
+    "direction": {
+      "type": "enum",
+      "values": [
+        "rtl",
+        "ltr"
+      ],
+      "aliases": [
+        "dir",
+        "bidi"
+      ],
+      "description": "Reading direction (Arabic / Hebrew). 'rtl' writes <w:bidiVisual/> on tblPr (mirrors column order); 'ltr' clears it. Distinct from per-cell textDirection.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl when set, key absent otherwise",
+      "enforcement": "report"
+    },
+    "align": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center",
+        "right"
+      ],
+      "aliases": [
+        "alignment"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop align=center"
+      ],
+      "readback": "one of values",
+      "enforcement": "report"
+    },
+    "indent": {
+      "type": "int",
+      "description": "table indent in twips.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop indent=200"
+      ],
+      "readback": "twips",
+      "enforcement": "report"
+    },
+    "cellSpacing": {
+      "type": "int",
+      "description": "space between cells in twips. Alias: cellspacing.",
+      "aliases": [
+        "cellspacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop cellSpacing=40"
+      ],
+      "readback": "twips",
+      "enforcement": "report"
+    },
+    "layout": {
+      "type": "enum",
+      "values": [
+        "fixed",
+        "autofit"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop layout=fixed"
+      ],
+      "readback": "one of values",
+      "enforcement": "report"
+    },
+    "padding": {
+      "type": "int",
+      "description": "default cell padding (all four sides) in twips. Add/Set only — Get does not surface the table-default cell margin today.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop padding=100"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "caption": {
+      "type": "string",
+      "description": "accessibility caption for the table (<w:tblCaption> @w:val). Surfaced to assistive technology.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop caption=\"...\""
+      ],
+      "readback": "string value",
+      "enforcement": "report"
+    },
+    "description": {
+      "type": "string",
+      "description": "accessibility description / long-desc for the table (<w:tblDescription> @w:val).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop description=\"...\""
+      ],
+      "readback": "string value",
+      "enforcement": "report"
+    },
+    "rowBandSize": {
+      "type": "integer",
+      "description": "rows per band when a banded table style applies (<w:tblStyleRowBandSize> @w:val). Default 1; e.g. 2 stripes every second row.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop rowBandSize=2"
+      ],
+      "readback": "integer value",
+      "enforcement": "report"
+    },
+    "colBandSize": {
+      "type": "integer",
+      "description": "columns per band when a banded table style applies (<w:tblStyleColBandSize> @w:val). Default 1. Alias: columnBandSize.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop colBandSize=3"
+      ],
+      "readback": "integer value",
+      "enforcement": "report"
+    },
+    "tblLook": {
+      "type": "string",
+      "description": "conditional-formatting bitmask (<w:tblLook> @w:val, 4-digit hex) selecting which facets of a conditional/banded table style apply: 0x0020 firstRow, 0x0040 lastRow, 0x0080 firstColumn, 0x0100 lastColumn, 0x0200 noHBand, 0x0400 noVBand. The w:val hex is authoritative (Word also reads the decomposed boolean attributes; w:val wins). Get emits the source hex (e.g. 0620) so dump→batch round-trips every bit; the default 04A0 (firstRow+firstColumn) is only seeded when a table style is applied and no explicit tblLook is given. Decomposed facets also settable as firstRow/lastRow/firstColumn/lastColumn/bandRow/bandCol (or the tblLook.<facet> compound form).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop tblLook=0620",
+        "--prop tblLook.firstRow=true --prop tblLook.firstColumn=false"
+      ],
+      "readback": "4-digit uppercase hex bitmask",
+      "enforcement": "report"
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "crop": {
+      "type": "string",
+      "description": "Crop in percent (0-100). 1 value = symmetric, 2 values = vertical,horizontal, 4 values = left,top,right,bottom.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop crop=10",
+        "--prop crop=5,10",
+        "--prop crop=10,5,10,5"
+      ],
+      "enforcement": "report",
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "cropBottom": {
+      "type": "string",
+      "description": "Crop from bottom edge as percent (0-100). Aliases: cropbottom.",
+      "aliases": [
+        "cropbottom"
+      ],
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop cropBottom=10"
+      ],
+      "enforcement": "report"
+    },
+    "cropLeft": {
+      "type": "string",
+      "description": "Crop from left as fraction (<=1) or percent (>1). E.g. cropLeft=0.1 or cropLeft=10 both mean 10%.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop cropLeft=0.1",
+        "--prop cropLeft=10"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "cropleft"
+      ]
+    },
+    "cropRight": {
+      "type": "string",
+      "description": "Crop from right edge as percent (0-100). Aliases: cropright.",
+      "aliases": [
+        "cropright"
+      ],
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop cropRight=10"
+      ],
+      "enforcement": "report"
+    },
+    "cropTop": {
+      "type": "string",
+      "description": "Crop from top edge as percent (0-100). Aliases: croptop.",
+      "aliases": [
+        "croptop"
+      ],
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop cropTop=10"
+      ],
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override the auto-generated 'Picture {id}' label on cNvPr @name.",
+      "add": true,
+      "set": false,
+      "examples": [
+        "--prop name=\"hero-image\"",
+        "--prop name=\"Hero Image\""
+      ],
+      "enforcement": "report",
+      "get": true,
+      "readback": "shape name string"
+    }
+  }
+}

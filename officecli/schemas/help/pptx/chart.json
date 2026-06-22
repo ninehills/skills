@@ -1,0 +1,138 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "chart",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/slide[N]/chart[@id=ID]"
+    ],
+    "positional": [
+      "/slide[N]/chart[N]"
+    ]
+  },
+  "note": "source of truth: Core/Chart/ChartHelper.cs ParseChartType() for the classic (c:chart) family, Core/Chart/ChartExBuilder.cs IsExtendedChartType() for the extended (cx:chart) family. Adding a new chartType value MUST update both the handler and this file in the same PR — contract tests enforce equivalence. Axis configuration: chart-level axis* props (axismin, axismax, axistitle, axisfont, ...) are Add-time only; for post-creation axis Set/Get use the chart-axis element.",
+  "children": [
+    {
+      "element": "chart-title",
+      "pathSegment": "title",
+      "cardinality": "0..1"
+    },
+    {
+      "element": "chart-legend",
+      "pathSegment": "legend",
+      "cardinality": "0..1"
+    },
+    {
+      "element": "chart-plotArea",
+      "pathSegment": "plotArea",
+      "cardinality": "0..1"
+    },
+    {
+      "element": "chart-axis",
+      "pathSegment": "axis",
+      "cardinality": "0..n",
+      "key": "role",
+      "keyValues": [
+        "category",
+        "value",
+        "value2",
+        "series"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "bar",
+          "column",
+          "line",
+          "area",
+          "scatter",
+          "bubble",
+          "radar",
+          "stock",
+          "combo"
+        ]
+      }
+    },
+    {
+      "element": "chart-series",
+      "pathSegment": "series",
+      "cardinality": "1..n"
+    }
+  ],
+  "extends": [
+    "_shared/chart",
+    "_shared/chart.docx-pptx",
+    "_shared/chart.pptx-xlsx"
+  ],
+  "properties": {
+    "direction": {
+      "type": "string",
+      "aliases": [
+        "rtl"
+      ],
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl|ltr",
+      "description": "Chart-level reading direction. rtl stamps a:rtl=\"1\" on chartSpace c:txPr lvl1pPr so default text bodies (axis labels, data labels) render right-to-left for Arabic / Hebrew."
+    },
+    "id": {
+      "type": "number",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "cNvPr chart id; @id in /chart[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "readback": "integer chart shape id",
+      "enforcement": "report"
+    },
+    "zorder": {
+      "type": "number",
+      "description": "1-based z-order in slide shape tree. On add, positions the chart within the shape tree (1 = back). Post-creation reordering is not supported via Set; use Move/Swap on the chart graphic frame, or raw-set the spTree child order.",
+      "aliases": ["z-order", "order"],
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": ["--prop zorder=1"],
+      "readback": "1-based integer (1 = back)",
+      "enforcement": "report"
+    },
+    "chartType": {
+      "type": "enum",
+      "values": [
+        "bar", "column", "line", "pie", "doughnut", "area",
+        "scatter", "bubble", "radar", "stock", "combo",
+        "waterfall", "funnel", "treemap", "sunburst",
+        "boxWhisker", "histogram", "pareto"
+      ],
+      "description": "pptx override: chartType is consumed by AddChart (creation only). Switching chart type post-creation is not supported — rebuild the chart with the new type. INPUT is lenient and accepts friendly aliases (stackedArea, bar3D, percentStackedColumn, stackedLine, percentStackedBar, ...) which round-trip correctly. READBACK (Get) is intentionally NOT symmetric with input: it returns the systematic `base_modifier` token form — e.g. area_stacked, area_percentStacked, bar_stacked, bar_percentStacked, bar3d, column_stacked, column_percentStacked, line_stacked, line_percentStacked, pieOfPie, barOfPie. This canonical-readback form is by design (one systematic token per geometry); do not expect the readback to echo the friendly input alias.",
+      "aliases": ["type"],
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": ["--prop chartType=column", "--prop chartType=stackedArea   # readback: area_stacked", "--prop chartType=bar3D   # readback: bar3d"],
+      "readback": "systematic base_modifier token (e.g. area_stacked, bar_percentStacked, column_stacked, line_stacked, bar3d, pieOfPie, barOfPie) — NOT the friendly input alias",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "shape name (DocProperties.Name).",
+      "examples": [
+        "--prop name=\"Sales Chart\""
+      ],
+      "readback": "shape name string",
+      "enforcement": "report"
+    }
+  }
+}

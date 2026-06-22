@@ -1,0 +1,6 @@
+{
+  "$schema": "../_schema.json",
+  "element": "hyperlink",
+  "shared_base": true,
+  "properties": {}
+}

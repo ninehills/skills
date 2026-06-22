@@ -1,0 +1,301 @@
+{
+  "$schema": "../_schema.json",
+  "element": "shape",
+  "shared_base": true,
+  "properties": {
+    "align": {
+      "type": "string",
+      "description": "Paragraph alignment: 'left' / 'center' (c/ctr) / 'right' (r) / 'justify'.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop align=center"
+      ],
+      "enforcement": "report"
+    },
+    "bold": {
+      "type": "bool",
+      "description": "Bold runs. Bare alias of font.bold.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop bold=true"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.bold"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "color": {
+      "type": "color",
+      "description": "Text color. Bare alias of font.color.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop color=#FF0000",
+        "--prop color=0000FF"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.color"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "fill": {
+      "type": "color",
+      "description": "Solid fill color, or 'none' for no fill (text-only shapes route effects to text-level rPr). Accepts color-transform modifiers appended with '+': '+lumMod<N>' / '+lumOff<N>' (luminance, percent), '+tint<N>' / '+shade<N>', '+alpha<N>' (e.g. 'accent1+lumMod75', 'FF0000+lumMod50', 'accent2+shade60+alpha80'). Modifiers apply to both scheme and srgb base colors and round-trip in Get.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop fill=#FFFF00",
+        "--prop fill=none",
+        "--prop fill=FF0000",
+        "--prop fill=#FF0000",
+        "--prop fill=red",
+        "--prop fill=accent1"
+      ],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report",
+      "aliases": [
+        "background"
+      ]
+    },
+    "flipH": {
+      "type": "bool",
+      "aliases": [
+        "flipHorizontal"
+      ],
+      "description": "Flip horizontally (Office-API alias of flip=h).",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop flipH=true"
+      ],
+      "enforcement": "report"
+    },
+    "flipV": {
+      "type": "bool",
+      "aliases": [
+        "flipVertical"
+      ],
+      "description": "Flip vertically (Office-API alias of flip=v).",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop flipV=true"
+      ],
+      "enforcement": "report"
+    },
+    "font": {
+      "type": "string",
+      "description": "default font family for shape text. Bare 'font' targets Latin + EastAsian; for per-script control (Japanese / Korean / Arabic) use font.latin, font.ea, or font.cs.",
+      "aliases": [
+        "font.name"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font=Arial"
+      ],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "glow": {
+      "type": "string",
+      "description": "glow effect. Pass a color (e.g. '4472C4') or 'true' (defaults to accent blue).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop glow=#4472C4",
+        "--prop glow=4472C4",
+        "--prop glow=true"
+      ],
+      "readback": "color hex string",
+      "enforcement": "report"
+    },
+    "italic": {
+      "type": "bool",
+      "description": "Italic runs. Bare alias of font.italic.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop italic=true"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.italic"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "line": {
+      "type": "string",
+      "description": "Outline color (or 'none'). Form: 'color[:width[:style]]', e.g. 'FF0000:1.5:dash'. width in points; style: solid|dash|dot|dashdot|longdash.",
+      "aliases": [
+        "border",
+        "linecolor",
+        "lineColor"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop line=#000000",
+        "--prop line=FF0000:1.5",
+        "--prop line=none",
+        "--prop line=000000"
+      ],
+      "readback": "color or color:width",
+      "enforcement": "report"
+    },
+    "margin": {
+      "type": "length",
+      "description": "uniform internal padding (text inset) for shape body.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop margin=4",
+        "--prop margin=0.1in"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override the auto-generated 'Shape {id}' label on cNvPr @name.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop name=\"banner\"",
+        "--prop name=MyShape"
+      ],
+      "enforcement": "report",
+      "get": true,
+      "readback": "shape name string (cNvPr @name)"
+    },
+    "reflection": {
+      "type": "string",
+      "description": "reflection effect. Accepts 'true' to enable a default reflection.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop reflection=true"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "rotation": {
+      "type": "string",
+      "description": "Rotation in degrees (positive = clockwise). Stored OOXML-internal as 60000ths of a degree on Transform2D @rot.",
+      "aliases": [
+        "rot",
+        "rotate"
+      ],
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop rotation=45"
+      ],
+      "enforcement": "report",
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "shadow": {
+      "type": "string",
+      "description": "outer shadow effect. Pass a color (e.g. '000000') or 'true' (defaults to black). Routed to text-level rPr for text-only shapes.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop shadow=#808080",
+        "--prop shadow=none",
+        "--prop shadow=000000",
+        "--prop shadow=true"
+      ],
+      "readback": "color hex string",
+      "enforcement": "report"
+    },
+    "size": {
+      "type": "font-size",
+      "description": "font size",
+      "aliases": [
+        "fontSize",
+        "fontsize",
+        "font.size"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop size=14",
+        "--prop size=14pt",
+        "--prop size=10.5pt"
+      ],
+      "readback": "unit-qualified string, e.g. \"14pt\"",
+      "enforcement": "strict"
+    },
+    "softEdge": {
+      "type": "string",
+      "aliases": [
+        "softedge"
+      ],
+      "description": "Soft edge radius, or 'none' to clear.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop softEdge=5",
+        "--prop softEdge=4pt"
+      ],
+      "readback": "unit-qualified string in points, e.g. \"5pt\"",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop text=\"Note\"",
+        "--prop text=\"Hello\""
+      ],
+      "readback": "plain text content of the shape",
+      "enforcement": "strict"
+    },
+    "underline": {
+      "type": "string",
+      "description": "Underline style: 'true'/'single'/'sng', 'double'/'dbl', 'none'/'false'. Bare alias of font.underline.",
+      "add": true,
+      "set": true,
+      "examples": [
+        "--prop underline=single"
+      ],
+      "enforcement": "report",
+      "aliases": [
+        "font.underline"
+      ],
+      "get": true,
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "valign": {
+      "type": "string",
+      "description": "Vertical anchor: 'top' (t) / 'center' (ctr/middle/c/m) / 'bottom' (b).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop valign=middle"
+      ],
+      "enforcement": "report"
+    }
+  }
+}

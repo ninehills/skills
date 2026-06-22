@@ -1,0 +1,102 @@
+{
+  "$schema": "../_schema.json",
+  "element": "run",
+  "shared_base": true,
+  "properties": {
+    "bold": {
+      "type": "bool",
+      "aliases": [
+        "font.bold"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop bold=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "color": {
+      "type": "color",
+      "aliases": [
+        "font.color"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop color=#FF0000",
+        "--prop color=FF0000",
+        "--prop color=red"
+      ],
+      "readback": "#RRGGBB uppercase",
+      "enforcement": "strict"
+    },
+    "font": {
+      "type": "string",
+      "description": "bare font family — write-only convenience that sets ASCII+HighAnsi+EastAsia to the same value. Get normalizes the readback to per-script canonical keys (font.latin / font.ea / font.cs) so a get→set round-trip preserves divergent slot values.",
+      "aliases": [
+        "fontname",
+        "fontFamily",
+        "font.name"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop font=Calibri",
+        "--prop font=\"Arial\"",
+        "--prop font=\"Times New Roman\""
+      ],
+      "readback": "see font.latin / font.ea / font.cs",
+      "enforcement": "strict"
+    },
+    "italic": {
+      "type": "bool",
+      "aliases": [
+        "font.italic"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop italic=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "size": {
+      "type": "font-size",
+      "aliases": [
+        "fontsize",
+        "fontSize",
+        "font.size"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop size=11",
+        "--prop size=14",
+        "--prop size=14pt",
+        "--prop size=10.5pt"
+      ],
+      "readback": "unit-qualified, e.g. \"14pt\"",
+      "enforcement": "strict"
+    },
+    "text": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop text=\"bold word\"",
+        "--prop text=\"word\"",
+        "--prop text=\"run content\""
+      ],
+      "readback": "plain text of run",
+      "enforcement": "strict"
+    }
+  }
+}

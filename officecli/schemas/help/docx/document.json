@@ -1,0 +1,695 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "document",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": false
+  },
+  "paths": {
+    "positional": [
+      "/"
+    ]
+  },
+  "note": "Root container. Get returns top-level children (body, styles, numbering, headers, footers, etc.). Set exposes core document properties (author/title/subject/keywords/description).",
+  "children": [
+    {
+      "element": "body",
+      "pathSegment": "body",
+      "cardinality": "1"
+    },
+    {
+      "element": "styles",
+      "pathSegment": "styles",
+      "cardinality": "1"
+    },
+    {
+      "element": "numbering",
+      "pathSegment": "numbering",
+      "cardinality": "0..1"
+    }
+  ],
+  "extends": "_shared/root-metadata",
+  "properties": {
+    "author": {
+      "type": "string",
+      "aliases": [
+        "creator"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop author=\"Alice\""
+      ],
+      "readback": "author string",
+      "enforcement": "report"
+    },
+    "title": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop title=\"Report\""
+      ],
+      "readback": "title string",
+      "enforcement": "report"
+    },
+    "keywords": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop keywords=\"tag1,tag2\""
+      ],
+      "readback": "keywords string",
+      "enforcement": "report"
+    },
+    "description": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop description=\"Abstract\""
+      ],
+      "readback": "description string",
+      "enforcement": "report"
+    },
+    "lastModifiedBy": {
+      "type": "string",
+      "aliases": [
+        "lastmodifiedby"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lastModifiedBy=\"Bob\""
+      ],
+      "readback": "last-modified author",
+      "enforcement": "report"
+    },
+    "category": {
+      "type": "string",
+      "description": "document category metadata. Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "category string",
+      "enforcement": "report"
+    },
+    "revisionNumber": {
+      "type": "string",
+      "description": "document save counter from docProps/core.xml (cp:revision). Distinct from tracked-change revisions — see `help docx revision`.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "revision number string",
+      "enforcement": "report"
+    },
+    "created": {
+      "type": "string",
+      "description": "creation timestamp (ISO-8601). Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "ISO-8601 timestamp",
+      "enforcement": "report"
+    },
+    "modified": {
+      "type": "string",
+      "description": "last modification timestamp (ISO-8601). Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "ISO-8601 timestamp",
+      "enforcement": "report"
+    },
+    "protection": {
+      "type": "enum",
+      "values": [
+        "none",
+        "readOnly",
+        "comments",
+        "trackedChanges",
+        "forms"
+      ],
+      "description": "document protection mode.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "protection mode name",
+      "enforcement": "report"
+    },
+    "protectionEnforced": {
+      "type": "bool",
+      "description": "whether document protection is enforced.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "docGrid.type": {
+      "type": "enum",
+      "values": [
+        "default",
+        "lines",
+        "linesAndChars",
+        "snapToChars"
+      ],
+      "description": "document grid type.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "grid type token",
+      "enforcement": "report"
+    },
+    "docGrid.linePitch": {
+      "type": "number",
+      "description": "document grid line pitch.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "docGrid.charSpace": {
+      "type": "number",
+      "description": "document grid char space.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "charSpacingControl": {
+      "type": "enum",
+      "values": [
+        "compressPunctuation",
+        "compressPunctuationAndJapaneseKana",
+        "doNotCompress"
+      ],
+      "description": "CJK character spacing control.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "spacing control token",
+      "enforcement": "report"
+    },
+    "compatibility.mode": {
+      "type": "string",
+      "description": "compatibility mode identifier.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "compatibility mode value",
+      "enforcement": "report"
+    },
+    "docDefaults.font": {
+      "type": "string",
+      "description": "default Latin font.",
+      "aliases": [
+        "defaultFont"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "docDefaults.font.eastAsia": {
+      "type": "string",
+      "description": "default East Asian font slot.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "docDefaults.font.hAnsi": {
+      "type": "string",
+      "description": "default hAnsi font slot.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "docDefaults.font.complexScript": {
+      "type": "string",
+      "description": "default complex-script font slot.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "docDefaults.fontSize": {
+      "type": "font-size",
+      "description": "default font size.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "Npt",
+      "enforcement": "report"
+    },
+    "docDefaults.color": {
+      "type": "color",
+      "description": "default text color.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "#RRGGBB",
+      "enforcement": "report"
+    },
+    "docDefaults.bold": {
+      "type": "bool",
+      "description": "default bold flag.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "docDefaults.italic": {
+      "type": "bool",
+      "description": "default italic flag.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "docDefaults.rtl": {
+      "type": "bool",
+      "description": "default right-to-left flag.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "docDefaults.alignment": {
+      "type": "string",
+      "description": "default paragraph alignment.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "alignment token",
+      "enforcement": "report"
+    },
+    "docDefaults.spaceBefore": {
+      "type": "string",
+      "description": "default paragraph space-before.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "Npt",
+      "enforcement": "report"
+    },
+    "docDefaults.spaceAfter": {
+      "type": "string",
+      "description": "default paragraph space-after.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "Npt",
+      "enforcement": "report"
+    },
+    "docDefaults.lineSpacing": {
+      "type": "string",
+      "description": "default paragraph line spacing.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "1.5x or Npt",
+      "enforcement": "report"
+    },
+    "autoSpaceDE": {
+      "type": "bool",
+      "description": "auto-spacing between East Asian and Latin text.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "autoSpaceDN": {
+      "type": "bool",
+      "description": "auto-spacing between East Asian and numeric text.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "kinsoku": {
+      "type": "bool",
+      "description": "Japanese kinsoku line breaking rules.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "overflowPunct": {
+      "type": "bool",
+      "description": "allow punctuation to overflow margin.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "embedFonts": {
+      "type": "bool",
+      "description": "embed TrueType fonts.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "embedSystemFonts": {
+      "type": "bool",
+      "description": "embed system fonts.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "saveSubsetFonts": {
+      "type": "bool",
+      "description": "save font subsets.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "mirrorMargins": {
+      "type": "bool",
+      "description": "mirror margins for facing pages.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "gutterAtTop": {
+      "type": "bool",
+      "description": "gutter at top.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "bookFoldPrinting": {
+      "type": "bool",
+      "description": "book fold printing layout.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "evenAndOddHeaders": {
+      "type": "bool",
+      "description": "different headers for even/odd pages.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true when settings/evenAndOddHeaders is present",
+      "enforcement": "report"
+    },
+    "autoHyphenation": {
+      "type": "bool",
+      "description": "enable automatic hyphenation (settings/autoHyphenation).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true when settings/autoHyphenation is present",
+      "enforcement": "report"
+    },
+    "defaultTabStop": {
+      "type": "string",
+      "description": "default tab stop (e.g. \"720\" twips or \"0.5in\").",
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop defaultTabStop=720",
+        "--prop defaultTabStop=0.5in"
+      ],
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "displayBackgroundShape": {
+      "type": "bool",
+      "description": "display background shape.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "removePersonalInformation": {
+      "type": "bool",
+      "description": "remove personal info on save.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "removeDateAndTime": {
+      "type": "bool",
+      "description": "remove date/time on save.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "printFormsData": {
+      "type": "bool",
+      "description": "print only form data.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "readback": "n/a (set-only)",
+      "enforcement": "report"
+    },
+    "pageWidth": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm (e.g. \"21cm\")",
+      "examples": [
+        "--prop pageWidth=21cm"
+      ],
+      "enforcement": "report"
+    },
+    "sectPr": {
+      "type": "enum",
+      "values": [
+        "present"
+      ],
+      "add": false,
+      "set": true,
+      "get": false,
+      "description": "dump→batch round-trip marker: forces the body's final section to emit a (possibly empty) <w:sectPr/> so an empty source sectPr is not dropped. Internal round-trip use; not an interactive edit.",
+      "examples": [
+        "--prop sectPr=present"
+      ],
+      "enforcement": "report"
+    },
+    "pageHeight": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm (e.g. \"29.7cm\")",
+      "examples": [
+        "--prop pageHeight=29.7cm"
+      ],
+      "enforcement": "report"
+    },
+    "orientation": {
+      "type": "enum",
+      "values": [
+        "portrait",
+        "landscape"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "orientation token",
+      "examples": [
+        "--prop orientation=landscape"
+      ],
+      "enforcement": "report"
+    },
+    "marginTop": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm",
+      "examples": [
+        "--prop marginTop=2.54cm"
+      ],
+      "enforcement": "report"
+    },
+    "marginBottom": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm",
+      "examples": [
+        "--prop marginBottom=2.54cm"
+      ],
+      "enforcement": "report"
+    },
+    "marginLeft": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm",
+      "examples": [
+        "--prop marginLeft=3.18cm"
+      ],
+      "enforcement": "report"
+    },
+    "marginRight": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm",
+      "examples": [
+        "--prop marginRight=3.18cm"
+      ],
+      "enforcement": "report"
+    },
+    "marginHeader": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "header-from-top-edge distance (pgMar @header). Convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm",
+      "examples": [
+        "--prop marginHeader=1.5cm"
+      ],
+      "enforcement": "report"
+    },
+    "marginFooter": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "footer-from-bottom-edge distance (pgMar @footer). Convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm",
+      "examples": [
+        "--prop marginFooter=1.75cm"
+      ],
+      "enforcement": "report"
+    },
+    "marginGutter": {
+      "type": "length",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "binding gutter width (pgMar @gutter). Convenience readback from sectPr; primary edit path is /section[N].",
+      "readback": "length in cm",
+      "examples": [
+        "--prop marginGutter=0cm"
+      ],
+      "enforcement": "report"
+    },
+    "extended.application": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "from docProps/app.xml application identifier (e.g. \"Microsoft Word\").",
+      "readback": "application string",
+      "enforcement": "report"
+    },
+    "bookFoldPrintingSheets": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "settings.xml bookFoldPrintingSheets — sheets per booklet signature when book-fold printing.",
+      "readback": "integer sheets-per-signature",
+      "enforcement": "report"
+    },
+    "bookFoldReversePrinting": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "settings.xml bookFoldRevPrinting flag — true when book-fold printing reverses the page order.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "doNotDisplayPageBoundaries": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "settings.xml doNotDisplayPageBoundaries flag — Word view hides the page-boundary frame.",
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "columns.equalWidth": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "document-default columns equal-width flag (sectPr cols @equalWidth on the body sectPr).",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "columns.separator": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "document-default columns separator flag (sectPr cols @sep on the body sectPr).",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "locale": {
+      "type": "string",
+      "description": "primary document locale derived from theme themeFontLang (e.g. 'en-US', 'zh-CN', 'ar-SA'). Read-only summary — change via run lang.* slots or theme themeFontLang.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "BCP-47 locale string",
+      "enforcement": "report"
+    }
+  }
+}

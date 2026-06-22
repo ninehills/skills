@@ -1,0 +1,106 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "media",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/slide[N]/video[M]", "/slide[N]/audio[M]"]
+  },
+  "note": "Aliases: video, audio. Video/audio inferred from extension when type=media. Poster image auto-generated when not supplied.",
+  "properties": {
+    "src": {
+      "type": "string",
+      "description": "media source — file path, URL, or data-URI; accepted on add/set only. Get does NOT surface this key (no Format[\"src\"] or Format[\"relId\"] is emitted for media).",
+      "aliases": ["path"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop src=/path/to/video.mp4"],
+      "readback": "add-time only; not surfaced in Get.",
+      "enforcement": "report"
+    },
+    "poster": {
+      "type": "string",
+      "description": "custom thumbnail image path.",
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop poster=/path/to/thumb.png"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop x=1in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop y=1in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop width=4in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop height=3in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "volume": {
+      "type": "int",
+      "description": "playback volume 0-100.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop volume=80"],
+      "readback": "volume percent",
+      "enforcement": "report"
+    },
+    "autoPlay": {
+      "type": "bool",
+      "aliases": ["autoplay", "autoStart", "autostart"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop autoPlay=true"],
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "loop": {
+      "type": "bool",
+      "description": "loop until stopped (repeats the clip indefinitely during playback).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop loop=true"],
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "trimStart": {
+      "type": "string",
+      "description": "trim from media start. Accepts ms ('200'), seconds ('1.5s'), or 'hh:mm:ss.fff' ('00:00:01.500'); stored as ms-int. Alias: trimstart.",
+      "aliases": ["trimstart"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop trimStart=1500", "--prop trimStart=1.5s", "--prop trimStart=00:00:01.500"],
+      "readback": "milliseconds (string)",
+      "enforcement": "report"
+    },
+    "trimEnd": {
+      "type": "string",
+      "description": "trim from media end. Same input forms as trimStart; stored as ms-int. Alias: trimend.",
+      "aliases": ["trimend"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop trimEnd=10000", "--prop trimEnd=10s", "--prop trimEnd=00:00:10.000"],
+      "readback": "milliseconds (string)",
+      "enforcement": "report"
+    }
+  }
+}

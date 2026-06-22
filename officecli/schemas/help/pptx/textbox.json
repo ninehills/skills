@@ -1,0 +1,244 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "textbox",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/slide[N]/shape[M]"]
+  },
+  "note": "Alias for shape — both route to AddShape (with --prop formula → AddEquation). Common text/position/size/font props inlined below; full surface (geometry, rotation, effects, …) in pptx/shape.json. effective.* keys behave as documented in pptx/shape.json.",
+  "properties": {
+    "text": {
+      "type": "string",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop text=\"Hello\""],
+      "readback": "plain text content of the textbox",
+      "enforcement": "strict"
+    },
+    "font": {
+      "type": "string",
+      "description": "font family. Bare 'font' targets Latin + EastAsian; for per-script control (Japanese / Korean / Arabic) use font.latin, font.ea, or font.cs.",
+      "aliases": ["fontname", "fontFamily"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop font=Calibri"],
+      "readback": "font family string",
+      "enforcement": "report"
+    },
+    "font.latin": {
+      "type": "string",
+      "description": "Latin-script font slot (a:latin) only.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop font.latin=Calibri"],
+      "enforcement": "report"
+    },
+    "font.ea": {
+      "type": "string",
+      "description": "East-Asian font slot (a:ea) — Chinese / Japanese / Korean text.",
+      "aliases": ["font.eastasia", "font.eastasian"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop font.ea=\"メイリオ\""],
+      "enforcement": "report"
+    },
+    "font.cs": {
+      "type": "string",
+      "description": "Complex-script font slot (a:cs) — Arabic / Hebrew / Thai etc.",
+      "aliases": ["font.complexscript", "font.complex"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop font.cs=\"Arabic Typesetting\""],
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "enum",
+      "values": ["ltr", "rtl"],
+      "description": "paragraph reading direction (a:pPr rtl). Use 'rtl' for Arabic / Hebrew layouts.",
+      "aliases": ["dir", "rtl"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop direction=rtl"],
+      "enforcement": "report"
+    },
+    "size": {
+      "type": "font-size",
+      "description": "font size — Add/Set forwards to the first run; Get exposes the inheritance-resolved value as effective.size, not bare size.",
+      "aliases": ["fontsize"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop size=14", "--prop size=14pt", "--prop size=10.5pt"],
+      "readback": "n/a at shape level — read effective.size on the shape, or size on the inner run",
+      "enforcement": "strict"
+    },
+    "bold": {
+      "type": "bool",
+      "description": "Add/Set forwards to the first run; Get does not surface bold at the shape level.",
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop bold=true"],
+      "readback": "n/a at shape level — read bold on the inner run",
+      "enforcement": "strict"
+    },
+    "italic": {
+      "type": "bool",
+      "description": "Add/Set forwards to the first run; Get does not surface italic at the shape level.",
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop italic=true"],
+      "readback": "n/a at shape level — read italic on the inner run",
+      "enforcement": "strict"
+    },
+    "color": {
+      "type": "color",
+      "description": "text color — Add/Set forwards to the first run; Get exposes the inheritance-resolved value as effective.color, not bare color.",
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop color=0000FF", "--prop color=#0000FF"],
+      "readback": "n/a at shape level — read effective.color on the shape, or color on the inner run",
+      "enforcement": "strict"
+    },
+    "fill": {
+      "type": "color",
+      "description": "textbox background fill",
+      "aliases": ["background"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop fill=FFFF00", "--prop fill=accent1"],
+      "readback": "#RRGGBB (uppercase) or scheme color name",
+      "enforcement": "strict"
+    },
+    "align": {
+      "type": "enum",
+      "values": ["left", "center", "right", "justify"],
+      "description": "text horizontal alignment",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop align=center"],
+      "readback": "one of: left | center | right | justify",
+      "enforcement": "strict"
+    },
+    "width": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop width=5cm"],
+      "readback": "length in cm",
+      "enforcement": "strict"
+    },
+    "height": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop height=3cm"],
+      "readback": "length in cm",
+      "enforcement": "strict"
+    },
+    "x": {
+      "type": "length",
+      "description": "horizontal position of the textbox",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop x=2cm", "--prop x=1in", "--prop x=72pt"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "strict"
+    },
+    "y": {
+      "type": "length",
+      "description": "vertical position of the textbox",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop y=3cm"],
+      "readback": "length in cm (e.g. \"3cm\")",
+      "enforcement": "strict"
+    },
+    "effective.direction": {
+      "type": "enum",
+      "values": ["rtl", "ltr"],
+      "description": "resolved reading direction inherited from placeholder→layout→master→presentation defaults. Suppressed when 'direction' is set directly on the textbox.",
+      "add": false, "set": false, "get": true,
+      "readback": "rtl | ltr",
+      "enforcement": "report"
+    },
+    "effective.size": {
+      "type": "length",
+      "description": "resolved font size inherited from placeholder→layout→master→presentation defaults. Suppressed when 'size' is set directly on the textbox.",
+      "add": false, "set": false, "get": true,
+      "readback": "unit-qualified pt (e.g. \"18pt\")",
+      "enforcement": "report"
+    },
+    "effective.font": {
+      "type": "string",
+      "description": "resolved font name inherited from placeholder→layout→master→presentation defaults. Suppressed when 'font' is set directly on the textbox.",
+      "add": false, "set": false, "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "effective.color": {
+      "type": "color",
+      "description": "resolved text color inherited from placeholder→layout→master→presentation defaults. Suppressed when 'color' is set directly on the textbox.",
+      "add": false, "set": false, "get": true,
+      "readback": "#-prefixed uppercase hex (scheme colors pass through)",
+      "enforcement": "report"
+    },
+    "effective.bold": {
+      "type": "bool",
+      "description": "resolved bold inherited from placeholder→layout→master→presentation defaults. Suppressed when 'bold' is set directly on the textbox.",
+      "add": false, "set": false, "get": true,
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "autoFit": {
+      "type": "enum",
+      "description": "auto-fit mode for the textbox text body. Alias: autofit.",
+      "values": ["none", "normal", "shape", "noAutofit", "spAutoFit"],
+      "aliases": ["autofit"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop autoFit=shape"],
+      "readback": "one of: none | normal | shape",
+      "enforcement": "report"
+    },
+    "valign": {
+      "type": "enum",
+      "values": ["top", "center", "middle", "bottom"],
+      "description": "text vertical anchoring inside the textbox (a:bodyPr anchor). 'middle' is an input alias for 'center' — Get always reads back 'center'.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop valign=middle", "--prop valign=bottom"],
+      "readback": "one of: top | center | bottom",
+      "enforcement": "strict"
+    },
+    "margin": {
+      "type": "length",
+      "description": "text body insets (a:bodyPr lIns/tIns/rIns/bIns). Single value applies to all four sides; CSS-style 4-value form is 'lIns,tIns,rIns,bIns'. '0' / '0cm' is a valid round-trip and is preserved (not collapsed to default).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop margin=0.25cm", "--prop margin=0.2cm,0.5cm,0.2cm,0.5cm", "--prop margin=0"],
+      "readback": "single length (e.g. \"0.25cm\") when all four sides match, otherwise comma-separated 4-tuple",
+      "enforcement": "strict"
+    },
+    "id": {
+      "type": "number",
+      "description": "cNvPr shape id; @id in /shape[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "add": true, "set": false, "get": true,
+      "readback": "integer shape id",
+      "enforcement": "report"
+    },
+    "zorder": {
+      "type": "number",
+      "description": "1-based z-order in slide shape tree. On add/set, repositions the shape within the shape tree (1 = back).",
+      "aliases": ["z-order", "order"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop zorder=1"],
+      "readback": "1-based integer (1 = back)",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "Override the auto-generated 'TextBox {N}' label on cNvPr @name.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop name=\"banner\""],
+      "readback": "shape name string (cNvPr @name)",
+      "enforcement": "report"
+    },
+    "lang": {
+      "type": "string",
+      "description": "BCP-47 language tag. lang lives per-run (drawingML a:rPr/@lang) — a textbox has no language of its own. add/set is a convenience that writes the FIRST run's rPr; read it back at run scope (/shape[N]/paragraph[P]/run[R]). Not surfaced at shape level (first-run projection is lossy and a new run would not inherit it).",
+      "aliases": ["altLang", "altlang"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop lang=en-US"],
+      "readback": "run scope only (/shape[N]/paragraph[P]/run[R])",
+      "enforcement": "report"
+    }
+  }
+}

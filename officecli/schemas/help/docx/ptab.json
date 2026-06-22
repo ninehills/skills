@@ -1,0 +1,82 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "ptab",
+  "parent": "paragraph",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/body/p[@paraId=X]/r[N]",
+      "/header[N]/p[M]/r[K]",
+      "/footer[N]/p[M]/r[K]"
+    ]
+  },
+  "note": "Inline positional tab (w:ptab, Word 2007+). Anchors left/center/right alignment regions in headers/footers. Inserted as <w:r><w:ptab/></w:r>; surfaced by Get as type=ptab. Aliases: positionaltab.",
+  "properties": {
+    "align": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center",
+        "right"
+      ],
+      "aliases": [
+        "alignment"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "required": true,
+      "examples": [
+        "--prop align=center",
+        "--prop align=right"
+      ],
+      "readback": "ptab alignment attribute",
+      "enforcement": "report"
+    },
+    "relativeTo": {
+      "type": "enum",
+      "values": [
+        "margin",
+        "indent"
+      ],
+      "default": "margin",
+      "aliases": [
+        "relativeto"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop relativeTo=margin"
+      ],
+      "readback": "ptab relativeTo attribute",
+      "enforcement": "report"
+    },
+    "leader": {
+      "type": "enum",
+      "values": [
+        "none",
+        "dot",
+        "hyphen",
+        "middleDot",
+        "underscore"
+      ],
+      "default": "none",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop leader=dot"
+      ],
+      "readback": "ptab leader attribute",
+      "enforcement": "report"
+    }
+  }
+}

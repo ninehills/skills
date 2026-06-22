@@ -1,0 +1,18 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "fallback": {
+      "type": "string",
+      "description": "optional PNG fallback for SVG sources. When omitted, a 1x1 transparent PNG is generated.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop fallback=/path/to/fallback.png"
+      ],
+      "readback": "n/a (SVG-only)",
+      "enforcement": "report"
+    }
+  }
+}

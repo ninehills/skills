@@ -1,0 +1,235 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - rid: osx-arm64
+            name: officecli-mac-arm64
+            os: macos-latest
+          - rid: osx-x64
+            name: officecli-mac-x64
+            os: macos-latest
+          - rid: linux-x64
+            name: officecli-linux-x64
+            os: ubuntu-latest
+          - rid: linux-arm64
+            name: officecli-linux-arm64
+            os: ubuntu-latest
+          - rid: linux-musl-x64
+            name: officecli-linux-alpine-x64
+            os: ubuntu-latest
+          - rid: linux-musl-arm64
+            name: officecli-linux-alpine-arm64
+            os: ubuntu-latest
+          - rid: win-x64
+            name: officecli-win-x64.exe
+            os: windows-latest
+          - rid: win-arm64
+            name: officecli-win-arm64.exe
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: dotnet publish src/officecli/officecli.csproj -c Release -r ${{ matrix.rid }} -o publish --nologo
+
+      - name: Rename output
+        run: |
+          if [ -f publish/officecli.exe ]; then
+            mv publish/officecli.exe publish/${{ matrix.name }}
+          else
+            mv publish/officecli publish/${{ matrix.name }}
+          fi
+
+      - name: Setup macOS code signing
+        if: startsWith(matrix.rid, 'osx-')
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          CERT_PATH="$RUNNER_TEMP/build_certificate.p12"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode > "$CERT_PATH"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH" login.keychain-db
+          rm -f "$CERT_PATH"
+
+      - name: Codesign (macOS)
+        if: startsWith(matrix.rid, 'osx-')
+        run: |
+          IDENTITY=$(security find-identity -v -p codesigning | grep "Developer ID Application" | head -n 1 | sed -E 's/.*"(.+)"/\1/')
+          echo "Signing with: $IDENTITY"
+          # --options runtime (Hardened Runtime, required by notarization) denies the
+          # self-contained CoreCLR's MAP_JIT executable memory by default, so the runtime
+          # fails to start with "Failed to create CoreCLR, HRESULT: 0x80070008" on every
+          # command. build/officecli.entitlements re-permits exactly allow-jit (the plist
+          # holds no XML comments — codesign's AMFI parser rejects them).
+          codesign --force --options runtime --entitlements build/officecli.entitlements --timestamp --sign "$IDENTITY" publish/${{ matrix.name }}
+          codesign --verify --strict --verbose=2 publish/${{ matrix.name }}
+          # Fail the build if allow-jit did not actually embed (e.g. a malformed plist
+          # makes codesign silently drop entitlements) — otherwise the bug ships again.
+          codesign -d --entitlements - --xml publish/${{ matrix.name }} | grep -q allow-jit
+
+      - name: Notarize (macOS)
+        if: startsWith(matrix.rid, 'osx-')
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+        run: |
+          # A bare Mach-O binary cannot be stapled; notarytool requires a
+          # zip/pkg/dmg container. Submit a zip — the notarization ticket is
+          # recorded on Apple's servers and Gatekeeper validates online.
+          ditto -c -k --keepParent publish/${{ matrix.name }} "$RUNNER_TEMP/notarize.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$TEAM_ID" \
+            --password "$APP_SPECIFIC_PASSWORD" \
+            --wait
+          rm -f "$RUNNER_TEMP/notarize.zip"
+
+      - name: Smoke test - create document
+        if: >-
+          (matrix.rid == 'osx-arm64' && runner.arch == 'ARM64') ||
+          (matrix.rid == 'osx-x64' && runner.arch == 'X64') ||
+          (matrix.rid == 'linux-x64' && runner.os == 'Linux') ||
+          (matrix.rid == 'win-x64' && runner.os == 'Windows')
+        env:
+          # Disable Git Bash (MSYS) POSIX-to-Windows path conversion on
+          # windows-latest, which otherwise mangles `/body` into
+          # `C:/Program Files/Git/body` before it reaches the CLI.
+          MSYS_NO_PATHCONV: '1'
+          MSYS2_ARG_CONV_EXCL: '*'
+        run: |
+          chmod +x publish/${{ matrix.name }}
+          publish/${{ matrix.name }} create test_smoke.docx
+          publish/${{ matrix.name }} add test_smoke.docx /body --type paragraph --prop text="Hello from CI"
+          publish/${{ matrix.name }} get test_smoke.docx '/body/p[1]'
+          publish/${{ matrix.name }} close test_smoke.docx
+          rm -f test_smoke.docx
+
+      - name: Smoke test - .NET 8-only runtime (linux-x64)
+        if: matrix.rid == 'linux-x64' && runner.os == 'Linux'
+        run: |
+          chmod +x publish/${{ matrix.name }}
+          mkdir -p smoke_net8
+          docker run --rm \
+            -v "$PWD/publish:/app:ro" \
+            -v "$PWD/smoke_net8:/work" \
+            -w /work \
+            mcr.microsoft.com/dotnet/runtime:8.0 \
+            bash -c "set -e; \
+              /app/${{ matrix.name }} create issue115.docx; \
+              /app/${{ matrix.name }} add issue115.docx /body --type paragraph --prop text='net8 smoke'; \
+              /app/${{ matrix.name }} close issue115.docx; \
+              /app/${{ matrix.name }} view issue115.docx text --json"
+
+      - name: Smoke test - install
+        if: >-
+          (matrix.rid == 'osx-arm64' && runner.arch == 'ARM64') ||
+          (matrix.rid == 'osx-x64' && runner.arch == 'X64') ||
+          (matrix.rid == 'linux-x64' && runner.os == 'Linux') ||
+          (matrix.rid == 'win-x64' && runner.os == 'Windows')
+        env:
+          MSYS_NO_PATHCONV: '1'
+          MSYS2_ARG_CONV_EXCL: '*'
+        run: |
+          publish/${{ matrix.name }} install
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            test -f "$LOCALAPPDATA/OfficeCLI/officecli.exe" || { echo "FAIL: officecli.exe not found in %LOCALAPPDATA%\\OfficeCLI"; exit 1; }
+            "$LOCALAPPDATA/OfficeCLI/officecli.exe" --version
+          else
+            test -f "$HOME/.local/bin/officecli" || { echo "FAIL: officecli not found in ~/.local/bin"; exit 1; }
+            "$HOME/.local/bin/officecli" --version
+          fi
+
+      - name: Smoke test - install.sh / install.ps1
+        # Exercises the shell installers themselves (separate from the CLI's
+        # own `install` subcommand tested above). Downloads from
+        # d.officecli.ai with github fallback — validates the production
+        # mirror is reachable AND the in-repo script is syntactically and
+        # logically correct on each platform.
+        if: >-
+          (matrix.rid == 'osx-arm64' && runner.arch == 'ARM64') ||
+          (matrix.rid == 'osx-x64' && runner.arch == 'X64') ||
+          (matrix.rid == 'linux-x64' && runner.os == 'Linux') ||
+          (matrix.rid == 'win-x64' && runner.os == 'Windows')
+        shell: bash
+        env:
+          MSYS_NO_PATHCONV: '1'
+          MSYS2_ARG_CONV_EXCL: '*'
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            pwsh -NoProfile -ExecutionPolicy Bypass -File ./install.ps1
+            test -f "$LOCALAPPDATA/OfficeCLI/officecli.exe" || { echo "FAIL: officecli.exe not installed"; exit 1; }
+            "$LOCALAPPDATA/OfficeCLI/officecli.exe" --version
+          else
+            bash install.sh
+            test -f "$HOME/.local/bin/officecli" || { echo "FAIL: officecli not installed at ~/.local/bin"; exit 1; }
+            "$HOME/.local/bin/officecli" --version
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ matrix.name }}
+          path: publish/${{ matrix.name }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Flatten artifacts and generate checksums
+        run: |
+          mkdir -p flat
+          find artifacts -type f -exec mv {} flat/ \;
+          rm -rf artifacts
+          mv flat artifacts
+          cd artifacts
+          sha256sum officecli-* > SHA256SUMS
+          echo "=== SHA256SUMS ==="
+          cat SHA256SUMS
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: artifacts/**/*
+          generate_release_notes: true
+          draft: true

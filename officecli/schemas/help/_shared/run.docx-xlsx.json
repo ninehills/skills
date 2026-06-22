@@ -1,0 +1,30 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "subscript": {
+      "type": "bool",
+      "description": "vertical alignment = subscript. Mutually exclusive with superscript.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop subscript=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "superscript": {
+      "type": "bool",
+      "description": "vertical alignment = superscript. Mutually exclusive with subscript.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop superscript=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    }
+  }
+}

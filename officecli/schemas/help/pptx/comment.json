@@ -1,0 +1,72 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "comment",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/comment[M]"
+    ]
+  },
+  "note": "Comments live in CommentsPart with an author list. Anchored at x/y EMU on the slide.",
+  "extends": [
+    "_shared/comment",
+    "_shared/comment.docx-pptx"
+  ],
+  "properties": {
+    "index": {
+      "type": "int",
+      "description": "Per-author monotonic index, assigned by the engine.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "comment index",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=2cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=2cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "string",
+      "aliases": [
+        "dir",
+        "rtl"
+      ],
+      "description": "Reading direction for the comment text. rtl prepends U+200F (RIGHT-TO-LEFT MARK) so Arabic / Hebrew comments render with proper bidi context. p:cm has no native rtl attribute, so this is the standard pure-text convention.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl|ltr",
+      "enforcement": "report"
+    }
+  }
+}

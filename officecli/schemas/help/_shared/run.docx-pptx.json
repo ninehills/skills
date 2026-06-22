@@ -1,0 +1,64 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "effective.bold": {
+      "type": "bool",
+      "description": "resolved bold inherited from placeholder→layout→master→presentation defaults. Suppressed when 'bold' is set directly on the run.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "effective.color": {
+      "type": "color",
+      "description": "resolved text color inherited from placeholder→layout→master→presentation defaults. Suppressed when 'color' is set directly on the run.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "#-prefixed uppercase hex (scheme colors pass through)",
+      "enforcement": "report"
+    },
+    "effective.size": {
+      "type": "font-size",
+      "description": "inheritance-resolved font size (read-only). Surfaced when the run does not set 'size' directly; resolved through run style → paragraph style → docDefaults.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "unit-qualified, e.g. \"14pt\"",
+      "enforcement": "report"
+    },
+    "underline": {
+      "type": "enum",
+      "description": "underline style. Common values: single, double, dotted, dash, wave, none.",
+      "values": [
+        "single",
+        "double",
+        "dotted",
+        "dash",
+        "wave",
+        "none",
+        "thick",
+        "dottedHeavy",
+        "dashLong",
+        "dashLongHeavy",
+        "dashDotHeavy",
+        "wavyHeavy",
+        "wavyDouble"
+      ],
+      "aliases": [
+        "font.underline"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop underline=single",
+        "--prop underline=double"
+      ],
+      "readback": "underline style name",
+      "enforcement": "report"
+    }
+  }
+}

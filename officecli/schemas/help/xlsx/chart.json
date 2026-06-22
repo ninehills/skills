@@ -1,0 +1,119 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "chart",
+  "parent": "sheet",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/SheetName/chart[N]"
+    ]
+  },
+  "note": "Validator accepts dotted (axis./series./trendline./datalabels./font./fill./border./… ) and indexed (series{N}./dataLabel{N}./point{N}.) sub-prop namespaces in addition to keys declared below. Chart-level axis* props (axismin, axismax, axistitle, axisfont, …) are Add-time only; post-creation axis Set/Get goes through chart-axis.",
+  "extends": [
+    "_shared/chart",
+    "_shared/chart.docx-xlsx",
+    "_shared/chart.pptx-xlsx"
+  ],
+  "properties": {
+    "dataRange": {
+      "type": "string",
+      "aliases": [
+        "datarange",
+        "range"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "worksheet cell range that sources the chart's series; Add-time only. First column is taken as categories unless an explicit categories= is supplied, in which case every column becomes a series. xlsx-only: pptx/docx charts embed their data and have no host worksheet to reference.",
+      "examples": [
+        "--prop dataRange=Sheet1!B2:C5",
+        "--prop dataRange=Sheet1!B2:C5 --prop categories=Sheet1!A2:A5"
+      ]
+    },
+    "radarStyle": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "radar chart style token (standard | marker | filled).",
+      "readback": "radar style token",
+      "enforcement": "report",
+      "aliases": [
+        "radarstyle"
+      ],
+      "examples": [
+        "--prop radarstyle=filled"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "radar"
+        ]
+      }
+    },
+    "roundedCorners": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "chartSpace roundedCorners flag (true|false).",
+      "readback": "true|false",
+      "enforcement": "report",
+      "aliases": [
+        "roundedcorners"
+      ],
+      "examples": [
+        "--prop roundedcorners=true"
+      ]
+    },
+    "valAxisVisible": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] visible (on role=value); see chart-axis schema for full axis-level options",
+      "readback": "true|false",
+      "enforcement": "report",
+      "aliases": [
+        "valaxis.visible",
+        "valaxisvisible"
+      ],
+      "examples": [
+        "--prop valaxisvisible=false"
+      ]
+    },
+    "view3d.perspective": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "3-D chart perspective (0..240).",
+      "readback": "integer perspective",
+      "enforcement": "report"
+    },
+    "view3d.rotateX": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "3-D chart X rotation in degrees (-90..90).",
+      "readback": "integer degrees",
+      "enforcement": "report"
+    },
+    "view3d.rotateY": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "3-D chart Y rotation in degrees (0..360).",
+      "readback": "integer degrees",
+      "enforcement": "report"
+    }
+  }
+}

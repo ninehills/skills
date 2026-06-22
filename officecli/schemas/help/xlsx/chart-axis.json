@@ -1,0 +1,38 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "chart-axis",
+  "parent": "chart",
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "remove": false
+  },
+  "note": "Axes are created/destroyed implicitly by chartType changes — no direct Add/Remove. Extended charts (funnel/treemap/sunburst/boxWhisker/histogram) reject axis paths; use chart-level Set. At chart-creation time, configure axes via the chart's axis* props (axismin/axismax/axistitle/axisfont/…); chart-axis covers post-creation only. Known gaps: `labelFont` writes the title run (not tick labels); `lineWidth`/`lineDash` Set on an axis path applies to all plot-area series — use chart-series for series-specific line styling.",
+  "addressing": {
+    "key": "role",
+    "pathForm": "/SheetName/chart[N]/axis[@role=ROLE]",
+    "keyValues": [
+      "category",
+      "value",
+      "value2",
+      "series"
+    ]
+  },
+  "extends": [
+    "_shared/chart-axis",
+    "_shared/chart-axis.pptx-xlsx"
+  ],
+  "properties": {
+    "role": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "axis role token — value, value2, category, series. Surfaces on Get to identify which axis this node represents.",
+      "readback": "axis role token (lowercase)",
+      "enforcement": "report"
+    }
+  }
+}

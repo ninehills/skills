@@ -1,0 +1,155 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "sdt",
+  "parent": "body|paragraph",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/sdt[N]", "/body/p[N]/sdt[M]"]
+  },
+  "note": "Aliases: contentcontrol. Structured document tags — inline or block. Block-level SDT wraps paragraphs; inline SDT wraps runs.",
+  "properties": {
+    "type": {
+      "type": "enum",
+      "description": "SDT variant. Only text/richtext/dropdown/combobox/date are supported at add-time. picture/checkbox are not implemented — create those in Word and edit via CLI. Type cannot be changed after creation.",
+      "values": ["text", "richtext", "dropdown", "combobox", "date"],
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop type=text", "--prop type=dropdown"],
+      "readback": "type descriptor",
+      "enforcement": "report"
+    },
+    "tag": {
+      "type": "string",
+      "description": "machine-readable tag for data-binding.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop tag=customerName"],
+      "readback": "Tag attribute",
+      "enforcement": "report"
+    },
+    "alias": {
+      "type": "string",
+      "description": "human-readable display name shown in Word.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop alias=\"Customer Name\""],
+      "readback": "Alias attribute",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "placeholder/initial content.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop text=\"[Enter name]\""],
+      "readback": "concatenated text",
+      "enforcement": "report"
+    },
+    "format": {
+      "type": "string",
+      "description": "date-picker display format string (e.g. yyyy-MM-dd). Date controls only.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop format=yyyy-MM-dd"],
+      "readback": "DateFormat attribute",
+      "enforcement": "report"
+    },
+    "items": {
+      "type": "string",
+      "description": "comma-separated dropdown/combobox choices. Each item may use display|value form (e.g. Draft|DRAFT) when display text differs from the stored value.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop items=Red,Green,Blue", "--prop items=\"Draft|DRAFT,Final|FINAL\""],
+      "readback": "ListItem display|value list",
+      "enforcement": "report"
+    },
+    "lock": {
+      "type": "enum",
+      "description": "content-control locking. unlocked (default), contentLocked (content read-only), sdtLocked (control cannot be deleted), sdtContentLocked (both).",
+      "values": ["unlocked", "contentLocked", "sdtLocked", "sdtContentLocked"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop lock=sdtContentLocked"],
+      "readback": "Lock attribute",
+      "enforcement": "report"
+    },
+    "placeholder": {
+      "type": "bool",
+      "description": "true when the control is currently showing its placeholder text (<w:showingPlcHdr/>).",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop placeholder=true"],
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "placeholderText": {
+      "type": "string",
+      "description": "docPart gallery reference for the placeholder content (<w:placeholder><w:docPart w:val=.../></w:placeholder>).",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop placeholderText=DefaultPlaceholder"],
+      "readback": "DocPartReference attribute",
+      "enforcement": "report"
+    },
+    "date.fullDate": {
+      "type": "string",
+      "description": "date-picker selected value as ISO-8601 UTC (w:fullDate). The actual chosen date, distinct from the display format.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop date.fullDate=2026-01-01T00:00:00Z"],
+      "readback": "FullDate attribute",
+      "enforcement": "report"
+    },
+    "date.calendar": {
+      "type": "string",
+      "description": "date-picker calendar system (w:calendar), e.g. gregorian, hijri, japan.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop date.calendar=gregorian"],
+      "readback": "Calendar attribute",
+      "enforcement": "report"
+    },
+    "date.lid": {
+      "type": "string",
+      "description": "date-picker locale/language id (w:lid), e.g. en-US.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop date.lid=en-US"],
+      "readback": "LanguageId attribute",
+      "enforcement": "report"
+    },
+    "date.storeMappedDataAs": {
+      "type": "string",
+      "description": "date-picker XML-mapping storage type (w:storeMappedDataAs), e.g. dateTime, date, text.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop date.storeMappedDataAs=dateTime"],
+      "readback": "SdtDateMappingType attribute",
+      "enforcement": "report"
+    },
+    "comboBox.lastValue": {
+      "type": "string",
+      "description": "combobox current selection (w:lastValue on <w:comboBox>).",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop comboBox.lastValue=B"],
+      "readback": "LastValue attribute",
+      "enforcement": "report"
+    },
+    "dropDown.lastValue": {
+      "type": "string",
+      "description": "dropdown current selection (w:lastValue on <w:dropDownList>).",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop dropDown.lastValue=X"],
+      "readback": "LastValue attribute",
+      "enforcement": "report"
+    },
+    "id": {
+      "type": "number",
+      "description": "OOXML SdtId value; source of @sdtId in stable path /sdt[@sdtId=N].",
+      "add": false, "set": false, "get": true,
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "editable": {
+      "type": "bool",
+      "description": "false when SdtContentLockingValues.SdtContentLocked is set on this content control.",
+      "add": false, "set": false, "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "ole",
+  "parent": "paragraph|body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/body/p[N]/ole[M]",
+      "/header[N]/ole[M]",
+      "/footer[N]/ole[M]"
+    ]
+  },
+  "note": "Aliases: oleobject, object, embed. Embeds a binary package plus a preview image. Source accepted as file path, URL, or data-URI.",
+  "extends": [
+    "_shared/ole",
+    "_shared/ole.docx-pptx"
+  ]
+}

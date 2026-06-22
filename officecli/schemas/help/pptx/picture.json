@@ -1,0 +1,214 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "picture",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/picture[M]"
+    ]
+  },
+  "note": "Aliases: image, img. 'src' (alias 'path') required. Source resolved by ImageSource — file path, URL, data-URI, raw bytes.",
+  "extends": [
+    "_shared/picture",
+    "_shared/picture.docx-pptx",
+    "_shared/picture.pptx-xlsx"
+  ],
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "cNvPr picture id; @id in /picture[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "readback": "integer shape id (cNvPr)",
+      "enforcement": "report"
+    },
+    "mediaType": {
+      "type": "string",
+      "description": "logical media kind derived from VideoFromFile / AudioFromFile presence under the picture. One of `picture`, `video`, `audio`. Surfaces only via the `image`/`video`/`audio`/`media` selectors.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "`picture` | `video` | `audio`",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "description": "x offset in EMU/length form (e.g. 2cm). pptx absolute positioning.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=0",
+        "--prop x=1in"
+      ],
+      "readback": "length string (FormatEmu)",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "description": "y offset in EMU/length form (e.g. 2cm). pptx absolute positioning.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=0",
+        "--prop y=1in"
+      ],
+      "readback": "length string (FormatEmu)",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "length",
+      "description": "width — EMU/length form (e.g. 1.5cm). Required if not inferred from native ratio.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop width=5",
+        "--prop width=3in"
+      ],
+      "readback": "length string",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "description": "height — EMU/length form (e.g. 1.5cm). Required if not inferred from native ratio.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop height=5",
+        "--prop height=2in"
+      ],
+      "readback": "length string",
+      "enforcement": "report"
+    },
+    "rotation": {
+      "type": "number",
+      "description": "clockwise rotation in degrees. Mirrors shape/connector/group rotation — stored on the same a:xfrm rot attribute (degrees * 60000). Alias: rotate.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "aliases": ["rotate"],
+      "examples": [
+        "--prop rotation=45",
+        "--prop rotation=-90"
+      ],
+      "readback": "decimal degrees (e.g. 45 or 22.5)",
+      "enforcement": "report"
+    },
+    "link": {
+      "type": "string",
+      "description": "click-hyperlink target attached to the picture's cNvPr (so the whole image is clickable). Accepts absolute URI (https://, mailto:), slide[N] for in-deck jumps, or named actions (firstslide, lastslide, nextslide, previousslide). Pass 'none' or empty to clear.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop link=https://example.com",
+        "--prop link='slide[3]'",
+        "--prop link=nextslide"
+      ],
+      "readback": "URL, slide[N], or named action",
+      "enforcement": "report"
+    },
+    "tooltip": {
+      "type": "string",
+      "description": "hover tooltip text for the click-hyperlink. Applied together with `link` in a single set/add call; standalone tooltip change without link is not supported.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop link=https://example.com --prop tooltip=\"Open homepage\""
+      ],
+      "readback": "string",
+      "enforcement": "report"
+    },
+    "opacity": {
+      "type": "number",
+      "description": "picture opacity. Input as a decimal 0.0-1.0 or a percent 2-100. Stored on the blip as a:alphaModFix @amt (value * 100000); readback emits the decimal 0.0-1.0 form.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop opacity=0.5",
+        "--prop opacity=80"
+      ],
+      "readback": "decimal in [0.0, 1.0]",
+      "enforcement": "report"
+    },
+    "brightness": {
+      "type": "number",
+      "description": "luminance brightness in [-100, 100]. Stored on the blip as a:lum @bright (value * 1000). Combine with `contrast` to mirror PowerPoint's Picture Format → Corrections.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop brightness=40",
+        "--prop brightness=-20"
+      ],
+      "readback": "decimal in [-100, 100]",
+      "enforcement": "report"
+    },
+    "contrast": {
+      "type": "number",
+      "description": "luminance contrast in [-100, 100]. Stored on the blip as a:lum @contrast (value * 1000). Combine with `brightness`.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop contrast=-30",
+        "--prop contrast=20"
+      ],
+      "readback": "decimal in [-100, 100]",
+      "enforcement": "report"
+    },
+    "shadow": {
+      "type": "string",
+      "description": "outer shadow as `color-blur-angle-dist-opacity` (mirrors shape `shadow`). Input color is hex (with or without `#`, 6- or 8-digit `RRGGBBAA`) or a scheme name; blur/dist in points; angle in degrees; opacity 0-100. Readback emits `#RRGGBB-blur-angle-dist-opacity` (always `#`-prefixed 6-digit color; the alpha is carried solely by the trailing opacity field, never double-encoded as an alpha byte).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop shadow=000000-10-45-6-50",
+        "--prop shadow=accent1-8-90-4-60"
+      ],
+      "readback": "`#RRGGBB-blur-angle-dist-opacity`",
+      "enforcement": "report"
+    },
+    "glow": {
+      "type": "string",
+      "description": "outer glow as `color-radius-opacity` (mirrors shape `glow`). color is hex (no `#`) or scheme; radius in points; opacity 0-100.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop glow=FF0000-12-75",
+        "--prop glow=accent2-8-50"
+      ],
+      "readback": "`color-radius-opacity`",
+      "enforcement": "report"
+    },
+    "compressionState": {
+      "type": "string",
+      "description": "blip compression target (a:blip cstate attribute). PowerPoint's Picture Format → Compress Pictures → target use. Accepted values: email, print, hqprint, screen, none. `none` (the schema default) is suppressed on readback.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop compressionState=email",
+        "--prop compressionState=hqprint"
+      ],
+      "readback": "email | print | hqprint | screen",
+      "enforcement": "report"
+    }
+  }
+}

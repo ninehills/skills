@@ -1,0 +1,90 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "row",
+  "parent": "sheet",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/SheetName/row[N]"]
+  },
+  "note": "Row index N is 1-based. Add/Set asymmetry: all formatting props are currently Set-only. Insert/move/clone at an occupied slot shifts every row at or past the slot down by one, and every range-bearing structure on the sheet (mergeCells, CF/DV sqref, autoFilter, hyperlink/table refs, named ranges, formula cell-refs) follows the displacement. 'add --from /SheetName/row[K]' with --before/--after clones cells + single-row mergeCells; relative formula refs are delta-shifted to the new anchor (Excel 'Insert Copied Cells' parity).",
+  "examples": [
+    {
+      "title": "Filter rows by column name (resolves against a ListObject or a detected header-row table)",
+      "commands": [
+        "officecli query book.xlsx \"row[Salary>5000]\"",
+        "officecli query book.xlsx \"row[Region=West and Sales>1000]\"",
+        "officecli query book.xlsx \"row[Status=open or Priority=high]\""
+      ]
+    }
+  ],
+  "properties": {
+    "matchedTable": {
+      "type": "string",
+      "description": "label of the table whose column predicate this row matched (emitted on row nodes returned by a row[Col op val] selector). Get-only.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "tableSource": {
+      "type": "string",
+      "description": "`detected` when matchedTable came from a header-sniffed (not real listObject) table. Get-only.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "cols": {
+      "type": "int",
+      "description": "number of empty cells to seed in the new row.",
+      "add": true, "set": false, "get": false,
+      "examples": ["--prop cols=5"],
+      "readback": "n/a (structural only)",
+      "enforcement": "strict"
+    },
+    "height": {
+      "type": "length",
+      "description": "row height in points.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop height=24"],
+      "readback": "numeric points (raw double as stored)",
+      "enforcement": "strict"
+    },
+    "hidden": {
+      "type": "bool",
+      "description": "hide row.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop hidden=true"],
+      "readback": "true when hidden, key absent otherwise",
+      "enforcement": "strict"
+    },
+    "outline": {
+      "type": "int",
+      "description": "outline/group level 0-7. Aliases: outlineLevel, group. Set accepts `outline`/`outlineLevel`/`group`; Get readback uses canonical key `outlineLevel`.",
+      "aliases": ["outlinelevel", "group"],
+      "add": false, "set": true, "get": false,
+      "examples": ["--prop outline=1"],
+      "readback": "see `outlineLevel`",
+      "enforcement": "report"
+    },
+    "outlineLevel": {
+      "type": "number",
+      "description": "row outline grouping level (0 = ungrouped, 1..7 = nested group depth). Get-only readback of the value set via `outline`.",
+      "add": false, "set": false, "get": true,
+      "readback": "integer 0..7; key omitted when row has no outline level",
+      "enforcement": "report"
+    },
+    "collapsed": {
+      "type": "bool",
+      "description": "collapse row group. Currently Set-only.",
+      "add": false, "set": true, "get": false,
+      "examples": ["--prop collapsed=true"],
+      "readback": "not surfaced by Get",
+      "enforcement": "report"
+    },
+    "customHeight": { "type":"bool", "add":false, "set":false, "get":true, "description":"true when the row carries an explicit height (Row @customHeight). Get-only flag.", "readback":"true when row has a custom height", "enforcement":"report" }
+  }
+}

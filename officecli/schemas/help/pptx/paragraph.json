@@ -1,0 +1,162 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "paragraph",
+  "elementAliases": ["p"],
+  "parent": "shape|placeholder",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/shape[M]/p[K]"
+    ]
+  },
+  "note": "Aliases: para. Appends a:p to a shape's TextBody. Alignment uses pptx vocabulary (l/ctr/r/just); lineSpacing via SpacingConverter.",
+  "children": [
+    {
+      "element": "run",
+      "pathSegment": "r",
+      "cardinality": "0..n"
+    }
+  ],
+  "extends": "_shared/paragraph",
+  "properties": {
+    "align": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center",
+        "right",
+        "justify"
+      ],
+      "aliases": [
+        "alignment",
+        "halign"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop align=center"
+      ],
+      "readback": "canonical 'align'",
+      "enforcement": "report"
+    },
+    "level": {
+      "type": "int",
+      "description": "list indent level 0-8.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop level=1"
+      ],
+      "readback": "indent level",
+      "enforcement": "report"
+    },
+    "marginLeft": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "left text margin (CT_TextParagraphProperties @marL).",
+      "readback": "unit-qualified pt length (e.g. '36pt')",
+      "enforcement": "report"
+    },
+    "marginRight": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "right text margin (CT_TextParagraphProperties @marR).",
+      "readback": "unit-qualified pt length (e.g. '36pt')",
+      "enforcement": "report"
+    },
+    "lineRule": {
+      "type": "enum",
+      "add": false,
+      "set": false,
+      "get": false,
+      "description": "Not applicable to pptx. PowerPoint has no independent line-spacing rule — the rule is inferred from the lineSpacing value's format (e.g. '1.5x' / '150%' → percent rule, '18pt' → fixed-points rule). Override of _shared/paragraph which inherits the docx-style lineRule.",
+      "enforcement": "report"
+    },
+    "bold": {
+      "type": "bool",
+      "description": "paragraph default run weight. Stored on the paragraph's defRPr (CT_TextCharacterProperties) and inherited by every run in the paragraph that does not override `bold`. Folded onto the paragraph by dump when every run shares the same value.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop bold=true"],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "italic": {
+      "type": "bool",
+      "description": "paragraph default run italic. Stored on the paragraph's defRPr and inherited by every run that does not override `italic`. Folded onto the paragraph by dump when every run shares the same value.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop italic=true"],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "color": {
+      "type": "color",
+      "description": "paragraph default run color. Stored on the paragraph's defRPr solidFill and inherited by every run that does not override `color`. Folded onto the paragraph by dump when every run shares the same value.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop color=FF0000"],
+      "readback": "canonical hex color",
+      "enforcement": "report"
+    },
+    "size": {
+      "type": "length",
+      "description": "paragraph default run font size (points). Stored on the paragraph's defRPr (@sz, units of 1/100 pt) and inherited by every run that does not override `size`. Folded onto the paragraph by dump when every run shares the same value.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop size=14pt"],
+      "readback": "unit-qualified points (e.g. \"14pt\")",
+      "enforcement": "report"
+    },
+    "lang": {
+      "type": "string",
+      "description": "BCP-47 language tag stamped on the paragraph's defRPr (@lang). Folded onto the paragraph by dump when every run shares the same lang value (single-run collapse). See pptx/run.json for full semantics.",
+      "aliases": ["lang.latin"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop lang=en-US"],
+      "readback": "BCP-47 tag as written",
+      "enforcement": "strict"
+    },
+    "list": {
+      "type": "string",
+      "description": "paragraph bullet style. Named presets (bullet, dash, arrow, check, star, none) or a literal bullet character; 'numbered'/'alpha'/'roman'/... map to auto-numbered schemes. Mutually exclusive with bulletRaw — when a non-standard bullet (custom buFont/buChar/buBlip) is present, Get emits bulletRaw instead of list.",
+      "aliases": ["bullet"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop list=bullet", "--prop list=numbered", "--prop list=none"],
+      "readback": "named preset or literal char; absent when bulletRaw is emitted",
+      "enforcement": "report"
+    },
+    "tabs": {
+      "type": "string",
+      "description": "custom tab stops as a compact comma-separated list of pos:align pairs (e.g. '1in:l,2in:r'). Alignment aliases: l (left), ctr (center), r (right), dec (decimal). Writes a:tabLst on the paragraph. An invalid alignment token rejects the whole value and leaves existing tab stops intact.",
+      "aliases": ["tablist"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop tabs=1in:l,2in:r"],
+      "readback": "compact pos:align list",
+      "enforcement": "report"
+    }
+  }
+}

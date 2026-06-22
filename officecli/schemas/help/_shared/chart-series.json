@@ -1,0 +1,265 @@
+{
+  "$schema": "../_schema.json",
+  "element": "chart-series",
+  "shared_base": true,
+  "properties": {
+    "categories": {
+      "type": "string",
+      "description": "per-series category override; range reference only.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop series1.categories=\"Sheet1!$A$2:$A$5\""
+      ],
+      "enforcement": "report",
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "categoriesRef": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "A1 cell range backing the category labels.",
+      "readback": "A1 range string",
+      "enforcement": "report"
+    },
+    "color": {
+      "type": "color",
+      "description": "series fill color.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop series1.color=#4472C4",
+        "--prop series1.color=4472C4"
+      ],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "dataLabels.numFmt": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "per-series data label number format readback.",
+      "readback": "format code",
+      "enforcement": "report"
+    },
+    "dataLabels.separator": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "per-series data label separator string readback.",
+      "readback": "separator string",
+      "enforcement": "report"
+    },
+    "errBars": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "error bar value type (fixed, percent, stddev, stderr); accepted aliases: fixedValue, percentage/pct, standardDeviation, standardError. Pass 'none' to clear. Silently ignored on series types that don't support error bars.",
+      "readback": "OOXML errValType token",
+      "enforcement": "lenient"
+    },
+    "invertIfNeg": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "invert color for negative values. Bar/column/area/pie series only; line/scatter silently ignore.",
+      "readback": "true | false",
+      "enforcement": "lenient"
+    },
+    "lineDash": {
+      "type": "enum",
+      "values": [
+        "solid",
+        "sysDash",
+        "sysDot",
+        "sysDashDot",
+        "lgDash",
+        "lgDashDot",
+        "lgDashDotDot",
+        "dash",
+        "dashDot",
+        "dot",
+        "longDash"
+      ],
+      "set": true,
+      "get": true,
+      "aliases": [
+        "dash"
+      ],
+      "description": "series line dash style. Set accepts user-friendly aliases (dash/dot/dashDot/longDash); Get returns OOXML token (sysDash/sysDot/sysDashDot/lgDash). 'dashDotDot' has no native enum member and is accepted as an alias for sysDashDotDot — Get readback will return sysDashDotDot. 'solid' is the only round-trip-stable value.",
+      "examples": [
+        "--prop lineDash=dash",
+        "--prop lineDash=solid"
+      ],
+      "readback": "OOXML preset dash token",
+      "enforcement": "report"
+    },
+    "lineWidth": {
+      "type": "number",
+      "set": true,
+      "get": true,
+      "description": "series line width in points (e.g. 1.5).",
+      "examples": [
+        "--prop lineWidth=1.5"
+      ],
+      "readback": "numeric width in points",
+      "enforcement": "report"
+    },
+    "marker": {
+      "type": "string",
+      "set": true,
+      "get": true,
+      "description": "per-series marker symbol. Values: circle, dash, diamond, dot, plus, square, star, triangle, x, none, auto. Supports 'symbol:size:COLOR' compound form (e.g. 'circle:8:FF0000'). Applies to line/scatter/radar series. (picture markers are not implemented.)",
+      "examples": [
+        "--prop marker=circle",
+        "--prop marker=\"circle:8:FF0000\""
+      ],
+      "readback": "marker symbol name",
+      "enforcement": "report"
+    },
+    "markerSize": {
+      "type": "number",
+      "set": true,
+      "get": true,
+      "description": "marker size in points (2–72). Applies when marker is not 'none'.",
+      "examples": [
+        "--prop markerSize=8"
+      ],
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "markerColor": {
+      "type": "string",
+      "aliases": [
+        "marker.color"
+      ],
+      "set": true,
+      "get": true,
+      "description": "per-series marker fill color (line/scatter/radar). Preserves existing symbol and size — pair with marker=/markerSize= to set the triplet independently. Round-trips via Reader's spPr/solidFill probe.",
+      "examples": [
+        "--prop markerColor=FF0000"
+      ],
+      "readback": "hex color, e.g. #FF0000",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "series name shown in legend and data labels.",
+      "aliases": [
+        "title"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop name=\"Q1\"",
+        "--prop series1.name=\"Q1\"",
+        "--prop name=\"Product A\"",
+        "--prop series1.name=\"Product A\"",
+        "--prop name=\"Revenue\"",
+        "--prop series1.name=\"Revenue\""
+      ],
+      "readback": "series name string",
+      "enforcement": "report"
+    },
+    "nameRef": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "A1 cell reference backing the series name.",
+      "readback": "A1 cell reference",
+      "enforcement": "report"
+    },
+    "scatterStyle": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "scatter sub-style (line/lineMarker/marker/smooth/smoothMarker/none).",
+      "readback": "OOXML scatterStyle token",
+      "enforcement": "report"
+    },
+    "secondaryAxis": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "true when the chart has more than one value axis (this series uses the secondary).",
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "smooth": {
+      "type": "string",
+      "description": "smooth line interpolation for line/scatter series (true|false).",
+      "appliesWhen": {
+        "parent.chartType": [
+          "line",
+          "scatter"
+        ]
+      },
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop smooth=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "values": {
+      "type": "string",
+      "description": "comma-separated numbers, OR a cell range reference (Sheet1!B2:B13)",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop series1.values=\"120,150,180\"",
+        "--prop series1.values=\"Sheet1!$B$2:$B$5\"",
+        "--prop series1.values=\"120,150,180,210\""
+      ],
+      "enforcement": "strict"
+    },
+    "bubbleSize": {
+      "type": "string",
+      "description": "bubble chart per-point sizes; comma-separated numbers OR a cell range reference. Defaults to the y-values when omitted.",
+      "appliesWhen": {
+        "parent.chartType": [
+          "bubble"
+        ]
+      },
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop series1.bubbleSize=\"10,20,30\"",
+        "--prop series1.bubbleSize=\"Sheet1!$D$1:$D$3\""
+      ],
+      "readback": "comma-separated numeric list (cached values)",
+      "enforcement": "report"
+    },
+    "bubbleSizeRef": {
+      "type": "string",
+      "description": "A1 cell range backing bubble per-point sizes. Coexists with bubbleSize (the literal becomes the numCache).",
+      "appliesWhen": {
+        "parent.chartType": [
+          "bubble"
+        ]
+      },
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": [
+        "--prop series1.bubbleSizeRef=\"Sheet1!$D$1:$D$3\""
+      ],
+      "readback": "A1 range string",
+      "enforcement": "report"
+    }
+  }
+}

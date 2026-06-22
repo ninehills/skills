@@ -1,0 +1,315 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "table",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/slide[N]/table[@id=ID]",
+      "/slide[N]/table[@name=NAME]"
+    ],
+    "positional": [
+      "/slide[N]/table[M]"
+    ]
+  },
+  "note": "GraphicFrame wrapping Drawing.Table. Seed data inline via `data` (semicolons split rows, commas split cells) or per-cell via `r{R}c{C}` props. `get /slide[N]/table[K]` defaults to --depth=1 (table + row stubs only; large tables at depth=2 dominate the response). Use --depth 2 or address cells directly via `/slide[N]/table[K]/row[R]/cell[C]`. A table-level `fill=COLOR` fans the fill out to every cell (there is no separate table-level fill readback — read the per-cell fill).",
+  "children": [
+    {
+      "element": "row",
+      "pathSegment": "tr",
+      "cardinality": "1..n"
+    },
+    {
+      "element": "column",
+      "pathSegment": "col",
+      "cardinality": "1..n"
+    }
+  ],
+  "extends": [
+    "_shared/table",
+    "_shared/table.docx-pptx",
+    "_shared/table.pptx-xlsx"
+  ],
+  "properties": {
+    "id": {
+      "type": "number",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "cNvPr graphic-frame id; @id in /table[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "readback": "integer (cNvPr graphic frame id)",
+      "enforcement": "report"
+    },
+    "zorder": {
+      "type": "number",
+      "description": "z-order in slide shape tree. On add, positions the table (1 = back). On set, re-stacks it: front/back/forward/backward, +1/-1, or a 1-based absolute index.",
+      "aliases": ["z-order", "order"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop zorder=1", "--prop zorder=front"],
+      "readback": "1-based integer (1 = back)",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "description": "left offset in EMU-parseable length.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=1in"
+      ],
+      "readback": "cm-formatted length",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=1in"
+      ],
+      "readback": "cm-formatted length",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop height=5cm"
+      ],
+      "readback": "cm-formatted length",
+      "enforcement": "report"
+    },
+    "rowHeight": {
+      "type": "length",
+      "description": "uniform row height (EMU). On add, if unspecified it's derived from 'height' / rows. On set, applies the given height to EVERY row (a convenience for `tr[R] --prop height` on each); read individual heights back per-row via `tr[R]`.",
+      "aliases": [
+        "rowheight"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop rowHeight=1cm"
+      ],
+      "readback": "not surfaced at table level",
+      "enforcement": "strict"
+    },
+    "colWidths": {
+      "type": "string",
+      "description": "per-column widths as comma- or semicolon-separated lengths (EMU/cm/in/pt). Length must match 'cols'; extra/missing entries fall back to the uniform default. Get readback is comma-separated FormatEmu output.",
+      "aliases": [
+        "colwidths"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop colWidths=2cm,3cm,2cm",
+        "--prop colWidths=\"1in;2in;1in\""
+      ],
+      "readback": "comma-separated length list (e.g. \"2cm,3cm,2cm\")",
+      "enforcement": "strict"
+    },
+    "headerFill": {
+      "type": "color",
+      "description": "solid fill color applied to row 0 (header).",
+      "aliases": [
+        "headerfill"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop headerFill=#4472C4"
+      ],
+      "readback": "per-cell fill, not aggregated at table level",
+      "enforcement": "strict"
+    },
+    "bodyFill": {
+      "type": "color",
+      "description": "solid fill color applied to rows 1..N (body).",
+      "aliases": [
+        "bodyfill"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop bodyFill=#EEECE1"
+      ],
+      "readback": "per-cell fill, not aggregated at table level",
+      "enforcement": "strict"
+    },
+    "firstRow": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @firstRow flag — header-row styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "lastRow": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @lastRow flag — total-row styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "firstCol": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @firstCol flag — first-column styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "lastCol": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @lastCol flag — last-column styling enabled.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "bandedRows": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @bandRow flag — alternating row banding from the table style.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "bandedCols": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tblPr @bandCol flag — alternating column banding from the table style.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "border.all": {
+      "type": "string",
+      "description": "shorthand: applies the border to every edge of every cell. PPT OOXML has no table-level border element — this fans out to per-cell a:lnL/lnR/lnT/lnB. Format: 'WIDTH[ DASH][ COLOR]' space-separated (e.g. '1pt solid FF0000') or 'STYLE;WIDTH;COLOR[;DASH]' semicolon form (style is ignored — kept for docx parity). DASH ∈ solid|dot|dash|lgDash|dashDot|sysDot|sysDash. Use 'none' to clear. Alias: border. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient.",
+      "aliases": [
+        "border"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.all=\"1pt solid FF0000\"",
+        "--prop border=\"single;1pt;000000\"",
+        "--prop border.all=none",
+        "--prop border.all=\"single;4;FF0000\""
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.bottom": {
+      "type": "string",
+      "description": "outer bottom border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated 'WIDTH DASH COLOR' form; docx only accepts the semicolon form 'STYLE;SIZE;COLOR'. Add/Set only — read per-cell.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.bottom=\"2pt solid 000000\"",
+        "--prop border.bottom=\"double;6;0000FF\""
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.horizontal": {
+      "type": "string",
+      "description": "inside-horizontal dividers (between rows). Fans out to bottom of rows 1..N-1 plus top of rows 2..N. PPT has no native inside-border element. Alias: border.insideH. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient.",
+      "aliases": [
+        "border.insideh",
+        "border.insideH"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.horizontal=\"1pt solid CCCCCC\"",
+        "--prop border.horizontal=\"single;4;CCCCCC\""
+      ],
+      "enforcement": "report",
+      "readback": "n/a (PPT has no native inside-border emit on Get)"
+    },
+    "border.left": {
+      "type": "string",
+      "description": "outer left edge: applies to the left of column-1 cells in every row only. Format same as border.all. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.left=\"1pt solid 808080\"",
+        "--prop border.left=\"single;4\""
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.right": {
+      "type": "string",
+      "description": "outer right edge: applies to the right of last-column cells in every row only. Format same as border.all. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.right=\"1pt solid 808080\"",
+        "--prop border.right=\"single;4\""
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.top": {
+      "type": "string",
+      "description": "outer top border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated 'WIDTH DASH COLOR' form; docx only accepts the semicolon form 'STYLE;SIZE;COLOR' (SIZE is in 1/8 pt units). Add/Set only — table-level border readback is not surfaced today; inspect per-cell border.top instead.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.top=\"2pt solid 000000\"",
+        "--prop border.top=\"single;4;000000\""
+      ],
+      "enforcement": "report",
+      "readback": "edge descriptor"
+    },
+    "border.vertical": {
+      "type": "string",
+      "description": "inside-vertical dividers (between columns). Fans out to right of cols 1..M-1 plus left of cols 2..M. Alias: border.insideV. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient.",
+      "aliases": [
+        "border.insidev",
+        "border.insideV"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.vertical=\"1pt solid CCCCCC\"",
+        "--prop border.vertical=\"single;4;CCCCCC\""
+      ],
+      "enforcement": "report",
+      "readback": "n/a (PPT has no native inside-border emit on Get)"
+    }
+  }
+}

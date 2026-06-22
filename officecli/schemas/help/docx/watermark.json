@@ -1,0 +1,90 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "watermark",
+  "parent": "body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/watermark"]
+  },
+  "note": "Watermarks are inserted into the document header as VML/DrawingML shapes. Text or image variants supported.",
+  "properties": {
+    "text": {
+      "type": "string",
+      "description": "watermark text (text variant).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop text=DRAFT"],
+      "readback": "text content",
+      "enforcement": "report"
+    },
+    "image": {
+      "type": "string",
+      "description": "image source for image watermark. Aliases: src, path.",
+      "aliases": ["src", "path"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop image=/path/to/logo.png"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "color": {
+      "type": "color",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop color=#C0C0C0"],
+      "readback": "#-prefixed hex",
+      "enforcement": "report"
+    },
+    "font": {
+      "type": "string",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop font=Calibri"],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "rotation": {
+      "type": "int",
+      "description": "VML rotation in degrees (0-360). Defaults to 315 (diagonal). Accepts negative input: -45 is stored and read back as 315.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop rotation=315", "--prop rotation=-45"],
+      "readback": "rotation degrees (0-360, e.g. 315)",
+      "enforcement": "report"
+    },
+    "opacity": {
+      "type": "string",
+      "description": "opacity 0..1 float as string (e.g. 0.5). Verbatim VML attribute injection.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop opacity=.5"],
+      "readback": "opacity value",
+      "enforcement": "report"
+    },
+    "size": {
+      "type": "string",
+      "description": "font size for text watermark (pt). Default 1pt (auto-fit).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop size=72pt"],
+      "readback": "pt-suffixed size",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "string",
+      "description": "watermark shape width (pt/in/cm).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop width=415pt"],
+      "readback": "shape width",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "string",
+      "description": "watermark shape height (pt/in/cm).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop height=207.5pt"],
+      "readback": "shape height",
+      "enforcement": "report"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "date": {
+      "type": "string",
+      "description": "ISO-8601 timestamp. Defaults to DateTime.UtcNow.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop date=2025-01-15T10:30:00Z",
+        "--prop date=2025-01-15T10:00:00Z"
+      ],
+      "readback": "Date attribute",
+      "enforcement": "report"
+    },
+    "initials": {
+      "type": "string",
+      "description": "author initials. Defaults to derived from author name when omitted.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop initials=AT",
+        "--prop initials=AW"
+      ],
+      "readback": "initials",
+      "enforcement": "report"
+    }
+  }
+}

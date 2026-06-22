@@ -1,0 +1,1474 @@
+{
+  "$schema": "../_schema.json",
+  "element": "chart",
+  "shared_base": true,
+  "properties": {
+    "areafill": {
+      "type": "string",
+      "aliases": [
+        "area.fill"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "fill applied to every series shape. Solid color or gradient 'c1-c2[:angle]'.",
+      "examples": [
+        "--prop areafill=4472C4-A5C8FF:90"
+      ]
+    },
+    "autotitledeleted": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "suppress the auto-generated 'Chart Title' placeholder.",
+      "examples": [
+        "--prop autotitledeleted=true"
+      ]
+    },
+    "axisfont": {
+      "type": "string",
+      "aliases": [
+        "axis.font"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] axisFont; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisfont=10:8B949E:Helvetica"
+      ]
+    },
+    "axisline": {
+      "type": "string",
+      "aliases": [
+        "axis.line"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] lineWidth/lineDash; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisline=666666:1"
+      ]
+    },
+    "axismax": {
+      "type": "number",
+      "aliases": [
+        "max"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] max (on value/value2); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axismax=1000",
+        "--prop axismax=250"
+      ]
+    },
+    "axismin": {
+      "type": "number",
+      "aliases": [
+        "min"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] min (on value/value2); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axismin=0"
+      ]
+    },
+    "axisnumfmt": {
+      "type": "string",
+      "aliases": [
+        "axisnumberformat"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] axisNumFmt / format; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisnumfmt=\"#,##0\""
+      ]
+    },
+    "axisorientation": {
+      "type": "string",
+      "aliases": [
+        "axisreverse"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] axisOrientation; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisorientation=true"
+      ]
+    },
+    "axisposition": {
+      "type": "string",
+      "aliases": [
+        "axispos"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] tickLabelPos / crossBetween; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisposition=top"
+      ]
+    },
+    "axistitle": {
+      "type": "string",
+      "aliases": [
+        "vtitle"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] title (value-axis); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axistitle=\"Revenue\""
+      ]
+    },
+    "axisvisible": {
+      "type": "bool",
+      "aliases": [
+        "axis.delete",
+        "axis.visible"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] visible; see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop axisvisible=false"
+      ]
+    },
+    "bubbleScale": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "bubble chart scale (% of default).",
+      "readback": "integer percentage",
+      "enforcement": "report",
+      "aliases": [
+        "bubblescale"
+      ],
+      "examples": [
+        "--prop bubblescale=100"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "bubble"
+        ]
+      }
+    },
+    "catAxisVisible": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] visible (on role=category); see chart-axis schema for full axis-level options",
+      "readback": "true | false",
+      "enforcement": "report",
+      "aliases": [
+        "cataxis.visible",
+        "cataxisvisible"
+      ],
+      "examples": [
+        "--prop cataxisvisible=false"
+      ]
+    },
+    "catTitle": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "category axis title text.",
+      "readback": "title string",
+      "enforcement": "report",
+      "aliases": [
+        "htitle",
+        "cattitle"
+      ],
+      "examples": [
+        "--prop cattitle=\"Quarter\""
+      ]
+    },
+    "cataxisline": {
+      "type": "string",
+      "aliases": [
+        "cataxis.line"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] lineWidth/lineDash (on role=category); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop cataxisline=333333:1"
+      ]
+    },
+    "categories": {
+      "type": "string",
+      "description": "comma-separated category labels, OR a cell range reference (e.g. Sheet1!A2:A5)",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop categories=A,B,C",
+        "--prop categories=\"Q1,Q2,Q3,Q4\"",
+        "--prop categories=\"Sheet1!$A$2:$A$5\""
+      ],
+      "readback": "comma-separated category labels",
+      "enforcement": "strict"
+    },
+    "chartFill": {
+      "type": "color",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "chart-level fill color (accepts #RRGGBB, named colors, or scheme names).",
+      "readback": "#RRGGBB or color descriptor",
+      "enforcement": "report"
+    },
+    "chartType": {
+      "type": "enum",
+      "values": [
+        "bar",
+        "column",
+        "line",
+        "pie",
+        "doughnut",
+        "area",
+        "scatter",
+        "bubble",
+        "radar",
+        "stock",
+        "combo",
+        "waterfall",
+        "funnel",
+        "treemap",
+        "sunburst",
+        "boxWhisker",
+        "histogram",
+        "pareto"
+      ],
+      "modifiers": {
+        "3d": {
+          "suffix": "3d",
+          "example": "column3d",
+          "appliesWhen": {
+            "chartType": [
+              "bar",
+              "column",
+              "line",
+              "pie",
+              "area"
+            ]
+          }
+        },
+        "stacked": {
+          "prefix": "stacked",
+          "example": "stackedBar",
+          "appliesWhen": {
+            "chartType": [
+              "bar",
+              "column",
+              "line",
+              "area"
+            ]
+          }
+        },
+        "percentStacked": {
+          "prefix": "percentStacked",
+          "example": "percentStackedBar",
+          "appliesWhen": {
+            "chartType": [
+              "bar",
+              "column",
+              "line",
+              "area"
+            ]
+          }
+        }
+      },
+      "aliases": [
+        "type",
+        "col",
+        "donut",
+        "xy",
+        "spider",
+        "ohlc",
+        "wf",
+        "charttype"
+      ],
+      "propAliases": [
+        "type"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop chartType=column",
+        "--prop chartType=stackedBar",
+        "--prop chartType=percentStackedColumn",
+        "--prop chartType=column3d",
+        "--prop chartType=waterfall"
+      ],
+      "readback": "normalized chartType string without modifiers (modifiers surface as separate flags in later iterations)",
+      "enforcement": "strict"
+    },
+    "chartareafill": {
+      "type": "string",
+      "aliases": [
+        "chartfill"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "chart-area background fill. Solid color, gradient, or 'none'.",
+      "examples": [
+        "--prop chartareafill=FFFFFF"
+      ]
+    },
+    "chartborder": {
+      "type": "string",
+      "aliases": [
+        "chartarea.border"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "chart-area outer border line. Same format as plotborder.",
+      "examples": [
+        "--prop chartborder=000000:1",
+        "--prop chartborder=none"
+      ]
+    },
+    "colorrule": {
+      "type": "string",
+      "aliases": [
+        "conditionalcolor",
+        "colorRule"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "conditional per-data-point color. Format: 'threshold:belowColor:aboveColor'.",
+      "examples": [
+        "--prop colorrule=0:FF0000:00AA00"
+      ]
+    },
+    "colors": {
+      "type": "string",
+      "description": "comma-separated series fill colors, positional (1st color → series 1). Per-series dotted keys (series1.color=...) override positions.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop colors=\"4472C4,ED7D31,A5A5A5\""
+      ],
+      "enforcement": "strict"
+    },
+    "combosplit": {
+      "type": "number",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "combo chart split index: first N series use primary chart type, rest use secondary. Add-time only.",
+      "examples": [
+        "--prop combosplit=2"
+      ]
+    },
+    "combotypes": {
+      "type": "string",
+      "aliases": [
+        "combo.types"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "rebuild as combo chart with per-series chart types (column,line,area,...). Comma-separated, one per series.",
+      "examples": [
+        "--prop combotypes=\"column,column,line\""
+      ]
+    },
+    "crossBetween": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "category axis cross-between behavior (between / midCat).",
+      "examples": [
+        "--prop crossBetween=between",
+        "--prop crossbetween=midcat"
+      ],
+      "readback": "crossBetween token",
+      "enforcement": "report",
+      "aliases": [
+        "crossbetween"
+      ]
+    },
+    "crosses": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "where the value axis crosses the category axis. Values: autoZero (default), max, min.",
+      "examples": [
+        "--prop crosses=max"
+      ],
+      "readback": "crosses token"
+    },
+    "crossesAt": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "value-axis crossesAt value readback.",
+      "readback": "numeric value",
+      "enforcement": "report",
+      "aliases": [
+        "crossesat"
+      ],
+      "examples": [
+        "--prop crossesat=0"
+      ]
+    },
+    "data": {
+      "type": "string",
+      "description": "inline series spec 'Name:1,2,3' or 'Name1:1,2,3;Name2:4,5,6'. Add-time only; use per-series chart-series Set after creation.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop data=\"Sales:10,20,30\"",
+        "--prop data=\"Sales:10,20,30;Cost:5,8,12\""
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "dataLabels": {
+      "type": "string",
+      "aliases": [
+        "datalabels",
+        "labels"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "show/hide data labels. Use 'none' to hide; otherwise comma list of flags: value, percent, category, series, all (also accepts seriesName/categoryName/percentage/values aliases). Position values (outsideEnd/center/insideEnd/insideBase/top/bottom/left/right/bestFit) implicitly enable showVal and apply as dLblPos.",
+      "examples": [
+        "--prop dataLabels=value",
+        "--prop dataLabels=\"value,percent\"",
+        "--prop dataLabels=outsideEnd",
+        "--prop dataLabels=none"
+      ],
+      "readback": "comma-separated flags: value,percent,category,series"
+    },
+    "dataTable": {
+      "type": "bool",
+      "aliases": [
+        "datatable"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "show data table beneath the chart (with default borders + legend keys).",
+      "examples": [
+        "--prop dataTable=true"
+      ],
+      "readback": "true | false"
+    },
+    "decreaseColor": {
+      "type": "color",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "waterfall: negative bar color. Add-time only.",
+      "examples": [
+        "--prop decreaseColor=FF0000"
+      ]
+    },
+    "dispBlanksAs": {
+      "type": "enum",
+      "values": [
+        "gap",
+        "zero",
+        "span"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "how empty cells render (gap leaves a hole, zero plots as 0, span connects across).",
+      "examples": [
+        "--prop dispBlanksAs=gap"
+      ],
+      "readback": "dispBlanksAs token",
+      "enforcement": "report"
+    },
+    "droplines": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "drop lines on line chart. true|false toggle or line spec 'color[:width[:dash]]'; 'none' removes.",
+      "examples": [
+        "--prop droplines=true",
+        "--prop droplines=808080:0.5"
+      ]
+    },
+    "errbars": {
+      "type": "string",
+      "aliases": [
+        "errorbars"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "error bars on each series. Format: 'type:value' where type ∈ fixed (alias: fixedValue), percent (alias: percentage, pct), stddev (alias: standardDeviation), stderr (alias: standardError). 'none' removes.",
+      "examples": [
+        "--prop errbars=fixed:5",
+        "--prop errbars=none",
+        "--prop errbars=percent:10"
+      ]
+    },
+    "explosion": {
+      "type": "number",
+      "aliases": [
+        "explode"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "pie/doughnut slice explosion 0..100 (percent of radius); 0 removes.",
+      "examples": [
+        "--prop explosion=10"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "firstSliceAngle": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "pie/doughnut first slice angle (degrees).",
+      "readback": "integer degrees",
+      "enforcement": "report",
+      "aliases": [
+        "sliceangle",
+        "firstsliceangle"
+      ],
+      "examples": [
+        "--prop firstsliceangle=90"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "pie"
+        ]
+      }
+    },
+    "gapdepth": {
+      "type": "number",
+      "appliesWhen": {
+        "chartType": [
+          "bar3d",
+          "line3d",
+          "area3d"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "depth gap between series in 3D bar/line/area charts (percent).",
+      "examples": [
+        "--prop gapdepth=150"
+      ]
+    },
+    "gapwidth": {
+      "type": "number",
+      "aliases": [
+        "gap"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "gap between bar/column groups, 0..500 (percent of bar width).",
+      "examples": [
+        "--prop gapwidth=150"
+      ],
+      "readback": "integer 0..500"
+    },
+    "gradient": {
+      "type": "string",
+      "aliases": [
+        "gradientfill"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "gradient fill applied to every series. Format: 'c1-c2[-c3][:angle]' (angle in degrees). Errors if chart has no series.",
+      "examples": [
+        "--prop gradient=FF0000-0000FF",
+        "--prop gradient=FF0000-00FF00-0000FF:90"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "gradients": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "per-series gradient fills, semicolon-separated; one entry per series.",
+      "examples": [
+        "--prop gradients=\"FF0000-0000FF;00FF00-FFFF00\""
+      ]
+    },
+    "gridlines": {
+      "type": "bool",
+      "aliases": [
+        "majorgridlines"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "value-axis major gridlines. true|false toggle, or line spec 'color', 'color:width', 'color:width:dash' to style; 'none' removes.",
+      "examples": [
+        "--prop gridlines=true",
+        "--prop gridlines=E0E0E0:0.3",
+        "--prop gridlines=none"
+      ],
+      "readback": "true | false"
+    },
+    "height": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "chart frame height; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop height=10cm"
+      ]
+    },
+    "hilowlines": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line",
+          "stock"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "high-low lines on line/stock chart. Same format as droplines.",
+      "examples": [
+        "--prop hilowlines=true"
+      ]
+    },
+    "holeSize": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "doughnut hole size readback.",
+      "readback": "integer 10..90 percent",
+      "enforcement": "report",
+      "aliases": [
+        "holesize"
+      ],
+      "examples": [
+        "--prop holesize=50",
+        "--prop holeSize=50"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "doughnut"
+        ]
+      }
+    },
+    "increaseColor": {
+      "type": "color",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "waterfall: positive bar color. Add-time only.",
+      "examples": [
+        "--prop increaseColor=00AA00"
+      ]
+    },
+    "invertifneg": {
+      "type": "bool",
+      "aliases": [
+        "invertifnegative"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "if true, draw negative bars in an inverted (lighter) color.",
+      "examples": [
+        "--prop invertifneg=true"
+      ]
+    },
+    "labelPos": {
+      "type": "string",
+      "aliases": [
+        "labelpos",
+        "labelposition"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "data label position. Values: center|ctr, insideEnd|inEnd|inside, insideBase|inBase|base, outsideEnd|outEnd|outside, bestFit|best|auto, top|t, bottom|b, left|l, right|r. Restrictions: not supported on doughnut/area/radar/stock; pie/pie3D restricted to ctr/inEnd/inBase/bestFit (other tokens rejected, per OOXML ST_DLblPosPie); stacked series clamp to ctr/inBase/inEnd; combo charts skip entirely.",
+      "examples": [
+        "--prop labelPos=outsideEnd"
+      ],
+      "readback": "OOXML position token: ctr/inEnd/inBase/outEnd/bestFit/t/b/l/r"
+    },
+    "labelfont": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "data label text font. Format: 'size:color:fontname' (any segment optional). Readback is split into labelFont.size / labelFont.color / labelFont.bold / labelFont.name (one key per slot) so dump→replay can rebuild the compound spec without parsing.",
+      "examples": [
+        "--prop labelfont=9:333333:Calibri"
+      ]
+    },
+    "labelFont.size": {
+      "type": "number",
+      "get": true,
+      "description": "data label font size in points. Readback of the size slot inside labelfont= (BuildLabelTextProperties' DefaultRunProperties.FontSize).",
+      "examples": []
+    },
+    "labelFont.color": {
+      "type": "string",
+      "get": true,
+      "description": "data label font color (hex, e.g. #FF0000). Readback of the color slot inside labelfont=.",
+      "examples": []
+    },
+    "labelFont.bold": {
+      "type": "bool",
+      "get": true,
+      "description": "data label font bold flag. Emitted only when true.",
+      "examples": []
+    },
+    "labelFont.name": {
+      "type": "string",
+      "get": true,
+      "description": "data label font typeface (latin). Readback of the fontname slot inside labelfont=.",
+      "examples": []
+    },
+    "labeloffset": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "category-axis label offset 0..1000 (percent of font height); category axis only.",
+      "examples": [
+        "--prop labeloffset=100"
+      ]
+    },
+    "labelrotation": {
+      "type": "number",
+      "aliases": [
+        "xaxis.labelrotation",
+        "valaxis.labelrotation",
+        "yaxis.labelrotation",
+        "xaxis.labelRotation",
+        "valaxis.labelRotation",
+        "yaxis.labelRotation",
+        "xaxislabelrotation",
+        "valaxislabelrotation",
+        "yaxislabelrotation"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "tick-label rotation in degrees (-90..90). Bare 'labelrotation' targets both axes; xaxis.* targets category, yaxis./valaxis.* targets value.",
+      "examples": [
+        "--prop labelrotation=-45",
+        "--prop xaxis.labelrotation=30"
+      ]
+    },
+    "leaderlines": {
+      "type": "bool",
+      "aliases": [
+        "showleaderlines"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "show/hide leader lines connecting data labels to slices (pie/doughnut).",
+      "examples": [
+        "--prop leaderlines=true"
+      ]
+    },
+    "legend": {
+      "type": "enum",
+      "values": [
+        "true",
+        "false",
+        "none",
+        "top",
+        "bottom",
+        "left",
+        "right",
+        "topRight",
+        "tr"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "legend position. 'none'/'false' hides; otherwise place at top|t, bottom|b, left|l, right|r, topRight|tr. Hyphen and underscore variants accepted.",
+      "examples": [
+        "--prop legend=bottom",
+        "--prop legend=none"
+      ]
+    },
+    "legend.overlay": {
+      "type": "bool",
+      "aliases": [
+        "legendoverlay"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "if true, legend overlays the plot area instead of reserving space.",
+      "examples": [
+        "--prop legend.overlay=true"
+      ],
+      "readback": "true | false"
+    },
+    "legendFont": {
+      "type": "string",
+      "aliases": [
+        "legendfont",
+        "legend.font"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "legend text font. Format: 'size:color:fontname' (any segment optional).",
+      "examples": [
+        "--prop legendFont=10:CCCCCC:Arial",
+        "--prop legendFont=9:808080"
+      ],
+      "readback": "size:color:fontname"
+    },
+    "linedash": {
+      "type": "string",
+      "aliases": [
+        "dash"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "line dash style for every series. Values: solid, dash, dashDot, dot, lgDash, lgDashDot, sysDash, sysDot, sysDashDot.",
+      "examples": [
+        "--prop linedash=dash"
+      ]
+    },
+    "linewidth": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "line width in points (applies to every series line).",
+      "examples": [
+        "--prop linewidth=2"
+      ]
+    },
+    "logbase": {
+      "type": "number",
+      "aliases": [
+        "logscale",
+        "yaxisscale"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis logarithmic base (2..1000 typically). Shorthand: true|yes|log|1 → base 10; false|none|linear|0 removes log scale.",
+      "examples": [
+        "--prop logbase=10",
+        "--prop logscale=true",
+        "--prop yaxisscale=linear"
+      ]
+    },
+    "majorTickMark": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "major tick mark style (out / in / cross / none).",
+      "examples": [
+        "--prop majorTickMark=out",
+        "--prop majortickmark=out"
+      ],
+      "readback": "tick mark token",
+      "enforcement": "report",
+      "aliases": [
+        "majortick",
+        "majortickmark"
+      ]
+    },
+    "majorunit": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis major gridline / tick spacing.",
+      "examples": [
+        "--prop majorunit=200",
+        "--prop majorunit=50"
+      ]
+    },
+    "marker": {
+      "type": "string",
+      "aliases": [
+        "markers"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "marker symbol for line/scatter/radar series only (other types silently skipped). Format: 'symbol' or 'symbol:size' or 'symbol:size:color'. Symbols: none, auto, circle, square, diamond, triangle, x, plus, star, dash, dot. (picture markers are not implemented.) Chart-level Get does not surface marker because applicability is chart-type-conditional — read per-series via /chart[N]/series[K] (chart-series schema declares marker get:true).",
+      "examples": [
+        "--prop marker=circle",
+        "--prop marker=square:8:FF0000"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "markersize": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "marker size 2..72 (line/scatter/radar series only).",
+      "examples": [
+        "--prop markersize=8"
+      ]
+    },
+    "markercolor": {
+      "type": "string",
+      "aliases": [
+        "marker.color"
+      ],
+      "set": true,
+      "get": true,
+      "description": "marker fill color (line/scatter/radar series only). Fans out to every applicable series; preserves existing marker symbol/size. Read back from the first series' marker spPr/solidFill.",
+      "examples": [
+        "--prop markerColor=FF0000"
+      ],
+      "readback": "as emitted by handler (hex color, e.g. #FF0000)"
+    },
+    "minorGridlines": {
+      "type": "bool",
+      "aliases": [
+        "minorgridlines"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "value-axis minor gridlines; same format as gridlines.",
+      "examples": [
+        "--prop minorGridlines=true",
+        "--prop minorGridlines=F0F0F0:0.25"
+      ],
+      "readback": "true | false"
+    },
+    "minorTickMark": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "minor tick mark style (out / in / cross / none).",
+      "examples": [
+        "--prop minorTickMark=none",
+        "--prop minortickmark=in"
+      ],
+      "readback": "tick mark token",
+      "enforcement": "report",
+      "aliases": [
+        "minortick",
+        "minortickmark"
+      ]
+    },
+    "minorunit": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis minor gridline / tick spacing.",
+      "examples": [
+        "--prop minorunit=50",
+        "--prop minorunit=10"
+      ]
+    },
+    "overlap": {
+      "type": "number",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "bar/column overlap within a group, -100..100 (negative = gap, positive = overlap).",
+      "examples": [
+        "--prop overlap=0",
+        "--prop overlap=100"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "plotFill": {
+      "type": "color",
+      "aliases": [
+        "plotareafill",
+        "plotfill"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "plot-area background fill. Solid color, gradient 'c1-c2[:angle]', or 'none'.",
+      "examples": [
+        "--prop plotFill=FAFAFA",
+        "--prop plotareafill=FAFAFA",
+        "--prop plotFill=none"
+      ],
+      "readback": "#RRGGBB or color descriptor"
+    },
+    "plotborder": {
+      "type": "string",
+      "aliases": [
+        "plotarea.border"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "plot-area border line. Format: 'color', 'color:width', 'color:width:dash'; or 'none'.",
+      "examples": [
+        "--prop plotborder=CCCCCC:0.5",
+        "--prop plotborder=none"
+      ]
+    },
+    "plotvisonly": {
+      "type": "bool",
+      "aliases": [
+        "plotvisibleonly"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "if true, skip plotting hidden worksheet rows/columns.",
+      "examples": [
+        "--prop plotvisonly=true"
+      ]
+    },
+    "preset": {
+      "type": "string",
+      "aliases": [
+        "theme",
+        "style.preset"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "named style bundle. Values: minimal, dark, corporate, magazine, dashboard, colorful, monochrome (alias mono).",
+      "examples": [
+        "--prop preset=minimal",
+        "--prop preset=corporate",
+        "--prop preset=dark"
+      ]
+    },
+    "referenceline": {
+      "type": "string",
+      "aliases": [
+        "refline",
+        "targetline"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "horizontal reference / target line. Format: 'value' or 'value:color' or 'value:color:label' or 'value:color:label:dash'. Pass 'none' to remove.",
+      "examples": [
+        "--prop referenceline=100:FF0000:Target",
+        "--prop referenceline=none",
+        "--prop refline=80:00AA00"
+      ]
+    },
+    "scatterstyle": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "scatter"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "scatter chart subtype. Values: line|lineOnly, lineMarker, marker|markerOnly, smooth|smoothLine, smoothMarker.",
+      "examples": [
+        "--prop scatterstyle=smoothMarker"
+      ]
+    },
+    "secondaryaxis": {
+      "type": "string",
+      "aliases": [
+        "secondary"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "comma-separated 1-based series indices to plot on a secondary value axis.",
+      "examples": [
+        "--prop secondaryaxis=2",
+        "--prop secondary=\"2,3\""
+      ]
+    },
+    "series{N}": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": false,
+      "description": "legacy bare per-series data update (N is the 1-based series index). 'series{N}=\"1,2,3\"' replaces the numeric values for series N; 'series{N}=\"Name:1,2,3\"' also updates the series label. Prefer the dotted form (series{N}.name=, series{N}.values=) for clarity — see chart-series schema.",
+      "examples": [
+        "--prop series1=\"10,20,30\"",
+        "--prop series2=\"Revenue:5,8,12\""
+      ]
+    },
+    "seriesoutline": {
+      "type": "string",
+      "aliases": [
+        "series.outline"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "series outline. Format: 'color', 'color:width', or 'color:width:dash' (also accepts '-' separator); 'none' removes.",
+      "examples": [
+        "--prop seriesoutline=000000:0.5",
+        "--prop seriesoutline=none"
+      ]
+    },
+    "seriesshadow": {
+      "type": "string",
+      "aliases": [
+        "series.shadow"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "outer shadow on every series shape. Format: 'COLOR-BLUR-ANGLE-DIST-OPACITY'; 'none' removes.",
+      "examples": [
+        "--prop seriesshadow=000000-5-45-3-50",
+        "--prop seriesshadow=none"
+      ]
+    },
+    "serlines": {
+      "type": "string",
+      "aliases": [
+        "serieslines"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "series lines on stacked bar charts (true/false).",
+      "examples": [
+        "--prop serlines=true"
+      ]
+    },
+    "shape": {
+      "type": "string",
+      "aliases": [
+        "barshape"
+      ],
+      "appliesWhen": {
+        "chartType": [
+          "bar3d"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "3D bar shape. Values: box|cuboid, cone, coneToMax, cylinder, pyramid, pyramidToMax. Bar3D charts only.",
+      "examples": [
+        "--prop shape=cylinder"
+      ]
+    },
+    "showMarker": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "show markers on line/scatter series at chart level (true|false).",
+      "examples": [
+        "--prop showMarker=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "shownegbubbles": {
+      "type": "bool",
+      "appliesWhen": {
+        "chartType": [
+          "bubble"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "render negative-valued bubbles. Bubble charts only.",
+      "examples": [
+        "--prop shownegbubbles=true"
+      ]
+    },
+    "sizerepresents": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "bubble"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "how bubble size value is mapped. Values: area (default), width|w. Bubble charts only.",
+      "examples": [
+        "--prop sizerepresents=area"
+      ]
+    },
+    "smooth": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line",
+          "scatter"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "smooth lines on line/scatter charts (true|false). Reported unsupported for other chart types.",
+      "examples": [
+        "--prop smooth=true"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "style": {
+      "type": "number",
+      "aliases": [
+        "styleid"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "built-in chart style id 1..48; pass 'none' to clear.",
+      "examples": [
+        "--prop style=2"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "tickLabelPos": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "tick label position (high / low / nextTo / none).",
+      "examples": [
+        "--prop tickLabelPos=nextTo",
+        "--prop ticklabelpos=low"
+      ],
+      "readback": "tick label position token",
+      "enforcement": "report",
+      "aliases": [
+        "ticklabelposition",
+        "ticklabelpos"
+      ]
+    },
+    "ticklabelskip": {
+      "type": "number",
+      "aliases": [
+        "tickskip"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "draw tick labels every Nth category (category axis).",
+      "examples": [
+        "--prop ticklabelskip=2"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "description": "chart title text; pass 'none' to remove an existing title. Get also returns sub-keys title.font, title.size, title.color, title.bold when set; these are get-only readback fields surfaced from chart title runs.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop title=\"Q1\"",
+        "--prop title=\"2024 Sales\"",
+        "--prop title=none"
+      ],
+      "readback": "chart title",
+      "enforcement": "report"
+    },
+    "title.bold": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title bold flag (true|false).",
+      "readback": "true | false"
+    },
+    "title.color": {
+      "type": "color",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title font color (#RRGGBB, named, or scheme color).",
+      "readback": "#RRGGBB"
+    },
+    "title.font": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title font name.",
+      "readback": "font name"
+    },
+    "title.overlay": {
+      "type": "bool",
+      "aliases": [
+        "titleoverlay"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "if true, title overlays the plot area instead of reserving space above it.",
+      "examples": [
+        "--prop title.overlay=true"
+      ],
+      "readback": "true"
+    },
+    "title.size": {
+      "type": "font-size",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "title font size (e.g. 14 or 14pt).",
+      "readback": "Npt"
+    },
+    "totalColor": {
+      "type": "color",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "waterfall: subtotal/total bar color. Add-time only.",
+      "examples": [
+        "--prop totalColor=4472C4"
+      ]
+    },
+    "transparency": {
+      "type": "number",
+      "aliases": [
+        "opacity",
+        "alpha"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "series fill transparency (0..100, percent). 'transparency' is inverse of 'opacity'/'alpha' (transparency=30 ≡ opacity=70).",
+      "examples": [
+        "--prop transparency=30",
+        "--prop opacity=70"
+      ]
+    },
+    "trendline": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "add trendline to every series. Format: 'type[:order]' or 'type:forward:backward'. Types: linear (default), exp|exponential, log|logarithmic, poly|polynomial, power, movingAvg|moving|movingAverage. Order applies to poly/movingAvg. Pass 'none' to clear.",
+      "examples": [
+        "--prop trendline=linear",
+        "--prop trendline=poly:3",
+        "--prop trendline=none",
+        "--prop trendline=movingAvg:3"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "updownbars": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "line",
+          "stock"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "up/down bars on line chart. true | 'gapWidth:upColor:downColor' | 'none'/'false'.",
+      "examples": [
+        "--prop updownbars=true",
+        "--prop updownbars=150:00AA00:FF0000"
+      ]
+    },
+    "valaxisline": {
+      "type": "string",
+      "aliases": [
+        "valaxis.line"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] lineWidth/lineDash (on role=value); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop valaxisline=333333:1"
+      ]
+    },
+    "varyColors": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "vary colors by data point (true|false; single-series charts).",
+      "examples": [
+        "--prop varyColors=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "view3d": {
+      "type": "string",
+      "aliases": [
+        "camera",
+        "perspective"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "3D view angles. Format: 'rotX,rotY,perspective' (any tail optional) or single integer for perspective only. Named-key form (rotX=...) is rejected.",
+      "examples": [
+        "--prop view3d=15,20,30",
+        "--prop view3d=20",
+        "--prop perspective=30"
+      ],
+      "readback": "as emitted by handler (per-format details vary)"
+    },
+    "width": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "chart frame width; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop width=18cm",
+        "--prop width=15cm"
+      ]
+    }
+  }
+}

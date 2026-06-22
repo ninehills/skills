@@ -1,0 +1,61 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "permStart",
+  "parent": "body|paragraph",
+  "operations": {
+    "add": true,
+    "set": false,
+    "get": true,
+    "query": false,
+    "remove": true
+  },
+  "paths": {
+    "stable":     ["/body/p[N]/permStart[@id=ID]"],
+    "positional": ["/body/p[N]/permStart[M]"]
+  },
+  "note": "Ranged editing-permission markers. <w:permStart>/<w:permEnd> delimit a region a group (edGrp) or specific user (ed) may edit inside a protected document. Positioned paragraph children like bookmark markers: permStart opens the region, permEnd (type=permEnd, id only) closes the matching id. Use a shared id to pair them. colFirst/colLast scope the permission to a table-column range.",
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "marker id (required). permStart and its matching permEnd share the same id.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop id=5"],
+      "readback": "w:id",
+      "enforcement": "strict"
+    },
+    "edGrp": {
+      "type": "enum",
+      "description": "editing group allowed in the region (ST_EdGrp).",
+      "values": ["none", "everyone", "administrators", "contributors", "editors", "owners", "current"],
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop edGrp=everyone"],
+      "readback": "w:edGrp",
+      "enforcement": "report"
+    },
+    "ed": {
+      "type": "string",
+      "description": "specific user (e.g. domain\\user or email) allowed to edit the region.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop ed=jane@example.com"],
+      "readback": "w:ed",
+      "enforcement": "report"
+    },
+    "colFirst": {
+      "type": "number",
+      "description": "first table column (0-based) the permission applies to, for a table-column range.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop colFirst=0"],
+      "readback": "w:colFirst",
+      "enforcement": "report"
+    },
+    "colLast": {
+      "type": "number",
+      "description": "last table column (0-based) the permission applies to, for a table-column range.",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop colLast=2"],
+      "readback": "w:colLast",
+      "enforcement": "report"
+    }
+  }
+}

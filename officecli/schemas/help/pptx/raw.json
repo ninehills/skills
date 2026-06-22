@@ -1,0 +1,29 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "raw",
+  "operations": {
+    "add": false,
+    "set": false,
+    "get": false,
+    "query": false,
+    "remove": false
+  },
+  "properties": {},
+  "description": "Raw OOXML access via the `raw` (read) and `raw-set` (write) commands. Use only when L2 DOM operations cannot express what you need. Two part-path forms are accepted: (1) semantic short names (recommended — /slide[N] is stable across reorder) and (2) zip-internal URIs (any path ending in .xml is resolved literally against the package, e.g. /ppt/slides/slide1.xml).",
+  "parts": [
+    { "name": "/presentation",   "desc": "Presentation part (slide list, sizing, defaults)" },
+    { "name": "/theme",          "desc": "Theme (color scheme, font scheme)" },
+    { "name": "/slide[N]",       "desc": "Nth slide (1-based, in visible order)" },
+    { "name": "/slideMaster[N]", "desc": "Nth slide master" },
+    { "name": "/slideLayout[N]", "desc": "Nth slide layout" },
+    { "name": "/noteSlide[N]",   "desc": "Notes slide attached to slide N" },
+    { "name": "/<zip-uri>.xml",  "desc": "Any path ending in .xml is resolved as a literal zip-internal URI (e.g. /ppt/slides/slide1.xml, /ppt/slideLayouts/slideLayout3.xml, /ppt/theme/theme1.xml). Use semantic names when slides may be reordered." }
+  ],
+  "examples": [
+    "officecli raw deck.pptx /presentation",
+    "officecli raw deck.pptx '/slide[1]'",
+    "officecli raw deck.pptx /ppt/slideMasters/slideMaster1.xml",
+    "officecli raw-set deck.pptx '/slide[1]' --xpath \"//p:sp[1]\" --action remove"
+  ]
+}

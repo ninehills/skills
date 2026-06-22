@@ -1,0 +1,20 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "chart-series",
+  "parent": "chart",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/chart[N]/series[K]",
+      "/body/p[N]/chart[M]/series[K]"
+    ]
+  },
+  "note": "At Add time, series pass as dotted props on the parent chart (series1.name, series1.values, series1.color, series1.categories); this schema is per-series Set/Get after creation. Combo charts (mixed chartType / secondary axis) are unsupported — create separate charts. `lineStyle` is not a key (rejected as UNSUPPORTED — use lineWidth + lineDash).",
+  "extends": "_shared/chart-series"
+}

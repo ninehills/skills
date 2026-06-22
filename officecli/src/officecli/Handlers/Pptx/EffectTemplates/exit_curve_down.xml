@@ -1,0 +1,56 @@
+  <p:animScale>
+    <p:cBhvr>
+      <p:cTn id="{ID0}" dur="1000" accel="50000">
+        <p:stCondLst>
+          <p:cond delay="0"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+    </p:cBhvr>
+    <p:from x="100000" y="100000"/>
+    <p:to x="250000" y="250000"/>
+  </p:animScale>
+  <p:animMotion origin="layout" path="M 0.0000 0.0000 C 0.03802 0.0 0.1441 0.02341 0.1826 0.0915 C 0.22118 0.15964 0.24705 0.31256 0.2318 0.4083 C 0.21649 0.50394 0.20747 0.57948 0.0908 0.6661 C -0.02552 0.75279 -0.37517 0.88508 -0.4674 0.9289" pathEditMode="relative" ptsTypes="">
+    <p:cBhvr>
+      <p:cTn id="{ID1}" dur="1000" accel="50000">
+        <p:stCondLst>
+          <p:cond delay="0"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+      <p:attrNameLst>
+        <p:attrName>ppt_x</p:attrName>
+        <p:attrName>ppt_y</p:attrName>
+      </p:attrNameLst>
+    </p:cBhvr>
+  </p:animMotion>
+  <p:animEffect transition="out" filter="fade">
+    <p:cBhvr>
+      <p:cTn id="{ID2}" dur="1000"/>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+    </p:cBhvr>
+  </p:animEffect>
+  <p:set>
+    <p:cBhvr>
+      <p:cTn id="{ID3}" dur="1" fill="hold">
+        <p:stCondLst>
+          <p:cond delay="999"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+      <p:attrNameLst>
+        <p:attrName>style.visibility</p:attrName>
+      </p:attrNameLst>
+    </p:cBhvr>
+    <p:to>
+      <p:strVal val="hidden"/>
+    </p:to>
+  </p:set>

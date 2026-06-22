@@ -1,0 +1,287 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "extended.applicationVersion": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml AppVersion field.",
+      "readback": "version string",
+      "enforcement": "report"
+    },
+    "extended.characters": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Characters count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.company": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/app.xml Company field.",
+      "readback": "company name",
+      "enforcement": "report"
+    },
+    "extended.lines": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Lines count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.manager": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/app.xml Manager field.",
+      "readback": "manager name",
+      "enforcement": "report"
+    },
+    "extended.pages": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Pages count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.paragraphs": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Paragraphs count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "extended.template": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/app.xml Template field.",
+      "readback": "template name",
+      "enforcement": "report"
+    },
+    "extended.totalTime": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml TotalTime field (minutes).",
+      "readback": "integer minutes",
+      "enforcement": "report"
+    },
+    "extended.words": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "docProps/app.xml Words count.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "subject": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop subject=Finance"
+      ],
+      "readback": "subject string",
+      "enforcement": "report"
+    },
+    "theme.color.accent1": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 1.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent2": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 2.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent3": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 3.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent4": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 4.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent5": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 5.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.accent6": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme accent color 6.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.dk1": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot dk1 (dark 1 / default text).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.dk2": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot dk2 (dark 2).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.folHlink": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme followed-hyperlink color.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.hlink": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme hyperlink color.",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.lt1": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot lt1 (light 1 / default background).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.color.lt2": {
+      "type": "color",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "theme color slot lt2 (light 2).",
+      "readback": "#RRGGBB or scheme reference",
+      "enforcement": "report"
+    },
+    "theme.colorScheme": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "color scheme name (a:clrScheme/@name).",
+      "readback": "color scheme name",
+      "enforcement": "report"
+    },
+    "theme.font.major.eastAsia": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "major (heading) East Asian typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.font.major.latin": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "major (heading) Latin typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.font.minor.eastAsia": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "minor (body) East Asian typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.font.minor.latin": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "minor (body) Latin typeface.",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "theme.fontScheme": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "font scheme name (a:fontScheme/@name).",
+      "readback": "font scheme name",
+      "enforcement": "report"
+    },
+    "theme.formatScheme": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "format scheme name (a:fmtScheme/@name).",
+      "readback": "format scheme name",
+      "enforcement": "report"
+    },
+    "theme.name": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "theme display name (a:theme/@name).",
+      "readback": "theme name string",
+      "enforcement": "report"
+    }
+  }
+}

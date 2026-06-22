@@ -1,0 +1,30 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "height": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop height=8cm",
+        "--prop height=2in"
+      ],
+      "readback": "unit-qualified length from inline style (e.g. \"5cm\")",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop width=10cm",
+        "--prop width=3in"
+      ],
+      "readback": "unit-qualified length from inline style (e.g. \"5cm\")",
+      "enforcement": "report"
+    }
+  }
+}

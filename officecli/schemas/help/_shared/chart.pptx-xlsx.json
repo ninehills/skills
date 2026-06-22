@@ -1,0 +1,50 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "anchor": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "absolute placement on slide; cm-based 'x,y,w,h' or named anchor token.",
+      "examples": [
+        "--prop anchor=D2:J18",
+        "--prop anchor=2cm,3cm,18cm,10cm"
+      ]
+    },
+    "dispunits": {
+      "type": "string",
+      "aliases": [
+        "displayunits"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "value-axis display units divisor. Values: none, hundreds, thousands, tenThousands|10000, hundredThousands|100000, millions, tenMillions|10000000, hundredMillions|100000000, billions, trillions.",
+      "examples": [
+        "--prop dispunits=thousands"
+      ]
+    },
+    "x": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "absolute X position from sheet origin; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop x=2cm"
+      ]
+    },
+    "y": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "absolute Y position from sheet origin; accepts cm/in/pt/EMU. Ignored if anchor= is set.",
+      "examples": [
+        "--prop y=3cm"
+      ]
+    }
+  }
+}

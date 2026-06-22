@@ -1,0 +1,44 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "radarstyle": {
+      "type": "string",
+      "appliesWhen": {
+        "chartType": [
+          "radar"
+        ]
+      },
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "radar chart subtype. Values: standard|line, marker, filled|fill.",
+      "examples": [
+        "--prop radarstyle=filled"
+      ]
+    },
+    "roundedcorners": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "round the chart-area outer corners.",
+      "examples": [
+        "--prop roundedcorners=true"
+      ]
+    },
+    "valaxisvisible": {
+      "type": "bool",
+      "aliases": [
+        "valaxis.visible"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "description": "convenience shortcut for /chart[N]/axis[@role=...] visible (on role=value); see chart-axis schema for full axis-level options",
+      "examples": [
+        "--prop valaxisvisible=false"
+      ]
+    }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "comment",
+  "parent": "paragraph|run",
+  "addParent": [
+    "/body/p[N]",
+    "/body/p[N]/r[M]"
+  ],
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/comments/comment[@commentId=N]"
+    ],
+    "positional": [
+      "/comments/comment[N]"
+    ]
+  },
+  "note": "Comments live in WordprocessingCommentsPart. Anchor: CommentRangeStart/End surround the target run or paragraph; CommentReference marks the inline anchor.",
+  "extends": [
+    "_shared/comment",
+    "_shared/comment.docx-pptx"
+  ],
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "OOXML comment id (w:comment/@w:id). Assigned by the writer; surfaces only on Get/Query.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "integer comment ID",
+      "enforcement": "report"
+    },
+    "anchoredTo": {
+      "type": "string",
+      "description": "path of the paragraph or run the comment is anchored to (resolved from CommentRangeStart).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "path of anchored paragraph/run",
+      "enforcement": "report"
+    },
+    "runStart": {
+      "type": "int",
+      "description": "1-based run index inside the parent paragraph where the comment range starts. N=0 (default) anchors the comment to paragraph start; N>=1 places <w:commentRangeStart/> immediately after the Nth run so dump→batch round-trip restores intra-paragraph anchor positions.",
+      "aliases": ["runstart"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop runStart=2"
+      ],
+      "readback": "n/a (encoded inline; surfaces via anchoredTo path)",
+      "enforcement": "report"
+    },
+    "range": {
+      "type": "bool",
+      "description": "whether the comment spans a text range (default true: emits <w:commentRangeStart/> + <w:commentRangeEnd/> around the anchor plus a <w:commentReference/> run). Pass range=false for a zero-width / point-anchored comment that carries ONLY <w:commentReference/> — used by dump→batch to preserve reference-only comments without synthesizing a spurious range.",
+      "aliases": ["pointRef", "pointref"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop range=false",
+        "--prop pointRef=true"
+      ],
+      "readback": "n/a (encoded inline; affects emitted markers)",
+      "enforcement": "report"
+    }
+  }
+}

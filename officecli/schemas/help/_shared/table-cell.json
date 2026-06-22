@@ -1,0 +1,130 @@
+{
+  "$schema": "../_schema.json",
+  "element": "table-cell",
+  "shared_base": true,
+  "properties": {
+    "border.all": {
+      "type": "string",
+      "description": "all four cell edges. Format: 'WIDTH[ DASH][ COLOR]' (e.g. '1pt solid FF0000') or 'STYLE;WIDTH;COLOR[;DASH]' (style ignored — kept for docx parity). DASH ∈ solid|dot|dash|lgDash|dashDot|sysDot|sysDash. Use 'none' to clear. Alias: border. Stored as a:lnL/lnR/lnT/lnB on a:tcPr. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient.",
+      "aliases": [
+        "border"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.all=\"single;1pt;FF0000\"",
+        "--prop border.all=\"1pt solid FF0000\"",
+        "--prop border=none"
+      ],
+      "enforcement": "report"
+    },
+    "border.bottom": {
+      "type": "string",
+      "description": "bottom border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated 'WIDTH DASH COLOR' form; docx only accepts the semicolon form 'STYLE;SIZE;COLOR' (SIZE is in 1/8 pt units).",
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.bottom=\"single;1pt;808080\"",
+        "--prop border.bottom=\"1pt solid 808080\"",
+        "--prop border.bottom=\"double;6;0000FF\""
+      ],
+      "enforcement": "report"
+    },
+    "border.left": {
+      "type": "string",
+      "description": "left border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated 'WIDTH DASH COLOR' form; docx only accepts the semicolon form 'STYLE;SIZE;COLOR' (SIZE is in 1/8 pt units).",
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.left=\"single;1pt;808080\"",
+        "--prop border.left=\"1pt solid 808080\""
+      ],
+      "enforcement": "report"
+    },
+    "border.right": {
+      "type": "string",
+      "description": "right border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated 'WIDTH DASH COLOR' form; docx only accepts the semicolon form 'STYLE;SIZE;COLOR' (SIZE is in 1/8 pt units).",
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.right=\"single;1pt;808080\"",
+        "--prop border.right=\"1pt solid 808080\""
+      ],
+      "enforcement": "report"
+    },
+    "border.tl2br": {
+      "type": "string",
+      "description": "diagonal from top-left to bottom-right (a:lnTlToBr). Format same as border.all. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient. Get returns a summary border.tl2br key plus sub-keys: docx surfaces border.tl2br (style) / border.tl2br.sz / border.tl2br.color; pptx surfaces border.tl2br.color / border.tl2br.width / border.tl2br.dash.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.tl2br=\"single;1pt;FF0000\"",
+        "--prop border.tl2br=\"1pt solid FF0000\""
+      ],
+      "enforcement": "report"
+    },
+    "border.top": {
+      "type": "string",
+      "description": "top border. Format: STYLE[;SIZE[;COLOR[;SPACE]]]. Cross-format note: pptx accepts a space-separated 'WIDTH DASH COLOR' form; docx only accepts the semicolon form 'STYLE;SIZE;COLOR' (SIZE is in 1/8 pt units).",
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop border.top=\"single;2pt;000000\"",
+        "--prop border.top=\"2pt solid 000000\""
+      ],
+      "enforcement": "report"
+    },
+    "border.tr2bl": {
+      "type": "string",
+      "description": "diagonal from top-right to bottom-left (a:lnBlToTr). Format same as border.all. Cross-format note: docx only accepts the semicolon form 'STYLE;SIZE;COLOR' — pptx is more lenient. Get returns a summary border.tr2bl key plus sub-keys: docx surfaces border.tr2bl (style) / border.tr2bl.sz / border.tr2bl.color; pptx surfaces border.tr2bl.color / border.tr2bl.width / border.tr2bl.dash.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop border.tr2bl=\"single;1pt;FF0000\"",
+        "--prop border.tr2bl=\"1pt solid FF0000\""
+      ],
+      "enforcement": "report"
+    },
+    "fill": {
+      "type": "color",
+      "description": "cell background fill. Accepts a solid color (hex, named, rgb(...)), 'none' for explicit no-fill, or a gradient string 'COLOR1-COLOR2[-ANGLE]' (e.g. 'FF0000-0000FF-90'). Stored on the cell's properties element using each format's native shading/fill primitives. Scheme color names (accent1, dk1, lt2, …) are supported in pptx only.",
+      "aliases": [
+        "background",
+        "shd",
+        "shading"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop fill=FFFF00",
+        "--prop fill=#FF0000",
+        "--prop fill=red",
+        "--prop fill=none",
+        "--prop fill=\"FF0000-0000FF-90\"",
+        "--prop fill=\"gradient;FF0000;0000FF;90\""
+      ],
+      "readback": "#RRGGBB uppercase, 'gradient' (with separate 'gradient' key), or 'image' for picture fill",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "single-run text content placed in a fresh paragraph.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop text=\"Hello\""
+      ],
+      "readback": "concatenated run text",
+      "enforcement": "strict"
+    }
+  }
+}

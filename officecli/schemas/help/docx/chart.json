@@ -1,0 +1,42 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "chart",
+  "parent": "paragraph|body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/body/p[N]/chart[M]"
+    ]
+  },
+  "note": "Embedded as inline DrawingML chart (c:chart) or extended chart (cx:chart) depending on chartType. Data via inline spec or per-series props. Mirrors pptx/chart surface. Axis configuration: chart-level axis* props (axismin, axismax, axistitle, axisfont, ...) are Add-time only; for post-creation axis Set/Get use the chart-axis element.",
+  "extends": [
+    "_shared/chart",
+    "_shared/chart.docx-pptx",
+    "_shared/chart.docx-xlsx"
+  ],
+  "properties": {
+    "dispUnits": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "value-axis display units token readback (e.g. thousands, millions). Surfaces on the chart node when emitted by the value axis.",
+      "readback": "display unit token",
+      "enforcement": "report",
+      "aliases": [
+        "displayunits",
+        "dispunits"
+      ],
+      "examples": [
+        "--prop dispunits=thousands"
+      ]
+    }
+  }
+}

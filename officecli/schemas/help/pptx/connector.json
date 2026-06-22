@@ -1,0 +1,170 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "connector",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/slide[N]/connector[M]"]
+  },
+  "note": "Aliases: connection. Straight / bent / curved connector lines. 'from' and 'to' can reference shape paths to auto-attach endpoints.",
+  "properties": {
+    "shape": {
+      "type": "enum",
+      "values": ["straight", "elbow", "curve"],
+      "description": "Connector geometry preset. Add/Set accept the short names (straight, elbow, curve) or OOXML full names (straightConnector1, bentConnector2, bentConnector3, curvedConnector2, curvedConnector3 — bent/curved 2-segment forms map to the 3-segment primitive). Get readback returns the OOXML full name.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop shape=straight", "--prop shape=elbow", "--prop shape=curve"],
+      "readback": "OOXML preset full name (straightConnector1, bentConnector3, curvedConnector3)",
+      "enforcement": "report"
+    },
+    "from": {
+      "type": "string",
+      "description": "start-point shape reference (Add/Set only). Accepts a shape index (1, 2, …), /slide[N]/shape[M] (positional), /slide[N]/shape[@id=M] (as returned by 'query shape'), or /slide[N]/shape[@name=Foo]. Reverse path resolution is not implemented.",
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop from='/slide[1]/shape[1]'", "--prop from='/slide[1]/shape[@id=10001]'", "--prop from='/slide[1]/shape[@name=BoxA]'"],
+      "readback": "see startShape/endShape get-only properties for resolved endpoint shape ids",
+      "enforcement": "report"
+    },
+    "to": {
+      "type": "string",
+      "description": "end-point shape reference (Add/Set only). Accepts a shape index (1, 2, …), /slide[N]/shape[M] (positional), /slide[N]/shape[@id=M] (as returned by 'query shape'), or /slide[N]/shape[@name=Foo]. Reverse path resolution is not implemented.",
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop to='/slide[1]/shape[2]'", "--prop to='/slide[1]/shape[@id=10002]'", "--prop to='/slide[1]/shape[@name=BoxB]'"],
+      "readback": "see startShape/endShape get-only properties for resolved endpoint shape ids",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop x=1in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop y=1in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop width=2in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop height=1in"],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "color": {
+      "type": "color",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop color=#000000"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "lineWidth": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "aliases": ["linewidth", "line.width"],
+      "examples": ["--prop lineWidth=2pt"],
+      "readback": "pt-qualified string",
+      "enforcement": "report"
+    },
+    "lineDash": {
+      "type": "enum",
+      "values": ["solid", "dot", "dash", "dashDot", "lgDash", "lgDashDot", "lgDashDotDot", "sysDot", "sysDash", "sysDashDot", "sysDashDotDot", "longdash", "longdashdot"],
+      "description": "outline dash pattern (drawingML prstDash). Get readback emits the canonical OOXML token (lgDash/lgDashDot/lgDashDotDot/sysDot/...); the long* aliases are accepted on Add/Set only. 'dashDotDot' has no native enum member; it is accepted as an alias for sysDashDotDot (Get readback returns sysDashDotDot).",
+      "add": true, "set": true, "get": true,
+      "aliases": ["linedash"],
+      "examples": ["--prop lineDash=dash", "--prop lineDash=lgDash", "--prop lineDash=sysDash"],
+      "readback": "canonical OOXML preset dash token (e.g. lgDash, sysDashDot)",
+      "enforcement": "report"
+    },
+    "lineJoin": {
+      "type": "enum",
+      "values": ["round", "bevel", "miter"],
+      "description": "line join style at connector corners (drawingML <a:ln> child <a:round/> | <a:bevel/> | <a:miter/>). Accepts compound 'miter:<lim>' to also set the miter limit in one key.",
+      "add": true, "set": true, "get": true,
+      "aliases": ["linejoin", "line.join"],
+      "examples": ["--prop lineJoin=miter", "--prop lineJoin=miter:800000", "--prop lineJoin=round"],
+      "readback": "round | bevel | miter",
+      "enforcement": "report"
+    },
+    "miterLimit": {
+      "type": "number",
+      "description": "miter join limit (drawingML <a:miter @lim>) in 1000ths of a percent (e.g. 800000 = 800%). Implies lineJoin=miter when set without an explicit lineJoin.",
+      "add": true, "set": true, "get": true,
+      "aliases": ["miterlimit", "miter.limit", "line.miterlimit"],
+      "examples": ["--prop miterLimit=800000"],
+      "readback": "integer (1000ths of a percent)",
+      "enforcement": "report"
+    },
+    "headEnd": {
+      "type": "enum",
+      "values": ["none", "triangle", "arrow", "stealth", "diamond", "oval"],
+      "add": true, "set": true, "get": true,
+      "aliases": ["headend"],
+      "examples": ["--prop headEnd=triangle"],
+      "readback": "OOXML LineEndValues token (canonical)",
+      "enforcement": "report"
+    },
+    "tailEnd": {
+      "type": "enum",
+      "values": ["none", "triangle", "arrow", "stealth", "diamond", "oval"],
+      "add": true, "set": true, "get": true,
+      "aliases": ["tailend"],
+      "examples": ["--prop tailEnd=arrow"],
+      "readback": "OOXML LineEndValues token (canonical)",
+      "enforcement": "report"
+    },
+    "id": {
+      "type": "number",
+      "description": "cNvPr shape id; @id in /connector[@id=ID]. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "add": true, "set": false, "get": true,
+      "readback": "integer shape id",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "connector name",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop name=\"Arrow1\""],
+      "readback": "plain string",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "inline text label on the connector (<p:cxnSp> child <p:txBody>). Single-paragraph single-run; Set replaces any existing label. Multi-paragraph labels arrive via subsequent add paragraph/run ops against the connector path.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop text=\"Yes\"", "--prop text=\"No\""],
+      "readback": "plain text content of the connector txBody",
+      "enforcement": "report"
+    },
+    "startShape": { "type":"number", "add":false, "set":false, "get":true, "description":"shape id of the start connection endpoint.", "readback":"integer shape id", "enforcement":"report" },
+    "startIdx":   { "type":"number", "add":false, "set":false, "get":true, "description":"connection point index on start shape (0-based; omitted when 0).", "readback":"integer", "enforcement":"report" },
+    "endShape":   { "type":"number", "add":false, "set":false, "get":true, "description":"shape id of the end connection endpoint.", "readback":"integer shape id", "enforcement":"report" },
+    "endIdx":     { "type":"number", "add":false, "set":false, "get":true, "description":"connection point index on end shape (0-based; omitted when 0).", "readback":"integer", "enforcement":"report" },
+    "zorder": {
+      "type": "string",
+      "description": "1-based z-order in slide shape tree. Add accepts 'top'/'bottom'/'forward'/'backward'/integer (same vocabulary as shape/picture/group); Get returns the resolved integer position.",
+      "aliases": ["z-order", "order"],
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop zorder=top", "--prop zorder=2"],
+      "readback": "integer (1-based position among content elements)",
+      "enforcement": "report"
+    }
+  }
+}

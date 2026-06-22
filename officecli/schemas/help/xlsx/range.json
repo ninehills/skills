@@ -1,0 +1,65 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "range",
+  "parent": "sheet",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": false
+  },
+  "paths": {
+    "positional": ["/SheetName/A1:C10"]
+  },
+  "note": "Read-through container for cell ranges. Get returns a range node with cell list / aggregate preview. Set broadcasts formatting props to every cell in the range (font/color/numberformat/alignment/fill). Not an Add target — cells exist implicitly.",
+  "properties": {
+    "merge": {
+      "type": "bool",
+      "description": "merge all cells in the range into a single cell. Pass merge=true to merge; the range is taken from the path. A range-shaped value equal to the path's range (e.g. `set '/Sheet1/B2:C2' --prop merge=B2:C2`) is accepted as a convenience and is equivalent to merge=true; a range-shaped value that disagrees with the path is rejected. Set merge=false to unmerge — the range must exactly match an existing merge, otherwise the call fails with the precise refs to use. Pass merge=sweep to bulk-clear every merge contained in the range (destructive, no precision check). For multiple disjoint ranges in one call, use the prop value form on a sheet- or cell-anchored set (e.g. `set '/Sheet1' --prop merge=A1:B1,A2:B2`).",
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop merge=true", "--prop merge=false", "--prop merge=sweep"],
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "font.bold": {
+      "type": "bool",
+      "description": "broadcast bold to every cell.",
+      "add": false, "set": true, "get": false,
+      "examples": ["--prop font.bold=true"],
+      "readback": "n/a (broadcast)",
+      "enforcement": "report"
+    },
+    "fill": {
+      "type": "color",
+      "description": "broadcast fill color.",
+      "add": false, "set": true, "get": false,
+      "examples": ["--prop fill=#FFFF00"],
+      "readback": "n/a (broadcast)",
+      "enforcement": "report"
+    },
+    "numberformat": {
+      "type": "string",
+      "description": "broadcast number format code.",
+      "aliases": ["format"],
+      "add": false, "set": true, "get": false,
+      "examples": ["--prop numberformat=\"#,##0.00\""],
+      "readback": "n/a (broadcast)",
+      "enforcement": "report"
+    },
+    "alignment.horizontal": {
+      "type": "enum",
+      "values": ["left", "center", "right", "justify", "general", "fill", "centerContinuous"],
+      "aliases": ["halign"],
+      "add": false, "set": true, "get": false,
+      "examples": ["--prop alignment.horizontal=center"],
+      "readback": "n/a (broadcast)",
+      "enforcement": "report"
+    }
+  },
+  "children": [
+    { "element": "cell", "pathSegment": "{CellRef}", "cardinality": "1..n" }
+  ]
+}

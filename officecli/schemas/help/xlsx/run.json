@@ -1,0 +1,23 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "run",
+  "parent": "cell",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/SheetName/CellRef/r[N]"
+    ]
+  },
+  "note": "Rich-text run inside an inline-string cell. Adds an rPh/r element with font properties on the run.",
+  "extends": [
+    "_shared/run",
+    "_shared/run.docx-xlsx"
+  ]
+}

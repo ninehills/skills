@@ -1,0 +1,39 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "pagebreak",
+  "parent": "paragraph|body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/body/p[@paraId=X]/r[N]", "/header[N]/p[M]/r[K]", "/footer[N]/p[M]/r[K]"]
+  },
+  "note": "Inline w:br element wrapped in a run. Aliases: columnbreak, break. type=column → column break; type=page (default) → page break; type=line/textWrapping → soft line break. Surfaced by Get as type=break (when the run carries no <w:t> alongside the <w:br>).",
+  "properties": {
+    "type": {
+      "type": "enum",
+      "values": ["page", "column", "textWrapping", "line"],
+      "default": "page",
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop type=page", "--prop type=column"],
+      "readback": "n/a (use 'breakType' on Get / Set)",
+      "enforcement": "report",
+      "description": "Add-only alias; Get surfaces this as 'breakType', and Set requires 'breakType'."
+    },
+    "breakType": {
+      "type": "enum",
+      "values": ["page", "column", "textWrapping", "line"],
+      "aliases": ["breaktype"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop breakType=column"],
+      "readback": "br type attribute",
+      "enforcement": "report",
+      "description": "Canonical key on Get/Set. Add accepts 'type' as a parallel synonym for symmetry with the historical alias."
+    }
+  }
+}

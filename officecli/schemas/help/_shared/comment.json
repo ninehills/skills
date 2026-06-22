@@ -1,0 +1,32 @@
+{
+  "$schema": "../_schema.json",
+  "element": "comment",
+  "shared_base": true,
+  "properties": {
+    "author": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop author=\"Alice\""
+      ],
+      "readback": "Author attribute",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "comment body. Required.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop text=\"Check formula\"",
+        "--prop text=\"Reword this bullet\"",
+        "--prop text=\"Review this\""
+      ],
+      "readback": "concatenated text",
+      "enforcement": "report"
+    }
+  }
+}

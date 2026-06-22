@@ -1,0 +1,128 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "num",
+  "parent": "numbering",
+  "addParent": "/numbering",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": ["/numbering/num[@id=N]"],
+    "positional": ["/numbering/num[N]"]
+  },
+  "note": "Numbering instance (<w:num>). A thin pointer that references one <w:abstractNum> via abstractNumId — the abstractNum is the template, the num is the live counter. Paragraphs reference 'numId' (this element's id), not abstractNumId. Two modes: (B/C) --prop abstractNumId=N reuses an existing template; (A) --prop format=... auto-creates a matching abstractNum on the fly. By default each new num gets a startOverride on level 0 so two instances of the same abstractNum count independently — pass --prop continue=true to inherit Word's literal counter-continuation behavior instead.",
+  "properties": {
+    "id": {
+      "type": "int",
+      "description": "numId (w:numId, unique within /numbering). Omit for auto-assignment. Paragraphs reference this id via --prop numId=N.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": ["--prop id=3"],
+      "readback": "integer numId",
+      "enforcement": "strict"
+    },
+    "abstractNumId": {
+      "type": "int",
+      "description": "abstractNum to reuse (mode B/C). Must already exist in /numbering. Mutually exclusive with mode-A format-based auto-create. Set to mutate after creation.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop abstractNumId=0"],
+      "readback": "integer abstractNumId",
+      "enforcement": "strict"
+    },
+    "format": {
+      "type": "string",
+      "description": "mode A: when no abstractNumId is supplied, build a matching abstractNum from these props (format/text/indent/type/start) and bind this num to it. Same vocabulary as abstractNum.format.",
+      "aliases": ["fmt", "numFmt"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop format=decimal",
+        "--prop format=bullet"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "mode A: lvlText for the auto-created abstractNum level 0.",
+      "aliases": ["lvlText"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop text=\"%1.\""],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "indent": {
+      "type": "int",
+      "description": "mode A: left indent (twips) for the auto-created abstractNum level 0.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop indent=720"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "type": {
+      "type": "enum",
+      "values": ["hybridMultilevel", "multilevel", "singleLevel"],
+      "description": "mode A: multiLevelType for the auto-created abstractNum.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop type=hybridMultilevel"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "start": {
+      "type": "int",
+      "description": "starting number for level 0. Shorthand for startOverride.0. Default behavior: a fresh num auto-injects a startOverride on level 0 (using the abstractNum's level-0 start, typically 1) so independent instances of the same template don't share counters. Pass --prop continue=true to suppress this.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop start=5"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "startOverride.<N>": {
+      "type": "int",
+      "description": "per-level startOverride (N = 0..8). Emits <w:lvlOverride w:ilvl=N><w:startOverride w:val=...>. Use to reset specific levels without disturbing others.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop startOverride.0=1 --prop startOverride.1=1"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "continue": {
+      "type": "bool",
+      "description": "if true, suppress the default level-0 startOverride injection — this num inherits Word's literal counter-continuation behavior from the abstractNum (two num instances on the same abstractNum keep counting together).",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop continue=true"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "numId": {
+      "type": "int",
+      "description": "readback alias for id (matches the w:numId attribute name).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "integer numId",
+      "enforcement": "report"
+    }
+  }
+}

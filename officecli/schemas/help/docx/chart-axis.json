@@ -1,0 +1,24 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "chart-axis",
+  "parent": "chart",
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "remove": false
+  },
+  "note": "Mirror of pptx/chart-axis. Axes are created/destroyed implicitly by chartType changes — no direct Add/Remove. At chart-creation time, configure via the chart's axis* props (axismin/axismax/axistitle/axisfont/…); chart-axis covers post-creation only. Known gaps: `labelFont` writes the title run (not tick labels); `lineWidth`/`lineDash` apply to all plot-area series — use chart-series for series-specific line styling.",
+  "addressing": {
+    "key": "role",
+    "pathForm": "/chart[N]/axis[@role=ROLE]",
+    "keyValues": [
+      "category",
+      "value",
+      "value2",
+      "series"
+    ]
+  },
+  "extends": "_shared/chart-axis"
+}

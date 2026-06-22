@@ -1,0 +1,238 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "section",
+  "parent": "body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/section[N]", "/body/sectPr[N]"]
+  },
+  "note": "Sections are section-break paragraphs carrying SectionProperties. Canonical length readback is cm (via FormatTwipsToCm). Lenient length input (twips int, or 2cm/0.5in/24pt via ParseTwips).",
+  "properties": {
+    "type": {
+      "type": "enum",
+      "description": "section break type. Only applies to mid-document sections at /section[N]; the body-level path / refers to the final section which has no break type, and Set rejects 'type'/'break' there with an actionable error pointing at /section[N].",
+      "values": ["nextPage", "continuous", "evenPage", "oddPage", "nextColumn"],
+      "aliases": {
+        "nextPage": ["next", "nextpage", "newPage", "newpage", "page"],
+        "evenPage": ["even", "evenpage"],
+        "oddPage":  ["odd",  "oddpage"],
+        "nextColumn": ["column", "nextcolumn"]
+      },
+      "propAliases": ["break"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop type=nextPage", "--prop break=newPage"],
+      "readback": "one of values (innerText)",
+      "enforcement": "strict"
+    },
+    "pageWidth": {
+      "type": "length",
+      "aliases": ["pagewidth", "width"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop pageWidth=21cm"],
+      "readback": "unit-qualified cm (e.g. \"21cm\")",
+      "enforcement": "strict"
+    },
+    "pageHeight": {
+      "type": "length",
+      "aliases": ["pageheight", "height"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop pageHeight=29.7cm"],
+      "readback": "unit-qualified cm (e.g. \"29.7cm\")",
+      "enforcement": "strict"
+    },
+    "orientation": {
+      "type": "enum",
+      "values": ["portrait", "landscape"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop orientation=landscape"],
+      "readback": "innerText of PageOrientationValues",
+      "enforcement": "strict"
+    },
+    "marginTop": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop marginTop=2.5cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "marginBottom": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop marginBottom=2.5cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "marginLeft": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop marginLeft=3cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "marginRight": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop marginRight=3cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "marginHeader": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "description": "header-from-top-edge distance (pgMar @header).",
+      "examples": ["--prop marginHeader=1.5cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "marginFooter": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "description": "footer-from-bottom-edge distance (pgMar @footer).",
+      "examples": ["--prop marginFooter=1.75cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "marginGutter": {
+      "type": "length",
+      "add": true, "set": true, "get": true,
+      "description": "binding gutter width (pgMar @gutter).",
+      "examples": ["--prop marginGutter=0cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "columns": {
+      "type": "int",
+      "description": "number of text columns. Add accepts combined form \"N\" or \"N,SPACE\" (e.g. \"2,1cm\"); separate space override via alias \"columns.space\".",
+      "aliases": ["columns.count"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop columns=2", "--prop columns=2,1cm"],
+      "readback": "integer column count",
+      "enforcement": "strict"
+    },
+    "columnSpace": {
+      "type": "length",
+      "description": "space between columns. Canonical key. Legacy alias 'columns.space' still accepted on Add/Set.",
+      "aliases": ["columns.space"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop columnSpace=1cm"],
+      "readback": "unit-qualified cm",
+      "enforcement": "strict"
+    },
+    "titlePage": {
+      "type": "bool",
+      "description": "enable distinct first-page header/footer for the section (writes <w:titlePg/>).",
+      "aliases": ["titlepage", "titlepg"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop titlePage=true"],
+      "readback": "true when <w:titlePg/> is present",
+      "enforcement": "strict"
+    },
+    "pageNumFmt": {
+      "type": "enum",
+      "description": "page-number numeric format (writes w:pgNumType/@w:fmt). Common: decimal / lowerRoman / upperRoman / lowerLetter / upperLetter. Locale-specific: hindiNumbers / hindiVowels / arabicAlpha / arabicAbjad / thaiCounting / chineseCounting / japaneseCounting / koreanCounting / ideographDigital. Use 'hindiNumbers' for Indic-Arabic numerals (٠١٢٣) common in Arabic documents.",
+      "values": ["decimal", "lowerRoman", "upperRoman", "lowerLetter", "upperLetter", "hindiNumbers", "hindiVowels", "hindiConsonants", "hindiCounting", "arabicAlpha", "arabicAbjad", "thaiNumbers", "thaiLetters", "thaiCounting", "chineseCounting", "chineseCountingThousand", "chineseLegalSimplified", "japaneseCounting", "japaneseLegal", "japaneseDigitalTen", "koreanCounting", "koreanLegal", "koreanDigital", "ideographDigital", "ideographTraditional", "ideographZodiac", "none"],
+      "aliases": ["pagenumfmt", "pagenumberformat", "pagenumberfmt"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop pageNumFmt=lowerRoman", "--prop pageNumFmt=hindiNumbers"],
+      "readback": "innerText of NumberFormatValues",
+      "enforcement": "strict"
+    },
+    "direction": {
+      "type": "enum",
+      "values": ["ltr", "rtl"],
+      "description": "section reading direction (writes <w:bidi/> on sectPr). Flips page side, header/footer anchors, and gutter for Arabic / Hebrew documents. Apply at section level alongside paragraph-level direction for a fully RTL document.",
+      "aliases": ["dir", "bidi"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop direction=rtl"],
+      "readback": "rtl (only emitted when sectPr/<w:bidi/> is present)",
+      "enforcement": "strict"
+    },
+    "rtlGutter": {
+      "type": "bool",
+      "description": "places the binding gutter on the right side (writes <w:rtlGutter/> on sectPr). Used together with direction=rtl for Arabic/Hebrew layouts.",
+      "aliases": ["rtlgutter"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop rtlGutter=true"],
+      "readback": "true (only emitted when sectPr/<w:rtlGutter/> is present)",
+      "enforcement": "report"
+    },
+    "pageStart": {
+      "type": "int",
+      "description": "starting page number for the section (writes w:pgNumType/@w:start). Use 'none'/'off' to clear.",
+      "aliases": ["pagestart", "pagenumberstart", "pagenumstart"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop pageStart=1", "--prop pageStart=none"],
+      "readback": "integer start value",
+      "enforcement": "strict"
+    },
+    "lineNumbers": {
+      "type": "enum",
+      "values": ["continuous", "restartPage", "restartSection"],
+      "aliases": {
+        "restartPage": ["page"],
+        "restartSection": ["section"]
+      },
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop lineNumbers=continuous"],
+      "readback": "one of values",
+      "enforcement": "strict"
+    },
+    "lineNumberCountBy": {
+      "type": "int",
+      "description": "line numbering interval (every Nth line gets a number). Companion to lineNumbers; only emitted when > 1.",
+      "aliases": ["linenumbercountby"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop lineNumbers=continuous --prop lineNumberCountBy=5"],
+      "readback": "integer",
+      "enforcement": "strict"
+    },
+    "lineNumberDistance": {
+      "type": "int",
+      "description": "gutter spacing in twips between the line-number column and the body text (<w:lnNumType w:distance>). Sibling attribute to lineNumberCountBy/lineNumberStart; surfaced independently so a section that carries only @distance round-trips. Does not by itself imply a restart mode.",
+      "aliases": ["linenumberdistance"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop lineNumberCountBy=2 --prop lineNumberDistance=288"],
+      "readback": "integer twips",
+      "enforcement": "report"
+    },
+    "headerRef": { "type":"string", "add":false, "set":false, "get":true, "description":"path to primary (default) header part. Convenience shortcut equal to headerRef.default when present.", "readback":"OOXML part path", "enforcement":"report" },
+    "headerRef.default": { "type":"string", "add":false, "set":false, "get":true, "description":"path to default-type header part.", "readback":"OOXML part path", "enforcement":"report" },
+    "headerRef.first": { "type":"string", "add":false, "set":false, "get":true, "description":"path to first-page-only header part.", "readback":"OOXML part path", "enforcement":"report" },
+    "headerRef.even": { "type":"string", "add":false, "set":false, "get":true, "description":"path to even-page header part.", "readback":"OOXML part path", "enforcement":"report" },
+    "footerRef": { "type":"string", "add":false, "set":false, "get":true, "description":"path to primary (default) footer part. Convenience shortcut equal to footerRef.default when present.", "readback":"OOXML part path", "enforcement":"report" },
+    "footerRef.default": { "type":"string", "add":false, "set":false, "get":true, "description":"path to default-type footer part.", "readback":"OOXML part path", "enforcement":"report" },
+    "footerRef.first": { "type":"string", "add":false, "set":false, "get":true, "description":"path to first-page-only footer part.", "readback":"OOXML part path", "enforcement":"report" },
+    "footerRef.even": { "type":"string", "add":false, "set":false, "get":true, "description":"path to even-page footer part.", "readback":"OOXML part path", "enforcement":"report" },
+    "colSpaces":         { "type":"string", "add":false, "set":false, "get":true, "description":"per-column space overrides — comma-separated EMU/twips values, one per column. Surfaces when columns carry individual @space attrs.", "readback":"comma-separated integer twips", "enforcement":"report" },
+    "columns.equalWidth":{ "type":"bool",   "add":false, "set":false, "get":true, "description":"sectPr cols @equalWidth flag — true when all columns share the same width.", "readback":"true|false", "enforcement":"report" },
+    "columns.separator": { "type":"bool",   "add":false, "set":false, "get":true, "description":"sectPr cols @sep flag — vertical separator line drawn between columns.", "readback":"true when set", "enforcement":"report" },
+    "pgBorders":          { "type":"enum",   "add":true,  "set":true,  "get":false, "values":["box","none"], "description":"page-border shorthand. 'box' materialises a single 4pt auto-colour border on all four sides; 'none' strips pgBorders. Get/dump surfaces existing page borders as the per-side pgBorders.<top|left|bottom|right> keys (with full val/sz/color/space) instead, so the shorthand is input-only.", "enforcement":"report" },
+    "pgBorders.top":      { "type":"string", "add":true,  "set":true,  "get":true, "description":"top page border, STYLE[;SIZE[;COLOR[;SPACE]]] (SIZE in eighths-of-pt or a unit-qualified length; SPACE in points-from-edge twips). Mirrors the paragraph pbdr.* / table border.* per-side value form.", "readback":"STYLE on the key, SIZE/COLOR/SPACE on .sz/.color/.space sub-keys", "enforcement":"report" },
+    "pgBorders.left":     { "type":"string", "add":true,  "set":true,  "get":true, "description":"left page border, STYLE[;SIZE[;COLOR[;SPACE]]]. See pgBorders.top.", "readback":"STYLE on the key, SIZE/COLOR/SPACE on .sz/.color/.space sub-keys", "enforcement":"report" },
+    "pgBorders.bottom":   { "type":"string", "add":true,  "set":true,  "get":true, "description":"bottom page border, STYLE[;SIZE[;COLOR[;SPACE]]]. See pgBorders.top.", "readback":"STYLE on the key, SIZE/COLOR/SPACE on .sz/.color/.space sub-keys", "enforcement":"report" },
+    "pgBorders.right":    { "type":"string", "add":true,  "set":true,  "get":true, "description":"right page border, STYLE[;SIZE[;COLOR[;SPACE]]]. See pgBorders.top.", "readback":"STYLE on the key, SIZE/COLOR/SPACE on .sz/.color/.space sub-keys", "enforcement":"report" },
+    "pgBorders.offsetFrom":{ "type":"enum",  "add":true,  "set":true,  "get":true, "values":["page","text"], "description":"pgBorders @offsetFrom — whether the border is measured from the page edge ('page') or the text margin ('text', the OOXML default). Surfaced on get only when present.", "readback":"page|text", "enforcement":"report" },
+    "pgBorders.zOrder":   { "type":"enum",  "add":true,  "set":true,  "get":true, "values":["front","back"], "description":"pgBorders @zOrder — whether the page border is drawn IN FRONT of ('front', the OOXML default) or BEHIND ('back') the page text. Surfaced on get only when present.", "readback":"front|back", "enforcement":"report" },
+    "pgBorders.display":  { "type":"enum",  "add":true,  "set":true,  "get":true, "values":["allPages","firstPage","notFirstPage"], "description":"pgBorders @display — which pages of the section the page border appears on (all pages, first page only, or every page except the first). Surfaced on get only when present.", "readback":"allPages|firstPage|notFirstPage", "enforcement":"report" },
+    "paperSrc.first":     { "type":"int",    "add":true,  "set":true,  "get":true, "description":"printer paper-source bin for the first page of the section (<w:paperSrc w:first>). Integer printer-tray id (0–65535). Sits after pgMar, before pgBorders in CT_SectPr order.", "examples":["--prop paperSrc.first=1"], "readback":"integer bin id", "enforcement":"report" },
+    "paperSrc.other":     { "type":"int",    "add":true,  "set":true,  "get":true, "description":"printer paper-source bin for the remaining pages of the section (<w:paperSrc w:other>). Integer printer-tray id (0–65535). Companion to paperSrc.first.", "examples":["--prop paperSrc.other=4"], "readback":"integer bin id", "enforcement":"report" },
+    "formProt":           { "type":"bool",   "add":true,  "set":true,  "get":true, "description":"section form-protection flag (<w:formProt>). When true the section's content is locked except for form fields. Bare on/off toggle; accepts none/off/false to clear. Sits after cols, before vAlign in CT_SectPr order.", "examples":["--prop formProt=true"], "readback":"true when set", "enforcement":"report" },
+    "vAlign":             { "type":"enum",   "add":true,  "set":true,  "get":true, "values":["top","center","both","bottom"], "aliases":["valign"], "description":"vertical alignment of page content (<w:vAlign>). 'center' vertically centers the body; 'both' justifies top-to-bottom. Accepts none/off to clear.", "examples":["--prop vAlign=center"], "readback":"top|center|both|bottom", "enforcement":"report" },
+    "textDirection":      { "type":"enum",   "add":true,  "set":true,  "get":true, "values":["lrTb","tbRl","btLr","lrTbV","tbRlV","tbLrV"], "aliases":["textdirection"], "description":"section page text flow direction (<w:textDirection>), East-Asian vertical layout. tbRl is the common vertical (top-to-bottom, columns right-to-left) page flow. Accepts none/off to clear. Distinct from the cell-level textDirection in tcPr.", "examples":["--prop textDirection=tbRl"], "readback":"lrTb|tbRl|btLr|lrTbV|tbRlV|tbLrV", "enforcement":"report" },
+    "footnotePr.numFmt":  { "type":"enum",   "add":true,  "set":true,  "get":true, "values":["decimal","lowerRoman","upperRoman","lowerLetter","upperLetter","chicago"], "propAliases":["footnotePr.format"], "description":"section footnote number format (<w:footnotePr><w:numFmt>). Restarting footnote numbering per page/section requires footnotePr.numRestart.", "examples":["--prop footnotePr.numFmt=lowerRoman"], "readback":"innerText of NumberFormatValues", "enforcement":"report" },
+    "footnotePr.numRestart": { "type":"enum","add":true,  "set":true,  "get":true, "values":["continuous","eachSect","eachPage"], "propAliases":["footnotePr.restart"], "description":"section footnote numbering restart (<w:footnotePr><w:numRestart>). 'eachPage' restarts the counter on every page; 'eachSect' on every section.", "examples":["--prop footnotePr.numRestart=eachPage"], "readback":"continuous|eachSect|eachPage", "enforcement":"report" },
+    "footnotePr.numStart":{ "type":"int",    "add":true,  "set":true,  "get":true, "description":"section footnote starting number (<w:footnotePr><w:numStart>).", "examples":["--prop footnotePr.numStart=1"], "readback":"non-negative integer", "enforcement":"report" },
+    "footnotePr.pos":     { "type":"enum",   "add":true,  "set":true,  "get":true, "values":["pageBottom","beneath","sectEnd"], "propAliases":["footnotePr.position"], "description":"section footnote placement (<w:footnotePr><w:pos>). pageBottom (default), beneath (beneath text), sectEnd (section end).", "examples":["--prop footnotePr.pos=pageBottom"], "readback":"pageBottom|beneath|sectEnd", "enforcement":"report" },
+    "endnotePr.numFmt":   { "type":"enum",   "add":true,  "set":true,  "get":true, "values":["decimal","lowerRoman","upperRoman","lowerLetter","upperLetter","chicago"], "propAliases":["endnotePr.format"], "description":"section endnote number format (<w:endnotePr><w:numFmt>).", "examples":["--prop endnotePr.numFmt=lowerRoman"], "readback":"innerText of NumberFormatValues", "enforcement":"report" },
+    "endnotePr.numRestart": { "type":"enum", "add":true,  "set":true,  "get":true, "values":["continuous","eachSect","eachPage"], "propAliases":["endnotePr.restart"], "description":"section endnote numbering restart (<w:endnotePr><w:numRestart>).", "examples":["--prop endnotePr.numRestart=eachSect"], "readback":"continuous|eachSect|eachPage", "enforcement":"report" },
+    "endnotePr.numStart": { "type":"int",    "add":true,  "set":true,  "get":true, "description":"section endnote starting number (<w:endnotePr><w:numStart>).", "examples":["--prop endnotePr.numStart=1"], "readback":"non-negative integer", "enforcement":"report" },
+    "endnotePr.pos":      { "type":"enum",   "add":true,  "set":true,  "get":true, "values":["sectEnd","docEnd"], "propAliases":["endnotePr.position"], "description":"section endnote placement (<w:endnotePr><w:pos>). sectEnd (section end) or docEnd (document end).", "examples":["--prop endnotePr.pos=docEnd"], "readback":"sectEnd|docEnd", "enforcement":"report" }
+  }
+}

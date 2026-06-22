@@ -1,0 +1,99 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "placeholder",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/slide[N]/placeholder[M]", "/slide[N]/shape[M]"]
+  },
+  "note": "Aliases: ph. Inserts a Shape with PlaceholderShape nonVisual properties — geometry comes from the slide layout. Add returns /slide[N]/shape[M] (placeholder is a shape at the OOXML layer). effective.* keys behave as documented in pptx/shape.json.",
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "cNvPr placeholder id. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "readback": "integer shape id (cNvPr)",
+      "enforcement": "report"
+    },
+    "phType": {
+      "type": "enum",
+      "description": "placeholder type. Required at Add. Set is intentionally not supported: phType binds the placeholder to a slide-layout slot for style/position inheritance, so changing it after creation would produce a half-bound shape rather than a typed placeholder. To change a placeholder's role, remove it and re-add with the new phType.",
+      "values": ["title", "body", "subtitle", "date", "footer", "slidenum", "header", "picture", "chart", "table", "diagram", "media", "obj", "clipart"],
+      "aliases": ["phtype", "type"],
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop phType=title"],
+      "readback": "placeholder type string",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "placeholder name. Defaults to '{type} Placeholder {id}'.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop name=\"Title 1\""],
+      "readback": "name string",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "optional initial text content.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop text=\"Slide title\""],
+      "readback": "concatenated run text",
+      "enforcement": "report"
+    },
+    "phIndex": {
+      "type": "number",
+      "description": "placeholder index within the slide layout (PlaceholderShape/@idx). Disambiguates same-typed placeholders (e.g. two `body` placeholders).",
+      "add": false, "set": false, "get": true,
+      "readback": "non-negative integer; key omitted when @idx absent",
+      "enforcement": "report"
+    },
+    "effective.direction": {
+      "type": "enum",
+      "values": ["rtl", "ltr"],
+      "description": "resolved reading direction inherited from placeholder→layout→master→presentation defaults. Suppressed when 'direction' is set directly on the placeholder.",
+      "add": false, "set": false, "get": true,
+      "readback": "rtl | ltr",
+      "enforcement": "report"
+    },
+    "effective.size": {
+      "type": "length",
+      "description": "resolved font size inherited from placeholder→layout→master→presentation defaults. Suppressed when 'size' is set directly on the placeholder.",
+      "add": false, "set": false, "get": true,
+      "readback": "unit-qualified pt (e.g. \"18pt\")",
+      "enforcement": "report"
+    },
+    "effective.font": {
+      "type": "string",
+      "description": "resolved font name inherited from placeholder→layout→master→presentation defaults. Suppressed when 'font' is set directly on the placeholder.",
+      "add": false, "set": false, "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "effective.color": {
+      "type": "color",
+      "description": "resolved text color inherited from placeholder→layout→master→presentation defaults. Suppressed when 'color' is set directly on the placeholder.",
+      "add": false, "set": false, "get": true,
+      "readback": "#-prefixed uppercase hex (scheme colors pass through)",
+      "enforcement": "report"
+    },
+    "effective.bold": {
+      "type": "bool",
+      "description": "resolved bold inherited from placeholder→layout→master→presentation defaults. Suppressed when 'bold' is set directly on the placeholder.",
+      "add": false, "set": false, "get": true,
+      "readback": "true/false",
+      "enforcement": "report"
+    },
+    "isTitle": { "type":"bool", "add":false, "set":false, "get":true, "description":"true when the shape is the title placeholder (phType=title or ctrTitle).", "readback":"true on title placeholders", "enforcement":"report" },
+    "inheritedFrom": { "type":"string", "add":false, "set":false, "get":true, "description":"placeholder inheritance source — `layout` when the placeholder definition lives on the parent slide layout (not the slide itself).", "readback":"`layout` when inherited", "enforcement":"report" }
+  }
+}

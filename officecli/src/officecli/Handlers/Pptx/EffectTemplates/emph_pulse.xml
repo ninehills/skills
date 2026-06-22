@@ -1,0 +1,1 @@
+<p:animEffect transition="out" filter="fade"><p:cBhvr><p:cTn id="{ID0}" dur="500" tmFilter="0, 0; .2, .5; .8, .5; 1, 0" /><p:tgtEl><p:spTgt spid="{SPID}" /></p:tgtEl></p:cBhvr></p:animEffect><p:animScale><p:cBhvr><p:cTn id="{ID1}" dur="250" autoRev="1" fill="hold" /><p:tgtEl><p:spTgt spid="{SPID}" /></p:tgtEl></p:cBhvr><p:by x="105000" y="105000" /></p:animScale>

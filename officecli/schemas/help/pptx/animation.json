@@ -1,0 +1,138 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "animation",
+  "parent": ["shape", "chart"],
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/shape[M]/animation[K]",
+      "/slide[N]/chart[M]/animation[K]"
+    ]
+  },
+  "note": "Animation attached to a shape or chart graphicFrame. Chart targets additionally write <a:bldChart bld=…/> alongside the timing tree (see chartBuild). No composite 'animation' key on Get — each facet (effect, class, presetId, trigger, duration, …) is its own key. `direction` is consumed at Add only. Motion-path anti-pattern: `--prop type=motionPath` is NOT a valid property and will produce an unsupported_property warning. The correct form is `--prop class=motion --prop path=<preset>` (e.g. `--prop class=motion --prop path=line`).",
+  "properties": {
+    "effect": {
+      "type": "enum",
+      "description": "animation preset. spin/grow/bold/wave require class=emphasis; appear/fade/fly/zoom/wipe/bounce/float/swivel/split/wheel/checkerboard/blinds/dissolve/flash/box/circle/diamond/plus/strips/wedge/random work for entrance and exit. Sixteen additional exit effects are backed by verbatim PowerPoint OOXML templates (anim primitives copied byte-for-byte from a PowerPoint-authored deck): contract, centerRevolve, collapse, floatOut, shrinkTurn, sinkDown, spinner, basicZoom, stretchy, boomerang, credits, curveDown, pinwheel, spiralOut, basicSwivel — these require class=exit. The plain 'float' effect is the Exciting-menu Float (preset 30); use 'floatOut' for the Moderate-menu Float Out (preset 42). Template effects ignore the duration prop (they keep PowerPoint's authored timing). (disappear is not supported — use class=exit + appear or fade.)",
+      "values": ["appear", "fade", "fly", "zoom", "wipe", "bounce", "float", "swivel", "split", "wheel", "checkerboard", "blinds", "dissolve", "flash", "box", "circle", "diamond", "plus", "strips", "wedge", "random", "spin", "grow", "wave", "bold", "contract", "centerRevolve", "collapse", "floatOut", "shrinkTurn", "sinkDown", "spinner", "basicZoom", "stretchy", "boomerang", "credits", "curveDown", "pinwheel", "spiralOut", "basicSwivel", "fillColor", "growShrink", "lineColor", "transparency", "complementaryColor", "complementaryColor2", "contrastingColor", "darken", "desaturate", "lighten", "objectColor", "pulse", "colorPulse", "teeter"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop effect=fade", "--prop effect=spin --prop class=emphasis"],
+      "readback": "effect name",
+      "enforcement": "report"
+    },
+    "class": {
+      "type": "enum",
+      "description": "animation category — entrance, exit, emphasis, or motion. spin/grow/wave only work with emphasis; motion needs path=<preset|custom>.",
+      "values": ["entrance", "exit", "emphasis", "motion"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop class=entrance", "--prop class=motion --prop path=line"],
+      "readback": "entrance | exit | emphasis | motion",
+      "enforcement": "report"
+    },
+    "path": {
+      "type": "enum",
+      "description": "Motion-path preset (only valid when class=motion). 'custom' requires d=<SVG-like path data>. Direction-aware presets (line, arc) accept direction= for variants. Note: use class=motion + path=<preset>, not type=motionPath — the latter is not a recognized property.",
+      "values": ["line", "arc", "circle", "diamond", "triangle", "square", "custom"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop class=motion --prop path=line --prop direction=right", "--prop class=motion --prop path=circle"],
+      "readback": "preset name (line | arc | circle | diamond | triangle | square | custom)",
+      "enforcement": "report"
+    },
+    "d": {
+      "type": "string",
+      "description": "Custom motion-path data (SVG-like; only valid when class=motion and path=custom). Coords are relative to slide (0..1). Must end with 'E' (auto-appended if missing).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop class=motion --prop path=custom --prop d='M 0 0 L 0.5 0 E'"],
+      "readback": "raw OOXML animMotion path string, only when path=custom",
+      "enforcement": "report"
+    },
+    "trigger": {
+      "type": "enum",
+      "values": ["onClick", "withPrevious", "afterPrevious"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop trigger=onClick"],
+      "readback": "trigger mode",
+      "enforcement": "report"
+    },
+    "duration": {
+      "type": "number",
+      "description": "Animation duration in milliseconds (integer, e.g. 500 = 0.5s).",
+      "aliases": ["dur"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop duration=500", "--prop dur=2000"],
+      "readback": "duration in milliseconds",
+      "enforcement": "report"
+    },
+    "delay": {
+      "type": "number",
+      "description": "Delay before starting in milliseconds (integer, e.g. 500 = 0.5s).",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop delay=200"],
+      "readback": "delay in milliseconds",
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "string",
+      "description": "direction for directional effects (in/out/left/right/up/down). Accepts the aliases 'top' (= up) and 'bottom' (= down), plus single-letter forms l/r/u/d; all normalize to the canonical in/out/left/right/up/down on readback.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop direction=in", "--prop direction=bottom"],
+      "readback": "canonical direction token (left/right/up/down) emitted as a standalone 'direction' key when the effect is directional, in addition to being packed into the 'animation' key value as 'effectName-class-direction-duration' (e.g. 'fly-entrance-left-500'). 'top'/'bottom' normalize to 'up'/'down'.",
+      "enforcement": "report"
+    },
+    "repeat": {
+      "type": "string",
+      "description": "Number of times the animation repeats. Accepts a positive integer (e.g. 3) or the literal 'indefinite' to loop forever. Stored as OOXML @repeatCount (count*1000 or 'indefinite').",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop repeat=3", "--prop repeat=indefinite"],
+      "readback": "positive integer count, or the literal 'indefinite'",
+      "enforcement": "report"
+    },
+    "restart": {
+      "type": "enum",
+      "description": "What happens when the trigger fires again after the animation has played. always = restart; whenNotActive = restart only if not currently playing; never = do nothing.",
+      "values": ["always", "whenNotActive", "never"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop restart=always", "--prop restart=whenNotActive"],
+      "readback": "always | whenNotActive | never",
+      "enforcement": "report"
+    },
+    "autoReverse": {
+      "type": "bool",
+      "description": "When true, the animation plays forward then in reverse, doubling its visible run. Maps to OOXML cTn @autoRev.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop autoReverse=true"],
+      "readback": "true when @autoRev=1 is present, omitted otherwise",
+      "enforcement": "report"
+    },
+    "presetId": {
+      "type": "number",
+      "add": false, "set": false, "get": true,
+      "description": "raw OOXML preset id for the animation effect. Emitted when the effect has a recognized preset.",
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "easein":     { "type":"number", "add":false, "set":false, "get":true, "description":"acceleration percentage (0..100) — fraction of the duration spent ramping up.", "readback":"integer percent", "enforcement":"report" },
+    "easeout":    { "type":"number", "add":false, "set":false, "get":true, "description":"deceleration percentage (0..100) — fraction of the duration spent ramping down.", "readback":"integer percent", "enforcement":"report" },
+    "motionPath": { "type":"string", "add":false, "set":false, "get":true, "description":"motion-path SVG-like path string (animMotion @path) for path animations.", "readback":"OOXML animMotion path string", "enforcement":"report" },
+    "chartBuild": {
+      "type": "enum",
+      "description": "Chart-internal build animation (only valid when the parent path is /slide[N]/chart[M]). Controls how chart elements appear under the entrance effect: asWhole (default — entire chart as one), series (one series at a time), category (one category at a time), seriesEl (each data point per series), categoryEl (each data point per category). Aliases accepted on input: bySeries, byCategory, bySeriesEl, byCategoryEl. Writes <a:bldChart bld='...'/> inside <p:bldGraphic><p:bldSub>. chartBuild is chart-wide — setting it via any /slide[N]/chart[M]/animation[K] propagates to every animation on the chart.",
+      "values": ["asWhole", "series", "category", "seriesEl", "categoryEl"],
+      "aliases": ["bySeries", "byCategory", "bySeriesEl", "byCategoryEl"],
+      "add": true, "set": true, "get": true,
+      "examples": [
+        "--prop \"effect=fade;class=entrance;chartBuild=byCategory\"",
+        "--prop \"effect=wipe;chartBuild=series;trigger=afterPrevious;duration=500\""
+      ],
+      "readback": "asWhole | series | category | seriesEl | categoryEl",
+      "enforcement": "report"
+    }
+  }
+}

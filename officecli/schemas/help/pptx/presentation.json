@@ -1,0 +1,376 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "presentation",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": false
+  },
+  "paths": {
+    "positional": [
+      "/"
+    ]
+  },
+  "note": "Root container. Get returns the presentation node with slide count + theme/master/layout references as children. Not addressable via Add. Set on '/' exposes core document metadata (title/author/subject/keywords/description/category) — written to docProps/core.xml, same source as docx/xlsx. Element-level mutations go through /slide[N], /theme, etc.",
+  "children": [
+    {
+      "element": "slide",
+      "pathSegment": "slide",
+      "cardinality": "0..n"
+    },
+    {
+      "element": "slidemaster",
+      "pathSegment": "slidemaster",
+      "cardinality": "1..n"
+    },
+    {
+      "element": "theme",
+      "pathSegment": "theme",
+      "cardinality": "1"
+    }
+  ],
+  "extends": "_shared/root-metadata",
+  "properties": {
+    "title": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop title=\"Q4 Review\""
+      ],
+      "readback": "title string",
+      "enforcement": "report"
+    },
+    "author": {
+      "type": "string",
+      "aliases": [
+        "creator"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop author=\"Alice\""
+      ],
+      "readback": "author string",
+      "enforcement": "report"
+    },
+    "keywords": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop keywords=\"tag1,tag2\""
+      ],
+      "readback": "keywords string",
+      "enforcement": "report"
+    },
+    "description": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop description=\"Abstract\""
+      ],
+      "readback": "description string",
+      "enforcement": "report"
+    },
+    "category": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop category=Marketing"
+      ],
+      "readback": "category string",
+      "enforcement": "report"
+    },
+    "lastModifiedBy": {
+      "type": "string",
+      "aliases": [
+        "lastmodifiedby"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lastModifiedBy=\"Bob\""
+      ],
+      "readback": "last-modified author",
+      "enforcement": "report"
+    },
+    "revisionNumber": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/core.xml Revision field — presentation save counter.",
+      "examples": [
+        "--prop revisionNumber=3"
+      ],
+      "readback": "revision number string",
+      "enforcement": "report"
+    },
+    "created": {
+      "type": "string",
+      "description": "creation timestamp from docProps/core.xml.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "ISO 8601 timestamp",
+      "enforcement": "report"
+    },
+    "modified": {
+      "type": "string",
+      "description": "last-modified timestamp from docProps/core.xml.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "ISO 8601 timestamp",
+      "enforcement": "report"
+    },
+    "slideWidth": {
+      "type": "string",
+      "aliases": ["width"],
+      "description": "slide width from <p:sldSz/@cx>, formatted via FormatEmu. Set accepts unit-qualified or raw EMU; setting width or height alone switches @type to 'custom'.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop slideWidth=30cm",
+        "--prop slideWidth=720pt"
+      ],
+      "readback": "unit-qualified length string (e.g. '25.4cm', '720pt')",
+      "enforcement": "report"
+    },
+    "slideHeight": {
+      "type": "string",
+      "aliases": ["height"],
+      "description": "slide height from <p:sldSz/@cy>, formatted via FormatEmu. Set accepts unit-qualified or raw EMU; setting width or height alone switches @type to 'custom'.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop slideHeight=20cm",
+        "--prop slideHeight=540pt"
+      ],
+      "readback": "unit-qualified length string (e.g. '19.05cm', '540pt')",
+      "enforcement": "report"
+    },
+    "slideSize": {
+      "type": "string",
+      "description": "slide size preset name derived from <p:sldSz/@type>. Set accepts one of the listed preset names (widescreen | standard | 16:10 | a4 | a3 | letter | b4 | b5 | 35mm | overhead | banner | ledger | custom) and rewrites @cx/@cy + @type accordingly; unlisted names are rejected (use slideWidth/slideHeight for an arbitrary custom size).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop slideSize=widescreen",
+        "--prop slideSize=a4"
+      ],
+      "readback": "preset name: widescreen | standard | 16:10 | a4 | a3 | letter | b4 | b5 | 35mm | overhead | banner | ledger | custom",
+      "enforcement": "report"
+    },
+    "defaultFont": {
+      "type": "string",
+      "description": "default minor (body) font from the first slide master's theme FontScheme.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "default text font family name",
+      "enforcement": "report"
+    },
+    "extended.application": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "from docProps/app.xml application identifier (e.g. \"Microsoft PowerPoint\").",
+      "readback": "application string",
+      "enforcement": "report"
+    },
+    "compatMode": {
+      "type": "bool",
+      "aliases": ["compatibilitymode"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "presentation @compatMode flag — true when the file is in legacy-compatibility mode.",
+      "examples": [
+        "--prop compatMode=true"
+      ],
+      "readback": "true when compat mode is on",
+      "enforcement": "report"
+    },
+    "firstSlideNum": {
+      "type": "number",
+      "aliases": ["firstslidenumber"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "presentation @firstSlideNum — slide number of the first slide (default 1).",
+      "examples": [
+        "--prop firstSlideNum=10"
+      ],
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "rtl": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": false,
+      "description": "Set-only input alias for presentation @rtl (right-to-left reading order). Get exposes the same OOXML attribute under the canonical key `direction` ('rtl' when true), matching docx convention. Asymmetric by design — set with `rtl=true|false`, read via `direction`.",
+      "examples": [
+        "--prop rtl=true"
+      ],
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "Get-only canonical key for presentation reading direction. Emits 'rtl' when @rtl=true is set; absent otherwise. To set, use the input-only `rtl=true|false` key.",
+      "readback": "'rtl' when right-to-left; key absent for default left-to-right",
+      "enforcement": "report"
+    },
+    "print.colorMode": {
+      "type": "string",
+      "aliases": ["printcolormode"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties color mode. Set accepts: color|clr, grayscale|gray, blackAndWhite|bw.",
+      "examples": [
+        "--prop print.colorMode=gray",
+        "--prop print.colorMode=color"
+      ],
+      "readback": "color mode token (clr | gray | bw)",
+      "enforcement": "report"
+    },
+    "print.frameSlides": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties FrameSlides flag — print a thin border around each slide.",
+      "examples": [
+        "--prop print.frameSlides=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "print.hiddenSlides": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties HiddenSlides flag — include hidden slides in printed output.",
+      "examples": [
+        "--prop print.hiddenSlides=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "print.what": {
+      "type": "string",
+      "aliases": ["printwhat"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties PrintWhat — what gets printed. Set accepts shorthand (slides, handouts, notes, outline) and explicit OOXML tokens (handouts1, handouts2, handouts3, handouts4, handouts6, handouts9). Bare `handouts` is an alias for handouts1. Get returns the OOXML token (e.g. handouts1).",
+      "examples": [
+        "--prop print.what=handouts",
+        "--prop print.what=handouts4",
+        "--prop print.what=notes"
+      ],
+      "readback": "print-what enum inner text (slides | handouts1..9 | notes | outline)",
+      "enforcement": "report"
+    },
+    "print.scaleToFitPaper": {
+      "type": "bool",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "PrintingProperties ScaleToFitPaper flag — scale slides to fill the paper page.",
+      "examples": [
+        "--prop print.scaleToFitPaper=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "show.loop": {
+      "type": "bool",
+      "aliases": ["showloop"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties Loop flag — auto-restart slideshow when reaching the end.",
+      "examples": [
+        "--prop show.loop=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    },
+    "show.narration": {
+      "type": "bool",
+      "aliases": ["shownarration"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties ShowNarration flag — play recorded narration during slideshow.",
+      "examples": [
+        "--prop show.narration=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "show.animation": {
+      "type": "bool",
+      "aliases": ["showanimation"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties ShowAnimation flag — play animations during slideshow.",
+      "examples": [
+        "--prop show.animation=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "show.useTimings": {
+      "type": "bool",
+      "aliases": ["usetimings", "show.usetimings"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ShowProperties UseTimings flag — use stored slide timings during slideshow.",
+      "examples": [
+        "--prop show.useTimings=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "removePersonalInfo": {
+      "type": "bool",
+      "aliases": ["removepersonalinfoonsave"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "ExtendedProperties RemovePersonalInfoOnSave — strip author/last-saved-by metadata on save.",
+      "examples": [
+        "--prop removePersonalInfo=true"
+      ],
+      "readback": "true when set",
+      "enforcement": "report"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "bookmark",
+  "parent": "body|paragraph",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable":     ["/bookmark[@name=NAME]"],
+    "positional": ["/bookmark[N]"]
+  },
+  "note": "Bookmarks are BookmarkStart/End pairs. Name must be addressable: no whitespace, no '/[]\"', no leading '@' or single quote. Duplicate names are allowed at Add (Word permits them; the bookmark id stays unique) and emit a warning — /bookmark[@name=NAME] then resolves to the first match.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "bookmark name (required). Letters, digits, '.', '_', '-' only.",
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop name=chapter1"],
+      "readback": "name as stored on BookmarkStart",
+      "enforcement": "strict"
+    },
+    "text": {
+      "type": "string",
+      "description": "optional bookmark-covered text. Without this, only an empty Start/End pair is inserted.",
+      "add": true, "set": false, "get": false,
+      "examples": ["--prop text=\"Chapter 1 title\""],
+      "readback": "not a distinct key — lives on wrapped runs",
+      "enforcement": "strict"
+    },
+    "id": {
+      "type": "string",
+      "description": "OOXML bookmark id (w:bookmarkStart/@w:id). Assigned by the writer; surfaces only on Get/Query.",
+      "add": false, "set": false, "get": true,
+      "readback": "numeric bookmark id as stored on BookmarkStart",
+      "enforcement": "report"
+    }
+  }
+}

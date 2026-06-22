@@ -1,0 +1,15 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "seriesCount": {
+      "type": "number",
+      "description": "number of data series in the chart (extended cx:chart only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "number of data series",
+      "enforcement": "report"
+    }
+  }
+}

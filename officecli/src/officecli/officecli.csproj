@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>OfficeCli</RootNamespace>
+    <AssemblyName>officecli</AssemblyName>
+    <Version>1.0.116</Version>
+    <Authors>goworm</Authors>
+    <Company>OfficeCLI</Company>
+    <Copyright>Copyright © 2026 OfficeCLI (https://OfficeCLI.AI)</Copyright>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>true</PublishTrimmed>
+    <CETCompat>false</CETCompat>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.4.1" />
+    <PackageReference Include="System.CommandLine" Version="3.0.0-preview.2.26159.112" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources/preview.css" />
+    <EmbeddedResource Include="Resources/preview.js" />
+    <EmbeddedResource Include="Resources/watch-sse-core.js" />
+    <EmbeddedResource Include="Resources/watch-overlay.js" />
+    <EmbeddedResource Include="Resources/cx-gallery/index.json">
+      <LogicalName>OfficeCli.Resources.cx-gallery.index.json</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/cx-gallery/fragments/*.xml">
+      <LogicalName>OfficeCli.Resources.cx-gallery.fragments.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources/chartex-colors.xml" />
+    <EmbeddedResource Include="Resources/chartex-style.xml" />
+    <EmbeddedResource Include="Handlers/Pptx/EffectTemplates/*.xml">
+      <LogicalName>OfficeCli.Handlers.Pptx.EffectTemplates.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- %(RecursiveDir) uses '\' on Windows and '/' on Linux/macOS; normalize to '/'
+         so SkillInstaller's `skills/{folder}/…` prefix lookup works on all platforms. -->
+    <EmbeddedResource Include="../../skills/**/*" LogicalName="skills/$([System.String]::Copy('%(RecursiveDir)').Replace('\','/'))%(Filename)%(Extension)" />
+    <EmbeddedResource Remove="../../skills/**/*.glb" />
+  </ItemGroup>
+
+  <!-- Embed help schemas into the assembly so SchemaHelpLoader can read
+       them via Assembly.GetManifestResourceStream — no on-disk extraction
+       required (single-file installer ships only the .exe). -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\schemas\help\**\*.json" LogicalName="schemas/help/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

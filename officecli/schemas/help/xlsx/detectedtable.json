@@ -1,0 +1,50 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "detectedtable",
+  "parent": "sheet",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": false,
+    "get": false,
+    "query": false,
+    "remove": false
+  },
+  "paths": {
+    "positional": ["/SheetName/A1:C10"]
+  },
+  "note": "Read-only synthetic node. A header-row block heuristically detected in unstructured cells (not a real ListObject), surfaced as a Type=detectedtable node inside `query <table-selector>` / outline results and used to resolve row[ColumnName op value] predicates. Not independently addressable, creatable, or settable — to make it a real table use `add table`. stable=false because its boundaries can shift as cells change.",
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "always `header-sniff` — marks the node as a heuristically-detected block rather than a ListObject.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "stable": {
+      "type": "bool",
+      "description": "always false — a detected block's boundaries may shift as surrounding cells change (a real ListObject has a fixed ref).",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "ref": {
+      "type": "string",
+      "description": "A1 range of the whole detected block including the header row.",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "columns": {
+      "type": "string",
+      "description": "comma-separated detected header names (used to resolve row[ColumnName op value] predicates).",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    },
+    "dataRange": {
+      "type": "string",
+      "description": "A1 range of the data body only (header row excluded).",
+      "add": false, "set": false, "get": true,
+      "enforcement": "report"
+    }
+  }
+}

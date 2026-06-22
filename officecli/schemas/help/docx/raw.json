@@ -1,0 +1,32 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "raw",
+  "operations": {
+    "add": false,
+    "set": false,
+    "get": false,
+    "query": false,
+    "remove": false
+  },
+  "properties": {},
+  "description": "Raw OOXML access via the `raw` (read) and `raw-set` (write) commands. Use only when L2 DOM operations cannot express what you need. Two part-path forms are accepted: (1) semantic short names (recommended) and (2) zip-internal URIs (any path ending in .xml is resolved literally against the package, e.g. /word/document.xml, /word/footnotes.xml).",
+  "parts": [
+    { "name": "/document",  "desc": "Main document body" },
+    { "name": "/styles",    "desc": "Style definitions" },
+    { "name": "/settings",  "desc": "Document-level settings (compatibility, view, protection)" },
+    { "name": "/numbering", "desc": "Numbering / list definitions" },
+    { "name": "/comments",  "desc": "Comments part" },
+    { "name": "/theme",     "desc": "Theme (color scheme, font scheme)" },
+    { "name": "/header[N]", "desc": "Nth header part (1-based)" },
+    { "name": "/footer[N]", "desc": "Nth footer part (1-based)" },
+    { "name": "/chart[N]",  "desc": "Nth embedded chart" },
+    { "name": "/<zip-uri>.xml", "desc": "Any path ending in .xml is resolved as a literal zip-internal URI (e.g. /word/footnotes.xml, /word/endnotes.xml, /word/glossary/document.xml, /customXml/item1.xml). Use for parts not covered by the semantic shortnames." }
+  ],
+  "examples": [
+    "officecli raw report.docx /document",
+    "officecli raw report.docx /styles",
+    "officecli raw report.docx /word/footnotes.xml",
+    "officecli raw-set report.docx /document --xpath \"//w:p[1]\" --action remove"
+  ]
+}

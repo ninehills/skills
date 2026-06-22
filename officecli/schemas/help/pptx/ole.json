@@ -1,0 +1,48 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "ole",
+  "parent": "slide",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/ole[M]"
+    ]
+  },
+  "note": "Aliases: oleobject, object, embed. Binary package + preview image. Position via x/y/width/height (EMU-parseable; readback in cm).",
+  "extends": [
+    "_shared/ole",
+    "_shared/ole.docx-pptx",
+    "_shared/ole.pptx-xlsx"
+  ],
+  "properties": {
+    "x": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=2cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=2cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    }
+  }
+}

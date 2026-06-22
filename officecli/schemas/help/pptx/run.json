@@ -1,0 +1,223 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "run",
+  "elementAliases": ["r"],
+  "parent": "paragraph",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/shape[M]/p[K]/r[L]"
+    ]
+  },
+  "note": "Appends a:r inside a:p. Font properties live on a:rPr. Colors get #-prefixed on readback via ParseHelpers.FormatHexColor. effective.* keys behave as documented in pptx/shape.json (no effective.direction on runs).",
+  "extends": [
+    "_shared/run",
+    "_shared/run.docx-pptx"
+  ],
+  "properties": {
+    "font": {
+      "type": "string",
+      "description": "bare font family — write-only convenience that sets the latin/ea/cs script slots to the same value. Get normalizes the readback to per-script canonical keys (font.latin / font.ea / font.cs) so a get→set round-trip preserves divergent slot values.",
+      "aliases": [
+        "fontname",
+        "fontFamily",
+        "font.name"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop font=Calibri",
+        "--prop font=\"Arial\"",
+        "--prop font=\"Times New Roman\""
+      ],
+      "readback": "see font.latin / font.ea / font.cs",
+      "enforcement": "strict"
+    },
+    "baseline": {
+      "type": "string",
+      "description": "vertical alignment in % of font height. Accepts 'super' (≡ +30), 'sub' (≡ -25), 'none'/'false'/'0', or a signed number. Get readback is the %-suffixed percentage.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop baseline=super",
+        "--prop baseline=sub",
+        "--prop baseline=-25"
+      ],
+      "readback": "signed percentage with % suffix (e.g. \"30%\", \"-25%\", \"0%\")",
+      "enforcement": "strict"
+    },
+    "highlight": {
+      "type": "color",
+      "description": "text highlight color behind the glyphs (a:highlight). Unlike Word's fixed named-color list, accepts any color (hex, named, rgb(), scheme names like accent1). 'none'/'false' removes the highlight on set.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop highlight=FFFF00",
+        "--prop highlight=accent1",
+        "--prop highlight=none"
+      ],
+      "readback": "#RRGGBB hex (or scheme color name)",
+      "enforcement": "report"
+    },
+    "kern": {
+      "type": "int",
+      "description": "minimum font size (in hundredths of a point) at which character kerning is applied. ECMA-376 §21.1.2.3.9 a:rPr/@kern. 0 disables; 1 enables for all sizes; e.g. 1200 = kern from 12pt up.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop kern=0",
+        "--prop kern=1200"
+      ],
+      "readback": "raw OOXML integer (hundredths of a point)",
+      "enforcement": "strict"
+    },
+    "spacing": {
+      "type": "number",
+      "description": "character spacing in points. Stored as 1/100 pt in OOXML (a:rPr/@spc); readback is the point value. Negative values tighten.",
+      "aliases": [
+        "charspacing",
+        "letterspacing",
+        "spc"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop spacing=2",
+        "--prop charspacing=-1",
+        "--prop spacing=0.5"
+      ],
+      "readback": "point value as decimal string (e.g. '2', '-1', '0.5')",
+      "enforcement": "strict"
+    },
+    "lang": {
+      "type": "string",
+      "description": "BCP-47 language tag for the run (ECMA-376 §21.1.2.3.9 a:rPr/@lang). DrawingML exposes a single primary-language slot — there is no per-script (latin/ea/cs) split like Word; 'lang.latin' is accepted as an alias on input, 'lang.ea'/'lang.cs' are rejected. Validated against a BCP-47 shape, max 35 chars.",
+      "aliases": [
+        "lang.latin"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lang=en-US",
+        "--prop lang=zh-CN",
+        "--prop lang=ja-JP"
+      ],
+      "readback": "BCP-47 tag as written (e.g. 'en-US')",
+      "enforcement": "strict"
+    },
+    "textOutline": {
+      "type": "string",
+      "description": "text outline / glyph stroke (a:rPr/a:ln). Compound form 'width:color' (mirrors connector 'line='); split forms 'textOutline.width' and 'textOutline.color' allow additive Set. Pass 'none' or 'false' to clear.",
+      "aliases": [
+        "textoutline"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textOutline=0.5pt:#FF0000",
+        "--prop textOutline=2pt",
+        "--prop textOutline=none"
+      ],
+      "readback": "width:color (e.g. '0.5pt:#FF0000') when both present; otherwise the part present",
+      "enforcement": "strict"
+    },
+    "textOutline.color": {
+      "type": "string",
+      "description": "text outline colour (a:rPr/a:ln/a:solidFill). Accepts #RRGGBB, named colors, rgb(...), or scheme tokens.",
+      "aliases": [
+        "textoutline.color"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textOutline.color=#FF0000"
+      ],
+      "readback": "#-prefixed hex color",
+      "enforcement": "strict"
+    },
+    "textOutline.width": {
+      "type": "string",
+      "description": "text outline stroke width (a:rPr/a:ln/@w). Accepts pt/cm/in/emu units.",
+      "aliases": [
+        "textoutline.width"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textOutline.width=0.5pt"
+      ],
+      "readback": "point value with 'pt' suffix (e.g. '0.5pt')",
+      "enforcement": "strict"
+    },
+    "cap": {
+      "type": "enum",
+      "values": [
+        "none",
+        "small",
+        "all"
+      ],
+      "aliases": [
+        "allCaps",
+        "allcaps",
+        "smallCaps",
+        "smallcaps"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop cap=all",
+        "--prop allCaps=true"
+      ],
+      "readback": "none | small | all",
+      "enforcement": "report"
+    },
+    "effective.font": {
+      "type": "string",
+      "description": "resolved font name inherited from placeholder→layout→master→presentation defaults. Suppressed when 'font' is set directly on the run.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "subscript": {
+      "type": "bool",
+      "description": "vertical alignment = subscript (sugar for baseline=sub). Mutually exclusive with superscript. Get readback uses canonical 'baseline' (not surfaced as 'subscript').",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop subscript=true"
+      ],
+      "enforcement": "strict"
+    },
+    "superscript": {
+      "type": "bool",
+      "description": "vertical alignment = superscript (sugar for baseline=super). Mutually exclusive with subscript. Get readback uses canonical 'baseline' (not surfaced as 'superscript').",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop superscript=true"
+      ],
+      "enforcement": "strict"
+    }
+  }
+}

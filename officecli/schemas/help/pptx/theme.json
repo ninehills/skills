@@ -1,0 +1,142 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "theme",
+  "parent": "presentation",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": false
+  },
+  "paths": {
+    "positional": ["/theme"]
+  },
+  "note": "Presentation theme part — fonts and color scheme. Set accepts a limited subset (color scheme entries, heading/body font); full theme replacement is not supported.",
+  "properties": {
+    "headingFont": {
+      "type": "string",
+      "description": "major (heading) Latin typeface.",
+      "aliases": ["majorFont", "majorfont", "major"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop headingFont=\"Calibri Light\""],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "bodyFont": {
+      "type": "string",
+      "description": "minor (body) Latin typeface.",
+      "aliases": ["minorFont", "minorfont", "minor"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop bodyFont=Calibri"],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "headingFont.ea": {
+      "type": "string",
+      "description": "major (heading) East Asian typeface (CJK).",
+      "aliases": ["majorFont.ea", "majorfont.ea"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop headingFont.ea=\"Yu Gothic\""],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "headingFont.cs": {
+      "type": "string",
+      "description": "major (heading) Complex Script typeface (Arabic/Hebrew/Thai).",
+      "aliases": ["majorFont.cs", "majorfont.cs"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop headingFont.cs=Arial"],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "bodyFont.ea": {
+      "type": "string",
+      "description": "minor (body) East Asian typeface (CJK).",
+      "aliases": ["minorFont.ea", "minorfont.ea"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop bodyFont.ea=\"Yu Gothic\""],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "bodyFont.cs": {
+      "type": "string",
+      "description": "minor (body) Complex Script typeface (Arabic/Hebrew/Thai).",
+      "aliases": ["minorFont.cs", "minorfont.cs"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop bodyFont.cs=\"Times New Roman\""],
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "dk1": {
+      "type": "color",
+      "description": "dark 1 — default text color in the theme color scheme.",
+      "aliases": ["dark1"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop dk1=#000000"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "lt1": {
+      "type": "color",
+      "description": "light 1 — default background color in the theme color scheme.",
+      "aliases": ["light1"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop lt1=#FFFFFF"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "dk2": {
+      "type": "color",
+      "description": "dark 2 — secondary dark / dark accent color in the theme color scheme.",
+      "aliases": ["dark2"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop dk2=#44546A"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "lt2": {
+      "type": "color",
+      "description": "light 2 — secondary light / light accent color in the theme color scheme.",
+      "aliases": ["light2"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop lt2=#E7E6E6"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "accent1": {
+      "type": "color",
+      "description": "theme accent color 1.",
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop accent1=#4472C4"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "accent2": { "type": "color", "description": "theme accent color 2.", "add": false, "set": true, "get": true, "examples": ["--prop accent2=#ED7D31"], "readback": "#-prefixed uppercase hex", "enforcement": "report" },
+    "accent3": { "type": "color", "description": "theme accent color 3.", "add": false, "set": true, "get": true, "examples": ["--prop accent3=#A5A5A5"], "readback": "#-prefixed uppercase hex", "enforcement": "report" },
+    "accent4": { "type": "color", "description": "theme accent color 4.", "add": false, "set": true, "get": true, "examples": ["--prop accent4=#FFC000"], "readback": "#-prefixed uppercase hex", "enforcement": "report" },
+    "accent5": { "type": "color", "description": "theme accent color 5.", "add": false, "set": true, "get": true, "examples": ["--prop accent5=#5B9BD5"], "readback": "#-prefixed uppercase hex", "enforcement": "report" },
+    "accent6": { "type": "color", "description": "theme accent color 6.", "add": false, "set": true, "get": true, "examples": ["--prop accent6=#70AD47"], "readback": "#-prefixed uppercase hex", "enforcement": "report" },
+    "hyperlink": {
+      "type": "color",
+      "description": "theme hyperlink color.",
+      "aliases": ["hlink"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop hyperlink=#0563C1"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "followedhyperlink": {
+      "type": "color",
+      "description": "theme followed (visited) hyperlink color.",
+      "aliases": ["folhlink"],
+      "add": false, "set": true, "get": true,
+      "examples": ["--prop followedhyperlink=#954F72"],
+      "readback": "#-prefixed uppercase hex",
+      "enforcement": "report"
+    },
+    "name": { "type":"string", "add":false, "set":true, "get":true, "description":"theme color scheme name (e.g. 'Office'). Set persists clrScheme/@name across reopen.", "examples":["--prop name=Custom"], "readback":"scheme name string", "enforcement":"report" }
+  }
+}

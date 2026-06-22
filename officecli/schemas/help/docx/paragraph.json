@@ -1,0 +1,1395 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "paragraph",
+  "elementAliases": [
+    "p"
+  ],
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/body/p[@paraId=ID]"
+    ],
+    "positional": [
+      "/body/p[N]"
+    ]
+  },
+  "note": "Get returns canonical keys: spaceBefore/spaceAfter/lineSpacing/align (legacy aliases spacebefore/linespacing/halign still accepted on Add/Set). effective.* keys are read-only values resolved through paragraph style → docDefaults from the first run; each carries an effective.X.src pointer to the writing layer (e.g. /styles/Heading1). Suppressed when the paragraph (or first run) sets the direct value.",
+  "children": [
+    {
+      "element": "run",
+      "pathSegment": "r",
+      "cardinality": "0..n"
+    }
+  ],
+  "extends": "_shared/paragraph",
+  "properties": {
+    "lineRule": {
+      "type": "enum",
+      "description": "line spacing rule paired with lineSpacing (Word-only: w:spacing@w:lineRule). 'auto' = multiplier (default for 1.5x/150%), 'exact' = exact fixed height (default for Npt), 'atLeast' = minimum height (Npt floor; lines may grow to fit tall content).",
+      "values": [
+        "auto",
+        "exact",
+        "atLeast"
+      ],
+      "aliases": [
+        "linerule"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lineSpacing=14pt --prop lineRule=atLeast"
+      ],
+      "readback": "auto | exact | atLeast",
+      "enforcement": "report"
+    },
+    "align": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center",
+        "right",
+        "justify",
+        "both",
+        "distribute"
+      ],
+      "aliases": [
+        "alignment",
+        "halign"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop align=center"
+      ],
+      "readback": "one of values",
+      "enforcement": "strict"
+    },
+    "style": {
+      "type": "string",
+      "description": "paragraph styleId (e.g. Heading1, Normal, Quote). Must reference an existing style or one of the built-in style aliases. Aliases mirror the canonical readback keys exposed by Get: styleId targets the OOXML styleId; styleName resolves the display name through the styles part (lenient, falls back to verbatim if no match).",
+      "aliases": [
+        "styleId",
+        "styleid",
+        "styleName",
+        "stylename"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop style=Heading1",
+        "--prop styleId=Heading1",
+        "--prop styleName=\"Heading 1\""
+      ],
+      "readback": "styleId as stored on the paragraph",
+      "enforcement": "strict"
+    },
+    "spaceBefore": {
+      "type": "length",
+      "aliases": [
+        "spacebefore"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop spaceBefore=12pt"
+      ],
+      "readback": "unit-qualified, e.g. \"12pt\"",
+      "enforcement": "strict"
+    },
+    "spaceAfter": {
+      "type": "length",
+      "aliases": [
+        "spaceafter"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop spaceAfter=6pt"
+      ],
+      "readback": "unit-qualified, e.g. \"6pt\"",
+      "enforcement": "strict"
+    },
+    "spaceBeforeAuto": {
+      "type": "boolean",
+      "aliases": [
+        "beforeAutospacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "w:spacing @beforeAutospacing — Word's 'automatic spacing between paragraphs of the same style' toggle for the space BEFORE the paragraph. Surfaced on get only when present.",
+      "examples": [
+        "--prop spaceBeforeAuto=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "spaceAfterAuto": {
+      "type": "boolean",
+      "aliases": [
+        "afterAutospacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "w:spacing @afterAutospacing — automatic spacing toggle for the space AFTER the paragraph. See spaceBeforeAuto.",
+      "examples": [
+        "--prop spaceAfterAuto=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "listStyle": {
+      "type": "enum",
+      "values": [
+        "bullet",
+        "ordered",
+        "none"
+      ],
+      "description": "high-level list type. 'bullet' (aliases: unordered, ul) creates a bulleted list; 'ordered' (or any other non-bullet value, e.g. 'decimal') creates a numbered list; 'none'/'remove'/'clear' strips list formatting. Preferred over raw numId. Continues the IMMEDIATELY preceding list of the same type automatically; an intervening non-list paragraph (or a list of the other type) starts a fresh list at 1. To continue numbering across such an interruption, pass an explicit 'numId' referencing the earlier list's instance; pass 'start' to force a restart.",
+      "aliases": [
+        "liststyle"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop listStyle=bullet --prop text=\"item\"",
+        "--prop listStyle=ordered --prop text=\"step 1\""
+      ],
+      "readback": "'bullet' or 'ordered' (normalized from the numbering format)",
+      "enforcement": "strict"
+    },
+    "numId": {
+      "type": "int",
+      "description": "numbering definition id (w:numId). Low-level entry point — prefer 'listStyle' unless you specifically need to reference an existing numbering instance. Requires the numId to already exist in /numbering (create via `add /numbering --type num` first).",
+      "aliases": [
+        "numid"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop numId=1"
+      ],
+      "readback": "numbering id as stored on the paragraph",
+      "enforcement": "report"
+    },
+    "numLevel": {
+      "type": "int",
+      "description": "list indent level (w:ilvl), 0..8. Requires numId or listStyle to be effective; Get only surfaces numLevel when numId is present on the paragraph.",
+      "aliases": [
+        "numlevel",
+        "ilvl",
+        "listLevel",
+        "listlevel",
+        "level"
+      ],
+      "requires": [
+        "numId"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop numLevel=1 --prop numId=1",
+        "--prop ilvl=1 --prop numId=1"
+      ],
+      "readback": "integer level as stored on the paragraph (only when numId is set)",
+      "enforcement": "report"
+    },
+    "start": {
+      "type": "int",
+      "description": "starting number for an ordered list (w:start / w:startOverride on level 0 of the numbering definition). Only meaningful together with liststyle=ordered or an existing numid. NOTE: this applies to the whole numbering instance shared by the paragraph, so setting it on one item of a multi-item list renumbers the entire list (every paragraph that shares the numId), not just that item onward. To restart numbering for a sub-range mid-list, give those paragraphs a fresh numId instead. Readback not implemented — w:start lives in the separate numbering part and cross-part traversal is fragile; query the numbering directly if you need it.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop liststyle=ordered --prop start=5 --prop text=\"item\""
+      ],
+      "readback": "n/a (write-only via paragraph; query numbering part)",
+      "enforcement": "report"
+    },
+    "bold": {
+      "type": "bool",
+      "description": "run-level bold. On Add, applied to the implicit run created by 'text'. On Set, applied to all runs in the paragraph and to the paragraph-mark run properties so subsequent runs inherit.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop bold=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "italic": {
+      "type": "bool",
+      "description": "run-level italic. Same scope as 'bold'.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop italic=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "font": {
+      "type": "string",
+      "description": "run-level font family (applied to Ascii/HighAnsi/EastAsia). On Add, applied to the implicit run created by 'text'. On Set, applied to all runs in the paragraph.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop font=\"Times New Roman\" --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "size": {
+      "type": "font-size",
+      "description": "run-level font size. Accepts bare number (pt), '14pt', '10.5pt'.",
+      "aliases": [
+        "fontsize"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop size=14 --prop text=\"Hi\"",
+        "--prop size=10.5pt --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "color": {
+      "type": "color",
+      "description": "run-level text color. Accepts #RRGGBB, RRGGBB, named colors (e.g. red), rgb(r,g,b).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop color=red --prop text=\"Hi\"",
+        "--prop color=#FF0000 --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "underline": {
+      "type": "string",
+      "description": "run-level underline. Accepts 'true'/'false' or an underline style (single, double, thick, dotted, dash, wavy, etc.).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop underline=true --prop text=\"Hi\"",
+        "--prop underline=double --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "underline.color": {
+      "type": "color",
+      "description": "underline stroke color, written to w:u/@w:color. Preserved when 'underline' style is toggled.",
+      "aliases": [
+        "underlineColor",
+        "underlinecolor",
+        "font.underline.color"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop underline=single --prop underline.color=#FF0000"
+      ],
+      "enforcement": "strict"
+    },
+    "strike": {
+      "type": "bool",
+      "description": "run-level single strikethrough.",
+      "aliases": [
+        "strikethrough"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop strike=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "highlight": {
+      "type": "string",
+      "description": "run-level highlight color (w:highlight values: yellow, green, cyan, magenta, blue, red, darkBlue, darkCyan, darkGreen, darkMagenta, darkRed, darkYellow, darkGray, lightGray, black, white, none).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop highlight=yellow --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "caps": {
+      "type": "bool",
+      "description": "run-level all caps. On Add only (no paragraph-level Set wrapper).",
+      "aliases": [
+        "allCaps"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop caps=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "smallcaps": {
+      "type": "bool",
+      "description": "run-level small caps. On Add only.",
+      "aliases": [
+        "smallCaps"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop smallcaps=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "dstrike": {
+      "type": "bool",
+      "description": "run-level double strikethrough. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop dstrike=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "vanish": {
+      "type": "bool",
+      "description": "run-level hidden text. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop vanish=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "outline": {
+      "type": "bool",
+      "description": "run-level outline text effect. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop outline=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "shadow": {
+      "type": "bool",
+      "description": "run-level shadow text effect. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop shadow=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "emboss": {
+      "type": "bool",
+      "description": "run-level emboss text effect. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop emboss=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "imprint": {
+      "type": "bool",
+      "description": "run-level imprint (engrave) text effect. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop imprint=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "noproof": {
+      "type": "bool",
+      "description": "run-level no-proofing flag. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop noproof=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "superscript": {
+      "type": "bool",
+      "description": "run-level superscript vertical alignment. On Add only (use vertAlign for Set).",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop superscript=true --prop text=\"x^2\""
+      ],
+      "enforcement": "strict"
+    },
+    "subscript": {
+      "type": "bool",
+      "description": "run-level subscript vertical alignment. On Add only (use vertAlign for Set).",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop subscript=true --prop text=\"H2O\""
+      ],
+      "enforcement": "strict"
+    },
+    "vertAlign": {
+      "type": "enum",
+      "values": [
+        "superscript",
+        "subscript",
+        "baseline",
+        "super",
+        "sub"
+      ],
+      "description": "run-level vertical text alignment. On Add only.",
+      "aliases": [
+        "vertalign"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop vertAlign=superscript --prop text=\"x^2\""
+      ],
+      "enforcement": "strict"
+    },
+    "charSpacing": {
+      "type": "length",
+      "description": "run-level character spacing in points (bare number = pt, or 'Xpt'). Stored as twips. On Add only.",
+      "aliases": [
+        "charspacing",
+        "letterspacing",
+        "letterSpacing"
+      ],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop charSpacing=2 --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "rtl": {
+      "type": "bool",
+      "description": "run-level right-to-left text flag. On Add only.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop rtl=true --prop text=\"Hi\""
+      ],
+      "enforcement": "strict"
+    },
+    "direction": {
+      "type": "enum",
+      "values": [
+        "ltr",
+        "rtl"
+      ],
+      "description": "paragraph reading direction. 'rtl' writes <w:bidi/> on pPr, <w:rtl/> on the paragraph mark, and <w:rtl/> on every run (so Arabic / Hebrew character order reverses inside runs, not just page-side layout). 'ltr' clears all three.",
+      "aliases": [
+        "dir",
+        "bidi"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl | ltr (only emitted when explicitly set)",
+      "enforcement": "strict"
+    },
+    "font.cs": {
+      "type": "string",
+      "description": "Complex-script font slot (rFonts/cs) — Arabic / Hebrew / Thai typefaces.",
+      "aliases": [
+        "font.complexscript",
+        "font.complex"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.cs=\"Arabic Typesetting\""
+      ],
+      "enforcement": "report"
+    },
+    "font.ea": {
+      "type": "string",
+      "description": "East-Asian font slot (rFonts/eastAsia) — Chinese / Japanese / Korean typefaces.",
+      "aliases": [
+        "font.eastasia",
+        "font.eastasian"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.ea=\"メイリオ\""
+      ],
+      "enforcement": "report"
+    },
+    "font.latin": {
+      "type": "string",
+      "description": "Latin font slots (rFonts/ascii + hAnsi) — ASCII / Western text.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.latin=Calibri"
+      ],
+      "enforcement": "report"
+    },
+    "font.asciiTheme": {
+      "type": "string",
+      "description": "Theme font binding for the ascii slot (rFonts/asciiTheme). Values: minorHAnsi, majorHAnsi, minorEastAsia, majorEastAsia, minorBidi, majorBidi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.asciiTheme=minorHAnsi"
+      ],
+      "enforcement": "report"
+    },
+    "font.hAnsiTheme": {
+      "type": "string",
+      "description": "Theme font binding for the hAnsi slot (rFonts/hAnsiTheme).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.hAnsiTheme=minorHAnsi"
+      ],
+      "enforcement": "report"
+    },
+    "font.eaTheme": {
+      "type": "string",
+      "description": "Theme font binding for the East-Asia slot (rFonts/eastAsiaTheme). Values: minorEastAsia, majorEastAsia.",
+      "aliases": [
+        "font.eastAsiaTheme"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.eaTheme=minorEastAsia"
+      ],
+      "enforcement": "report"
+    },
+    "font.csTheme": {
+      "type": "string",
+      "description": "Theme font binding for the complex-script slot (rFonts/cstheme). Values: minorBidi, majorBidi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.csTheme=minorBidi"
+      ],
+      "enforcement": "report"
+    },
+    "bold.cs": {
+      "type": "bool",
+      "description": "complex-script bold for the paragraph's runs (<w:bCs/>). Required for Arabic / Hebrew bold rendering.",
+      "aliases": [
+        "font.bold.cs",
+        "boldcs"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop bold.cs=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "italic.cs": {
+      "type": "bool",
+      "description": "complex-script italic (<w:iCs/>) for the paragraph's runs.",
+      "aliases": [
+        "font.italic.cs",
+        "italiccs"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop italic.cs=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "size.cs": {
+      "type": "font-size",
+      "description": "complex-script font size (<w:szCs/>) for the paragraph's runs.",
+      "aliases": [
+        "font.size.cs",
+        "sizecs"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop size.cs=14pt"
+      ],
+      "readback": "unit-qualified, e.g. \"14pt\"",
+      "enforcement": "strict"
+    },
+    "shd": {
+      "type": "string",
+      "description": "shading. Format: 'fill' or 'val;fill' or 'val;fill;color'. Applied at paragraph level on Add (pPr/shd).",
+      "aliases": [
+        "shading"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop shd=FFFF00",
+        "--prop shd=clear;FFFF00"
+      ],
+      "enforcement": "report"
+    },
+    "firstLineIndent": {
+      "type": "length",
+      "description": "first-line indent. Routed through SpacingConverter.",
+      "aliases": [
+        "firstlineindent"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop firstLineIndent=2cm"
+      ],
+      "enforcement": "report"
+    },
+    "rightIndent": {
+      "type": "length",
+      "description": "right indentation. Routed through SpacingConverter.",
+      "aliases": [
+        "rightindent",
+        "indentright"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop rightIndent=1cm"
+      ],
+      "enforcement": "report"
+    },
+    "hangingIndent": {
+      "type": "length",
+      "description": "hanging indent (pairs with left indent). Routed through SpacingConverter.",
+      "aliases": [
+        "hangingindent",
+        "hanging"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop hangingIndent=0.5cm"
+      ],
+      "readback": "unit-qualified length (e.g. \"28.35pt\")",
+      "enforcement": "report"
+    },
+    "keepNext": {
+      "type": "bool",
+      "description": "keep paragraph with the next paragraph (no page break between).",
+      "aliases": [
+        "keepnext"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop keepNext=true"
+      ],
+      "enforcement": "report"
+    },
+    "keepLines": {
+      "type": "bool",
+      "description": "keep all lines of the paragraph together (no page break within).",
+      "aliases": [
+        "keeplines",
+        "keeptogether",
+        "keepTogether"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop keepLines=true"
+      ],
+      "enforcement": "report"
+    },
+    "pageBreakBefore": {
+      "type": "bool",
+      "description": "force a page break before this paragraph.",
+      "aliases": [
+        "pagebreakbefore",
+        "break"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop pageBreakBefore=true",
+        "--prop break=newPage"
+      ],
+      "enforcement": "report"
+    },
+    "widowControl": {
+      "type": "bool",
+      "description": "widow/orphan control.",
+      "aliases": [
+        "widowcontrol"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop widowControl=true"
+      ],
+      "enforcement": "report"
+    },
+    "wordWrap": {
+      "type": "bool",
+      "description": "Latin-word break behaviour in CJK paragraphs. Set false to allow ASCII text/whitespace to participate in CJK character flow — required for right-aligned CJK lines that rely on trailing underlined whitespace to align with adjacent lines.",
+      "aliases": [
+        "wordwrap"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop wordWrap=false"
+      ],
+      "enforcement": "report"
+    },
+    "contextualSpacing": {
+      "type": "bool",
+      "description": "suppress space between paragraphs of the same style. Applied on Add/Set to paragraph pPr; also valid on Style.",
+      "aliases": [
+        "contextualspacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop contextualSpacing=true"
+      ],
+      "enforcement": "report"
+    },
+    "effective.size": {
+      "type": "font-size",
+      "description": "inheritance-resolved font size (read-only) — derived from the first run's style chain → paragraph style → docDefaults.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "unit-qualified, e.g. \"14pt\"",
+      "enforcement": "report"
+    },
+    "effective.size.src": {
+      "type": "string",
+      "description": "source pointer for effective.size.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.font.ascii": {
+      "type": "string",
+      "description": "inheritance-resolved Latin/ASCII font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.ascii.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.ascii.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.font.eastAsia": {
+      "type": "string",
+      "description": "inheritance-resolved East-Asian font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.eastAsia.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.eastAsia.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.font.hAnsi": {
+      "type": "string",
+      "description": "inheritance-resolved High-ANSI font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.hAnsi.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.hAnsi.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.font.cs": {
+      "type": "string",
+      "description": "inheritance-resolved complex-script font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.cs.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.cs.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.bold": {
+      "type": "bool",
+      "description": "inheritance-resolved bold (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "effective.bold.src": {
+      "type": "string",
+      "description": "source pointer for effective.bold.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.italic": {
+      "type": "bool",
+      "description": "inheritance-resolved italic (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "effective.italic.src": {
+      "type": "string",
+      "description": "source pointer for effective.italic.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.color": {
+      "type": "color",
+      "description": "inheritance-resolved font color (read-only). #RRGGBB or scheme color name.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "#RRGGBB uppercase or scheme color",
+      "enforcement": "report"
+    },
+    "effective.color.src": {
+      "type": "string",
+      "description": "source pointer for effective.color.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.underline": {
+      "type": "string",
+      "description": "inheritance-resolved underline style (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "underline style name",
+      "enforcement": "report"
+    },
+    "effective.underline.src": {
+      "type": "string",
+      "description": "source pointer for effective.underline.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "effective.rtl": {
+      "type": "bool",
+      "description": "inheritance-resolved right-to-left flag (read-only). Emitted even when 'rtl' is set directly so callers can compare direct vs cascade-resolved state.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "effective.rtl.src": {
+      "type": "string",
+      "description": "source pointer for effective.rtl.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "numFmt": {
+      "type": "string",
+      "description": "raw numbering format (e.g. bullet, decimal, lowerLetter). Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "numbering format token",
+      "enforcement": "report"
+    },
+    "shading.val": {
+      "type": "string",
+      "description": "shading pattern value (decomposed from `shd`). Add/Set use `shd`.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "shading pattern token",
+      "enforcement": "report"
+    },
+    "shading.fill": {
+      "type": "string",
+      "description": "shading fill color hex (decomposed from `shd`).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "#RRGGBB",
+      "enforcement": "report"
+    },
+    "shading.color": {
+      "type": "string",
+      "description": "shading foreground color hex.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "#RRGGBB",
+      "enforcement": "report"
+    },
+    "paraId": {
+      "type": "string",
+      "description": "paragraph stable id (source of @paraId in stable path). Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "paraId hex string",
+      "enforcement": "report"
+    },
+    "outlineLvl": {
+      "type": "number",
+      "description": "outline level (0-9). Used by Word's TOC and document map.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "rStyle": {
+      "type": "string",
+      "description": "Paragraph mark run style id (e.g. FootnoteReference, IntenseEmphasis). Inherited by runs without their own rStyle.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "readback": "style id",
+      "enforcement": "report"
+    },
+    "tabs": {
+      "type": "array",
+      "description": "tab stops array. Set accepts a comma-separated list of positions (twips, e.g. 720,1440); Get emits the stored tab stops when present.",
+      "aliases": [
+        "tabstops"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop tabs=720,1440"
+      ],
+      "readback": "array of tab stop descriptors",
+      "enforcement": "report"
+    },
+    "pbdr.top": {
+      "type": "string",
+      "description": "paragraph border edge descriptor. Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (handler does not surface paragraph borders today)",
+      "enforcement": "report"
+    },
+    "pbdr.bottom": {
+      "type": "string",
+      "description": "paragraph border edge descriptor. Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (handler does not surface paragraph borders today)",
+      "enforcement": "report"
+    },
+    "pbdr.left": {
+      "type": "string",
+      "description": "paragraph border edge descriptor. Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (handler does not surface paragraph borders today)",
+      "enforcement": "report"
+    },
+    "pbdr.right": {
+      "type": "string",
+      "description": "paragraph border edge descriptor. Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (handler does not surface paragraph borders today)",
+      "enforcement": "report"
+    },
+    "pbdr.between": {
+      "type": "string",
+      "description": "paragraph border edge descriptor. Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (handler does not surface paragraph borders today)",
+      "enforcement": "report"
+    },
+    "pbdr.bar": {
+      "type": "string",
+      "description": "paragraph border edge descriptor. Emitted only when present.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (handler does not surface paragraph borders today)",
+      "enforcement": "report"
+    },
+    "firstLineChars": {
+      "type": "number",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "first-line indent in 1/100 character units (CT_Ind @firstLineChars). Word's chars-relative variant of firstLineIndent.",
+      "readback": "integer 1/100-char units",
+      "enforcement": "report"
+    },
+    "hangingChars": {
+      "type": "number",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "hanging indent in 1/100 character units (CT_Ind @hangingChars). Word's chars-relative variant of hangingIndent.",
+      "readback": "integer 1/100-char units",
+      "enforcement": "report"
+    },
+    "markRPr.bold": {
+      "type": "bool",
+      "description": "paragraph-mark run property — bold flag on the ¶ glyph (w:pPr/w:rPr/w:b). Distinct from per-run bold; affects how the mark itself renders and is inherited by appended runs without their own bold setting.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "markRPr.italic": {
+      "type": "bool",
+      "description": "paragraph-mark run italic (w:pPr/w:rPr/w:i).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "markRPr.strike": {
+      "type": "bool",
+      "description": "paragraph-mark run strike (w:pPr/w:rPr/w:strike).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "markRPr.rtl": {
+      "type": "bool",
+      "description": "paragraph-mark run right-to-left flag (w:pPr/w:rPr/w:rtl).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "markRPr.rStyle": {
+      "type": "string",
+      "description": "paragraph-mark run character style (w:pPr/w:rPr/w:rStyle). Emitted on Get when the style binds the mark only; bare rStyle covers the mark+implicit-run shape.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "enforcement": "report"
+    },
+    "markRPr.underline": {
+      "type": "string",
+      "description": "paragraph-mark run underline style (w:pPr/w:rPr/w:u @val).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "underline style enum (single, double, dotted, …)",
+      "enforcement": "report"
+    },
+    "markRPr.size": {
+      "type": "length",
+      "description": "paragraph-mark run font size (w:pPr/w:rPr/w:sz, half-points internally).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "unit-qualified pt (e.g. 11pt)",
+      "enforcement": "report"
+    },
+    "markRPr.color": {
+      "type": "color",
+      "description": "paragraph-mark run color (w:pPr/w:rPr/w:color). Returns scheme color name for theme refs, or #-prefixed hex.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "scheme color name or #RRGGBB",
+      "enforcement": "report"
+    },
+    "markRPr.highlight": {
+      "type": "string",
+      "description": "paragraph-mark run highlight color (w:pPr/w:rPr/w:highlight @val).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "highlight color enum",
+      "enforcement": "report"
+    },
+    "markRPr.font.latin": {
+      "type": "string",
+      "description": "paragraph-mark run Ascii font (w:pPr/w:rPr/w:rFonts @ascii).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "markRPr.font.ea": {
+      "type": "string",
+      "description": "paragraph-mark run EastAsia font (w:pPr/w:rPr/w:rFonts @eastAsia).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "markRPr.font.cs": {
+      "type": "string",
+      "description": "paragraph-mark run ComplexScript font (w:pPr/w:rPr/w:rFonts @cs).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "markRPr.font.hint": {
+      "type": "string",
+      "description": "paragraph-mark run font slot hint (w:pPr/w:rPr/w:rFonts @hint) — eastAsia / cs / default; selects the font slot for ambiguous characters on the paragraph mark.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "eastAsia / cs / default",
+      "enforcement": "report"
+    },
+    "markRPr.font.asciiTheme": {
+      "type": "string",
+      "description": "paragraph-mark run theme font binding (w:pPr/w:rPr/w:rFonts/@w:asciiTheme), e.g. minorHAnsi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "enforcement": "report"
+    },
+    "markRPr.font.hAnsiTheme": {
+      "type": "string",
+      "description": "paragraph-mark run theme font binding (w:pPr/w:rPr/w:rFonts/@w:hAnsiTheme), e.g. minorHAnsi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "enforcement": "report"
+    },
+    "markRPr.font.eaTheme": {
+      "type": "string",
+      "description": "paragraph-mark run theme font binding (w:pPr/w:rPr/w:rFonts/@w:eastAsiaTheme), e.g. minorHAnsi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "enforcement": "report"
+    },
+    "markRPr.font.csTheme": {
+      "type": "string",
+      "description": "paragraph-mark run theme font binding (w:pPr/w:rPr/w:rFonts/@w:csTheme), e.g. minorHAnsi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "enforcement": "report"
+    },
+    "markRPr.charSpacing": {
+      "type": "length",
+      "description": "paragraph-mark run character spacing (w:pPr/w:rPr/w:spacing @val, twips internally).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "unit-qualified pt (e.g. 1pt)",
+      "enforcement": "report"
+    },
+    "markRPr.size.cs": {
+      "type": "length",
+      "description": "paragraph-mark run complex-script font size (w:pPr/w:rPr/w:szCs, half-points internally). The CJK/RTL counterpart of markRPr.size; emitted separately so the ¶ glyph's complex-script metrics survive dump→batch.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "unit-qualified pt (e.g. 11pt)",
+      "enforcement": "report"
+    },
+    "markRPr.bold.cs": {
+      "type": "bool",
+      "description": "paragraph-mark run complex-script bold (w:pPr/w:rPr/w:bCs). The CJK/RTL counterpart of markRPr.bold.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "markRPr.italic.cs": {
+      "type": "bool",
+      "description": "paragraph-mark run complex-script italic (w:pPr/w:rPr/w:iCs). The CJK/RTL counterpart of markRPr.italic.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "markRPr.kern": {
+      "type": "integer",
+      "description": "paragraph-mark run kerning threshold (w:pPr/w:rPr/w:kern @val, half-points). Below this font size Word disables kerning on the ¶ glyph.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "integer half-points",
+      "enforcement": "report"
+    },
+    "markRPr.font.ascii": {
+      "type": "string",
+      "description": "paragraph-mark run Ascii font (w:pPr/w:rPr/w:rFonts @ascii). Emitted alongside markRPr.font.hAnsi only when the two slots diverge; the symmetric case collapses to markRPr.font.latin.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "markRPr.font.hAnsi": {
+      "type": "string",
+      "description": "paragraph-mark run HighAnsi font (w:pPr/w:rPr/w:rFonts @hAnsi). Emitted alongside markRPr.font.ascii only when the two slots diverge; the symmetric case collapses to markRPr.font.latin.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "font name",
+      "enforcement": "report"
+    },
+    "markRPr.lang.latin": {
+      "type": "string",
+      "description": "paragraph-mark run Latin language tag (w:pPr/w:rPr/w:lang @val, BCP-47 e.g. en-US). Tags the ¶ glyph's language for proofing; mirrors run-level lang.latin.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "BCP-47 tag",
+      "enforcement": "report"
+    },
+    "markRPr.lang.ea": {
+      "type": "string",
+      "description": "paragraph-mark run East-Asian language tag (w:pPr/w:rPr/w:lang @eastAsia, BCP-47 e.g. ja-JP). Mirrors run-level lang.ea.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "BCP-47 tag",
+      "enforcement": "report"
+    },
+    "markRPr.lang.cs": {
+      "type": "string",
+      "description": "paragraph-mark run complex-script language tag (w:pPr/w:rPr/w:lang @bidi, BCP-47 e.g. ar-SA). Mirrors run-level lang.cs.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "readback": "BCP-47 tag",
+      "enforcement": "report"
+    },
+    "kern": {
+      "type": "integer",
+      "description": "kerning threshold on an empty paragraph's ¶-mark run (w:pPr/w:rPr/w:kern @val, half-points). Below this font size Word disables kerning. Get-side readback only — the value is applied via the generic run-formatting path (ApplyRunFormatting), not a dedicated paragraph Set case; text-bearing paragraphs surface the ¶-mark kern under markRPr.kern instead.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "integer half-points",
+      "enforcement": "report"
+    }
+  }
+}

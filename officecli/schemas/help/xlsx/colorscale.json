@@ -1,0 +1,19 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "colorscale",
+  "parent": "sheet",
+  "operations": {"add": true, "get": true},
+  "paths": {"positional": ["/SheetName/cf[N]"]},
+  "note": "Conditional formatting 2-/3-stop color scale. Add via `add /Sheet1/cf --type colorscale --prop sqref=A1:A10 --prop mincolor=F8696B --prop maxcolor=63BE7B`. Lookup: Add.Cf.cs:266 (AddColorScale); Get: Query.cs:500.",
+  "properties": {
+    "ref": { "type":"string", "aliases":["sqref","range"], "add":true, "get":true, "description":"target cell range.", "examples":["--prop ref=A1:A10"], "enforcement":"report" },
+    "minColor": { "type":"color", "aliases":["mincolor"], "add":true, "get":true, "description":"low-end color (default F8696B).", "examples":["--prop minColor=F8696B"], "readback":"#-prefixed uppercase hex", "enforcement":"report" },
+    "maxColor": { "type":"color", "aliases":["maxcolor"], "add":true, "get":true, "description":"high-end color (default 63BE7B).", "examples":["--prop maxColor=63BE7B"], "readback":"#-prefixed uppercase hex", "enforcement":"report" },
+    "midColor": { "type":"color", "aliases":["midcolor"], "add":true, "get":true, "description":"midpoint color (omit for 2-stop scale).", "examples":["--prop midColor=FFEB84"], "readback":"#-prefixed uppercase hex", "enforcement":"report" },
+    "midpoint": { "type":"number", "aliases":["midPoint"], "add":true, "get":false, "description":"midpoint percentile (default 50). Only meaningful when midcolor is set.", "examples":["--prop midpoint=50"], "enforcement":"report" },
+    "stopIfTrue": { "type":"bool", "add":true, "get":false, "description":"stop evaluating subsequent CF rules when this rule applies.", "examples":["--prop stopIfTrue=true"], "enforcement":"report" },
+    "type": { "type":"string", "add":false, "set":false, "get":true, "description":"canonical CF rule type token (e.g. \"dataBar\", \"colorScale\", \"iconSet\", \"formula\", \"topN\", \"cellIs\", \"containsText\", \"aboveAverage\", \"duplicateValues\", \"uniqueValues\", \"timePeriod\"). Emitted on every CF rule.", "readback":"normalized CF type token", "enforcement":"report" },
+    "dxfId": { "type":"number", "add":false, "set":false, "get":true, "description":"differential format id referencing dxf styles. Emitted only when present on the rule.", "readback":"integer", "enforcement":"report" }
+  }
+}

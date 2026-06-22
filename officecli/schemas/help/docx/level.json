@@ -1,0 +1,193 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "level",
+  "parent": "abstractNum",
+  "addParent": "/numbering/abstractNum[@id=N]",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": false,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/numbering/abstractNum[@id=N]/level[L]"]
+  },
+  "note": "Single <w:lvl> under an <w:abstractNum>. L is the level index (w:ilvl, 0..8). 'add abstractNum' pre-populates 9 default levels (lvl%3 cycle); adding another --type level with the same ilvl replaces it in place. Aliases lvl / level. Top-level abstractNum.* properties also accept level0.* dotted forms for level-0 customization at creation time — this element is for adjusting levels 1..8 or replacing levels post-Add.",
+  "properties": {
+    "ilvl": {
+      "type": "int",
+      "description": "level index 0..8 (w:ilvl). Required on Add.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": ["--prop ilvl=1"],
+      "readback": "integer 0..8",
+      "enforcement": "strict"
+    },
+    "format": {
+      "type": "string",
+      "description": "numFmt for this level. Common values: decimal, decimalZero, upperRoman, lowerRoman, upperLetter, lowerLetter, ordinal, cardinalText, ordinalText, bullet, chineseCounting, chineseLegalSimplified, japaneseCounting, koreanCounting, hex. Default decimal.",
+      "aliases": ["fmt", "numFmt"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop format=decimal",
+        "--prop format=chineseCounting"
+      ],
+      "readback": "numFmt token (lowerCamel as in OOXML)",
+      "enforcement": "report"
+    },
+    "lvlText": {
+      "type": "string",
+      "description": "lvlText template. Use %N to insert level N's running counter (e.g. '%1.', '%1.%2', '第%1章'). Default: %{ilvl+1}. for ordered, • for bullet.",
+      "aliases": ["text"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lvlText=\"%1.\"",
+        "--prop lvlText=\"第%1章\""
+      ],
+      "readback": "lvlText string (literal, including %N placeholders)",
+      "enforcement": "report"
+    },
+    "start": {
+      "type": "int",
+      "description": "starting number. Default 1.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop start=5"],
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "indent": {
+      "type": "int",
+      "description": "left indent in twips (pPr/ind/left). On Add, default (ilvl+1)*720.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop indent=720"],
+      "readback": "integer twips",
+      "enforcement": "report"
+    },
+    "hanging": {
+      "type": "int",
+      "description": "hanging indent in twips (pPr/ind/hanging). Default 360.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop hanging=360"],
+      "readback": "integer twips",
+      "enforcement": "report"
+    },
+    "justification": {
+      "type": "enum",
+      "values": ["left", "center", "right"],
+      "aliases": ["jc"],
+      "description": "lvlJc — marker alignment within the indent area. Default left.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop justification=left"],
+      "readback": "left | center | right",
+      "enforcement": "report"
+    },
+    "suff": {
+      "type": "enum",
+      "values": ["tab", "space", "nothing"],
+      "description": "separator between the marker and the text content. Default tab.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop suff=space"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "lvlRestart": {
+      "type": "int",
+      "description": "w:lvlRestart — level at which to restart this counter (0 = never restart).",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop lvlRestart=0"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "isLgl": {
+      "type": "bool",
+      "description": "w:isLgl — render this level's counter as decimal regardless of numFmt (legal-style numbering).",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop isLgl=true"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "enum",
+      "values": ["rtl", "ltr"],
+      "aliases": ["dir", "bidi"],
+      "description": "right-to-left direction on the level's pPr. Only 'rtl' writes <w:bidi/>; 'ltr' is the canonical clear.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop direction=rtl"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "font": {
+      "type": "string",
+      "description": "marker font (rPr/rFonts). Useful for bullet glyphs that need Symbol or Wingdings.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop font=Symbol"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "size": {
+      "type": "font-size",
+      "description": "marker font size (rPr/sz). Bare number = pt.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop size=14"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "color": {
+      "type": "color",
+      "description": "marker color (rPr/color).",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop color=#FF0000"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "bold": {
+      "type": "bool",
+      "description": "bold marker (rPr/b).",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop bold=true"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "italic": {
+      "type": "bool",
+      "description": "italic marker (rPr/i).",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop italic=true"],
+      "readback": "n/a",
+      "enforcement": "report"
+    }
+  }
+}

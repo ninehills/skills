@@ -1,0 +1,441 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "cell",
+  "elementAliases": [
+    "tc"
+  ],
+  "parent": "row",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/body/tbl[N]/tr[R]/tc[C]"
+    ]
+  },
+  "note": "Only 'text' and 'width' are honored at Add time; every other property is applied via Set after the cell exists. Run-level formatting (font/size/bold/italic/color/highlight/underline/strike) is written to every run in every paragraph in the cell — and to ParagraphMarkRunProperties when the cell has no runs yet. Border value format is STYLE[;SIZE[;COLOR[;SPACE]]], e.g. 'single;4;FF0000'.",
+  "extends": "_shared/table-cell",
+  "properties": {
+    "width": {
+      "type": "string",
+      "description": "cell preferred width (w:tcW). Accepts a bare twips integer or unit-qualified 'Ndxa' (Dxa), 'N%' (percent of table width), 'auto' (auto-fit, no preferred width), or 'nil' (no preferred width — distinct from a zero-twip explicit width). Get echoes the same unit-qualified form so the type round-trips losslessly.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop width=2500",
+        "--prop width=25%",
+        "--prop width=auto",
+        "--prop width=nil"
+      ],
+      "readback": "'Ndxa' | 'N%' | 'auto' | 'nil' | '0dxa'",
+      "enforcement": "report"
+    },
+    "skipGridSync": {
+      "type": "bool",
+      "description": "suppress the per-cell tblGrid synchronization side effect that normally fires when `width` is set. Used by dump → batch replay to preserve the source table's authoritative colWidths when individual tcW values disagree with the gridCol widths (Word renders by tcW; tblGrid is a layout hint). Set-only.",
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop skipGridSync=true"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "font": {
+      "type": "string",
+      "description": "font family applied to every run in every paragraph in the cell (set-only; apply after add).",
+      "aliases": [
+        "fontname",
+        "fontFamily"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font=\"Times New Roman\""
+      ],
+      "readback": "from first run's RunFonts.Ascii",
+      "enforcement": "report"
+    },
+    "size": {
+      "type": "font-size",
+      "description": "font size applied to every run in the cell. Accepts raw number (points), '14pt', '10.5pt' (set-only; apply after add).",
+      "aliases": [
+        "fontsize"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop size=14pt",
+        "--prop size=10.5pt"
+      ],
+      "readback": "unit-qualified, e.g. \"14pt\"",
+      "enforcement": "report"
+    },
+    "bold": {
+      "type": "bool",
+      "description": "bold applied to every run in the cell (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop bold=true"
+      ],
+      "readback": "true | (absent)",
+      "enforcement": "report"
+    },
+    "italic": {
+      "type": "bool",
+      "description": "italic applied to every run in the cell (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop italic=true"
+      ],
+      "readback": "true | (absent)",
+      "enforcement": "report"
+    },
+    "underline": {
+      "type": "enum",
+      "values": [
+        "none",
+        "single",
+        "double",
+        "thick",
+        "dotted",
+        "dash",
+        "wave",
+        "words"
+      ],
+      "description": "underline style applied to every run in the cell (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop underline=single",
+        "--prop underline=double"
+      ],
+      "readback": "one of values",
+      "enforcement": "report"
+    },
+    "strike": {
+      "type": "bool",
+      "description": "strike-through applied to every run in the cell (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop strike=true"
+      ],
+      "readback": "true | (absent)",
+      "enforcement": "report"
+    },
+    "color": {
+      "type": "color",
+      "description": "run text color applied to every run in the cell (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop color=FF0000",
+        "--prop color=#FF0000",
+        "--prop color=red"
+      ],
+      "readback": "#RRGGBB uppercase",
+      "enforcement": "report"
+    },
+    "highlight": {
+      "type": "color",
+      "description": "text highlight color. Mapped to Word's named highlight palette (yellow, green, cyan, magenta, blue, red, darkBlue, …) (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop highlight=yellow"
+      ],
+      "readback": "highlight palette name",
+      "enforcement": "report"
+    },
+    "fill": {
+      "type": "color",
+      "description": "cell background shading (w:shd @fill). Accepts a solid color — hex ('FF0000'), '#'-prefixed hex ('#FF0000'), named color ('red'), rgb(...) notation, or 'transparent' to clear. docx <w:shd> has no native gradient primitive: the CSS-style hyphen form 'COLOR1-COLOR2[-ANGLE]' is NOT accepted (native gradient cell fill is a pptx-only feature). A synthetic two-stop gradient is available via the semicolon form 'gradient;STARTCOLOR;ENDCOLOR[;ANGLE]', emulated with a shading pattern. Bare 'none' is not accepted — use 'transparent'. Set-only; apply after add.",
+      "aliases": [
+        "shd",
+        "shading"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop fill=FFFF00",
+        "--prop fill=#FF0000",
+        "--prop fill=red",
+        "--prop fill=transparent",
+        "--prop fill=\"gradient;FF0000;0000FF;90\""
+      ],
+      "readback": "#RRGGBB uppercase, or 'gradient' (with a separate 'gradient' key)",
+      "enforcement": "report"
+    },
+    "align": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center",
+        "right",
+        "justify",
+        "both",
+        "distribute"
+      ],
+      "description": "horizontal paragraph alignment applied to every paragraph in the cell (set-only; apply after add).",
+      "aliases": [
+        "alignment"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop align=center"
+      ],
+      "readback": "one of values (from first paragraph)",
+      "enforcement": "report"
+    },
+    "valign": {
+      "type": "enum",
+      "values": [
+        "top",
+        "center",
+        "bottom"
+      ],
+      "description": "vertical alignment of cell contents (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop valign=center"
+      ],
+      "readback": "one of values",
+      "enforcement": "report"
+    },
+    "colspan": {
+      "type": "int",
+      "description": "number of grid columns this cell spans. Aliases: gridspan. Adjusts cell width to the sum of spanned grid columns and removes now-redundant trailing cells in the row (set-only; apply after add).",
+      "aliases": [
+        "gridspan"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop colspan=2"
+      ],
+      "readback": "under key 'colspan' when > 1",
+      "enforcement": "report"
+    },
+    "fitText": {
+      "type": "bool",
+      "description": "enable w:fitText on every run so text is squeezed to the cell width (set-only; apply after add).",
+      "aliases": [
+        "fittext"
+      ],
+      "add": false,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop fitText=true"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "textDirection": {
+      "type": "enum",
+      "values": [
+        "lrtb",
+        "btlr",
+        "tbrl",
+        "horizontal",
+        "vertical",
+        "vertical-rl",
+        "tbrl-r",
+        "lrtb-r",
+        "tblr-r"
+      ],
+      "description": "text flow direction inside the cell. Aliases: textdir (set-only; apply after add).",
+      "aliases": [
+        "textdir"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textDirection=btlr"
+      ],
+      "readback": "OpenXML enum inner text",
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "enum",
+      "values": [
+        "rtl",
+        "ltr"
+      ],
+      "aliases": [
+        "dir",
+        "bidi"
+      ],
+      "description": "Reading direction (Arabic / Hebrew). 'rtl' writes <w:bidi/> on every cell paragraph, <w:rtl/> on each paragraph mark, and <w:rtl/> on every run; 'ltr' clears all three. Distinct from textDirection (which controls vertical/horizontal text flow inside the cell).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl when set, key absent otherwise",
+      "enforcement": "report"
+    },
+    "nowrap": {
+      "type": "bool",
+      "description": "disable text wrapping inside the cell (set-only; apply after add).",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop nowrap=true"
+      ],
+      "readback": "true | (absent)",
+      "enforcement": "report"
+    },
+    "hideMark": {
+      "type": "bool",
+      "description": "w:hideMark — ignore the cell's end-of-cell mark when measuring the row height for autofit (the cell appears empty even though it holds a paragraph mark).",
+      "aliases": [
+        "hidemark"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop hideMark=true"
+      ],
+      "readback": "true | (absent)",
+      "enforcement": "report"
+    },
+    "tcFitText": {
+      "type": "bool",
+      "description": "w:tcFitText — fit the cell's text to its width (the tcPr-level toggle). Distinct from the run-level 'fitText' property, which squeezes each run via w:fitText.",
+      "aliases": [
+        "tcfittext"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop tcFitText=true"
+      ],
+      "readback": "true | (absent)",
+      "enforcement": "report"
+    },
+    "padding.top": {
+      "type": "number",
+      "description": "top cell margin in twips (integer; 1 twip = 1/20 pt, e.g. 100 = 5pt). Raw integer only — no unit suffix.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop padding.top=100"
+      ],
+      "readback": "twips integer",
+      "enforcement": "report"
+    },
+    "padding.bottom": {
+      "type": "number",
+      "description": "bottom cell margin in twips (integer; 1 twip = 1/20 pt, e.g. 100 = 5pt). Raw integer only — no unit suffix.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop padding.bottom=100"
+      ],
+      "readback": "twips integer",
+      "enforcement": "report"
+    },
+    "padding.left": {
+      "type": "number",
+      "description": "left cell margin in twips (integer; 1 twip = 1/20 pt, e.g. 100 = 5pt). Raw integer only — no unit suffix.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop padding.left=100"
+      ],
+      "readback": "twips integer",
+      "enforcement": "report"
+    },
+    "padding.right": {
+      "type": "number",
+      "description": "right cell margin in twips (integer; 1 twip = 1/20 pt, e.g. 100 = 5pt). Raw integer only — no unit suffix.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop padding.right=100"
+      ],
+      "readback": "twips integer",
+      "enforcement": "report"
+    },
+    "vmerge": {
+      "type": "enum",
+      "values": [
+        "restart",
+        "continue"
+      ],
+      "description": "vertical merge marker (w:vMerge). 'restart' marks the top cell of a vertical span; 'continue' marks subsequent merged cells in the same column. Bare <w:vMerge/> reads as 'continue'.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop vmerge=restart",
+        "--prop vmerge=continue"
+      ],
+      "readback": "restart|continue",
+      "enforcement": "report"
+    },
+    "hmerge": {
+      "type": "enum",
+      "values": [
+        "restart",
+        "continue"
+      ],
+      "description": "horizontal merge marker (w:hMerge — legacy form). 'restart' marks the leading cell of a horizontal span; 'continue' marks subsequent merged cells. Most modern docs prefer gridSpan; hmerge is preserved for round-trip with files that already use it.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop hmerge=restart",
+        "--prop hmerge=continue"
+      ],
+      "readback": "restart|continue",
+      "enforcement": "report"
+    },
+    "cnfStyle": {
+      "type": "string",
+      "description": "conditional-formatting bitmask (ST_Cnf @val) on the cell (tcPr). A 12-digit binary string — each '0'/'1' flags one region in order: firstRow, lastRow, firstColumn, lastColumn, oddVBand, evenVBand, oddHBand, evenHBand, firstRowFirstColumn, firstRowLastColumn, lastRowFirstColumn, lastRowLastColumn. Short binary input is right-padded to 12. Not a hex number.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop cnfStyle=100000000000"
+      ],
+      "readback": "12-digit binary bitmask string",
+      "enforcement": "report"
+    }
+  }
+}

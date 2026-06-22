@@ -1,0 +1,29 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "fieldChar",
+  "parent": "paragraph",
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/body/p[@paraId=X]/r[N]", "/header[N]/p[M]/r[K]", "/footer[N]/p[M]/r[K]"]
+  },
+  "note": "Field-character marker (w:fldChar) — inline atom that delimits a complex field's begin / separate / end boundaries. Atomic add is intentionally NOT supported because a fldChar in isolation is invalid OOXML; use --type field to insert a complete begin+instrText+separate+cached+end sequence as one unit. Get/Set on individual fldChars allows audit→fix workflows to inspect and adjust an existing field's structure.",
+  "properties": {
+    "fieldCharType": {
+      "type": "enum",
+      "values": ["begin", "separate", "end"],
+      "aliases": ["fieldchartype"],
+      "add": false, "set": true, "get": true,
+      "required": true,
+      "examples": ["--prop fieldCharType=separate"],
+      "readback": "fldChar fldCharType attribute",
+      "enforcement": "report"
+    }
+  }
+}

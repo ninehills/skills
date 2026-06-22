@@ -1,0 +1,328 @@
+  <p:anim calcmode="lin" valueType="num">
+    <p:cBhvr>
+      <p:cTn id="{ID0}" dur="600" decel="50000">
+        <p:stCondLst>
+          <p:cond delay="0"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+      <p:attrNameLst>
+        <p:attrName>ppt_x</p:attrName>
+      </p:attrNameLst>
+    </p:cBhvr>
+    <p:tavLst>
+      <p:tav tm="0">
+        <p:val>
+          <p:strVal val="ppt_x"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="5000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0242"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="10000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0479"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="15000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0704"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="20000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0911"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="25000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1096"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="30000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1254"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="35000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1381"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="40000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1474"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="45000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1531"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="50000">
+        <p:val>
+          <p:strVal val="ppt_x+0.155"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="55000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1531"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="60000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1474"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="65000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1381"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="70000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1254"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="75000">
+        <p:val>
+          <p:strVal val="ppt_x+0.1096"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="80000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0911"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="85000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0704"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="90000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0479"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="95000">
+        <p:val>
+          <p:strVal val="ppt_x+0.0242"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="100000">
+        <p:val>
+          <p:strVal val="ppt_x"/>
+        </p:val>
+      </p:tav>
+    </p:tavLst>
+  </p:anim>
+  <p:anim calcmode="lin" valueType="num">
+    <p:cBhvr>
+      <p:cTn id="{ID1}" dur="400">
+        <p:stCondLst>
+          <p:cond delay="600"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+      <p:attrNameLst>
+        <p:attrName>ppt_x</p:attrName>
+      </p:attrNameLst>
+    </p:cBhvr>
+    <p:tavLst>
+      <p:tav tm="0">
+        <p:val>
+          <p:strVal val="ppt_x"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="100000">
+        <p:val>
+          <p:strVal val="ppt_x"/>
+        </p:val>
+      </p:tav>
+    </p:tavLst>
+  </p:anim>
+  <p:anim calcmode="lin" valueType="num">
+    <p:cBhvr>
+      <p:cTn id="{ID2}" dur="600" decel="50000">
+        <p:stCondLst>
+          <p:cond delay="0"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+      <p:attrNameLst>
+        <p:attrName>ppt_y</p:attrName>
+      </p:attrNameLst>
+    </p:cBhvr>
+    <p:tavLst>
+      <p:tav tm="0">
+        <p:val>
+          <p:strVal val="ppt_y"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="5000">
+        <p:val>
+          <p:strVal val="ppt_y+0.0019"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="10000">
+        <p:val>
+          <p:strVal val="ppt_y+0.0076"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="15000">
+        <p:val>
+          <p:strVal val="ppt_y+0.0169"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="20000">
+        <p:val>
+          <p:strVal val="ppt_y+0.0296"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="25000">
+        <p:val>
+          <p:strVal val="ppt_y+0.0454"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="30000">
+        <p:val>
+          <p:strVal val="ppt_y+0.0639"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="35000">
+        <p:val>
+          <p:strVal val="ppt_y+0.0846"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="40000">
+        <p:val>
+          <p:strVal val="ppt_y+0.1071"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="45000">
+        <p:val>
+          <p:strVal val="ppt_y+0.1307"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="50000">
+        <p:val>
+          <p:strVal val="ppt_y+0.155"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="55000">
+        <p:val>
+          <p:strVal val="ppt_y+0.1792"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="60000">
+        <p:val>
+          <p:strVal val="ppt_y+0.2029"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="65000">
+        <p:val>
+          <p:strVal val="ppt_y+0.2253"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="70000">
+        <p:val>
+          <p:strVal val="ppt_y+0.2461"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="75000">
+        <p:val>
+          <p:strVal val="ppt_y+0.2646"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="80000">
+        <p:val>
+          <p:strVal val="ppt_y+0.2804"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="85000">
+        <p:val>
+          <p:strVal val="ppt_y+0.2931"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="90000">
+        <p:val>
+          <p:strVal val="ppt_y+0.3024"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="95000">
+        <p:val>
+          <p:strVal val="ppt_y+0.308"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="100000">
+        <p:val>
+          <p:strVal val="ppt_y+0.31"/>
+        </p:val>
+      </p:tav>
+    </p:tavLst>
+  </p:anim>
+  <p:anim calcmode="lin" valueType="num">
+    <p:cBhvr>
+      <p:cTn id="{ID3}" dur="400">
+        <p:stCondLst>
+          <p:cond delay="600"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+      <p:attrNameLst>
+        <p:attrName>ppt_y</p:attrName>
+      </p:attrNameLst>
+    </p:cBhvr>
+    <p:tavLst>
+      <p:tav tm="0">
+        <p:val>
+          <p:strVal val="ppt_y"/>
+        </p:val>
+      </p:tav>
+      <p:tav tm="100000">
+        <p:val>
+          <p:strVal val="ppt_y"/>
+        </p:val>
+      </p:tav>
+    </p:tavLst>
+  </p:anim>
+  <p:animEffect transition="out" filter="fade">
+    <p:cBhvr>
+      <p:cTn id="{ID4}" dur="100">
+        <p:stCondLst>
+          <p:cond delay="900"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+    </p:cBhvr>
+  </p:animEffect>
+  <p:set>
+    <p:cBhvr>
+      <p:cTn id="{ID5}" dur="1" fill="hold">
+        <p:stCondLst>
+          <p:cond delay="999"/>
+        </p:stCondLst>
+      </p:cTn>
+      <p:tgtEl>
+        <p:spTgt spid="{SPID}"/>
+      </p:tgtEl>
+      <p:attrNameLst>
+        <p:attrName>style.visibility</p:attrName>
+      </p:attrNameLst>
+    </p:cBhvr>
+    <p:to>
+      <p:strVal val="hidden"/>
+    </p:to>
+  </p:set>

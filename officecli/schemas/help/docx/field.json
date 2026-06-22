@@ -1,0 +1,127 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "field",
+  "parent": "paragraph|body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/field[N]"]
+  },
+  "note": "Complex field (fldChar: begin/instr/separate/result/end), addressed as a whole at /field[N]; /body/p[N]/r[M] returns the inner fieldChar run, not the field. Per-type required props: mergefield/ref → name (aka fieldName/bookmarkName); seq → identifier; styleref → styleName; docproperty → propertyName; if → expression (+ optional trueText/falseText); date/time accept optional format.",
+  "properties": {
+    "evaluated": {
+      "type": "bool",
+      "description": "cross-handler protocol flag — true when the field has a cached result run that the opening application can display, false when the field was written without a cached value (view text substitutes #OCLI_NOTEVAL!{instr}; view issues emits subtype field_not_evaluated). For dirty cached fields the cache is still trusted by evaluated; staleness surfaces separately via subtype field_cache_stale. Read this via get --json instead of pattern-matching the sentinel, since multiple fields per paragraph and literal user content may collide.",
+      "add": false, "set": false, "get": true,
+      "readback": "true|false (true ⇒ cached result run present)",
+      "enforcement": "report"
+    },
+    "fieldType": {
+      "type": "enum",
+      "values": ["page", "pagenum", "pagenumber", "numpages", "date", "author", "title", "time", "filename", "section", "sectionpages", "mergefield", "ref", "pageref", "noteref", "seq", "styleref", "docproperty", "if", "createdate", "savedate", "printdate", "edittime", "lastsavedby", "subject", "numwords", "numchars", "revnum", "template", "comments", "doccomments", "keywords"],
+      "aliases": ["fieldtype", "type"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop fieldType=page"],
+      "readback": "resolved instruction",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "Per-type identifier: mergefield → field name (e.g. CustomerName); ref/pageref/noteref → target bookmark name; styleref → style name; docproperty → property name. Aliases preserve historical naming differences (e.g. ref docs called this 'bookmarkName').",
+      "aliases": ["fieldName", "fieldname", "bookmarkName", "bookmarkname", "bookmark", "styleName", "stylename", "propertyName", "propertyname"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop name=CustomerName", "--prop bookmarkName=Section1", "--prop styleName=\"Heading 1\""],
+      "readback": "n/a (embedded in instruction)",
+      "enforcement": "report"
+    },
+    "id": {
+      "type": "string",
+      "description": "SEQ field's identifier (sequence label). Defaults to 'name' when 'id' is not supplied. Alias: identifier.",
+      "aliases": ["identifier"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop id=Figure", "--prop identifier=Figure"],
+      "readback": "n/a (embedded in instruction)",
+      "enforcement": "report"
+    },
+    "expression": {
+      "type": "string",
+      "description": "IF field's logical expression (e.g. 'MERGEFIELD Gender = \"Male\"'). Add/Set only — surfaces back inside the `instruction` readback, not as its own Format key.",
+      "aliases": ["condition"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop expression='{ MERGEFIELD Gender } = \"Male\"'"],
+      "readback": "n/a (embedded in instruction)",
+      "enforcement": "report"
+    },
+    "trueText": {
+      "type": "string",
+      "description": "IF field's text shown when expression evaluates true. Add/Set only — surfaces back inside the `instruction` readback.",
+      "aliases": ["truetext"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop trueText=\"Mr.\""],
+      "readback": "n/a (embedded in instruction)",
+      "enforcement": "report"
+    },
+    "falseText": {
+      "type": "string",
+      "description": "IF field's text shown when expression evaluates false. Add/Set only — surfaces back inside the `instruction` readback.",
+      "aliases": ["falsetext"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop falseText=\"Ms.\""],
+      "readback": "n/a (embedded in instruction)",
+      "enforcement": "report"
+    },
+    "hyperlink": {
+      "type": "bool",
+      "description": "REF field: append \\h switch so the inserted reference becomes a clickable hyperlink to the bookmark target. Add/Set only — surfaces back as a switch inside the `instruction` readback.",
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop hyperlink=true"],
+      "readback": "n/a (embedded in instruction)",
+      "enforcement": "report"
+    },
+    "format": {
+      "type": "string",
+      "description": "field format — bare picture string (e.g. 'yyyy-MM-dd' for DATE, '0.00%' for numeric). The handler wraps it into the OOXML '\\@ \"...\"' switch automatically; do NOT pass the '\\@' prefix yourself.",
+      "add": true, "set": true, "get": true,
+      "examples": [
+        "--prop format=\"yyyy-MM-dd\"",
+        "--prop format=\"0.00%\""
+      ],
+      "readback": "instruction switches",
+      "enforcement": "report"
+    },
+    "instruction": {
+      "type": "string",
+      "description": "Raw field instruction text. Bypasses fieldType-specific helpers — useful for arbitrary fields not covered by the typed shortcuts.",
+      "aliases": ["instr", "code"],
+      "add": true, "set": true, "get": true,
+      "examples": ["--prop instruction=' DATE \\@ \"yyyy年MM月\" '"],
+      "readback": "instrText element text content",
+      "enforcement": "report"
+    },
+    "vertAlign": {
+      "type": "enum",
+      "values": ["superscript", "subscript", "baseline"],
+      "description": "field-wide vertical alignment applied uniformly to every run of the field (begin/instrText/separate/result/end). Common case: a superscript cross-reference citation mark ([1],[2]…). Accepts the boolean aliases superscript=true / subscript=true. Like the other run-format props the field add accepts (font/size/bold/color), this rides on the whole field rather than a single run.",
+      "aliases": ["vertalign", "superscript", "subscript"],
+      "add": true, "set": false, "get": false,
+      "examples": ["--prop vertAlign=superscript", "--prop superscript=true"],
+      "readback": "n/a (applied to the field's run properties)",
+      "enforcement": "report"
+    },
+    "fldLock": {
+      "type": "bool",
+      "description": "field lock (w:fldChar/w:fldSimple @w:fldLock) — when true, Word does NOT update the field on F9 / Update Field / recalc; the cached result stays put. Universal across field types (rides on the begin fldChar). On a dump→batch round-trip a fldSimple lock is preserved through the conversion to a complex field.",
+      "aliases": ["fldlock"],
+      "add": true, "set": false, "get": true,
+      "examples": ["--prop fldLock=true"],
+      "readback": "true (only emitted when the field is locked)",
+      "enforcement": "report"
+    }
+  }
+}

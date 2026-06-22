@@ -1,0 +1,118 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "row",
+  "elementAliases": [
+    "tr"
+  ],
+  "parent": "table",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/body/tbl[N]/tr[R]"
+    ]
+  },
+  "note": "Row column count defaults to the parent table grid. height uses AtLeast rule; height.exact forces Exact rule.",
+  "extends": "_shared/table-row",
+  "properties": {
+    "height.exact": {
+      "type": "length",
+      "description": "row height in twips (Exact rule, cannot grow). Add/Set only — Get does not surface a separate exact-height key; inspect `height.rule=exact` paired with `height` instead.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop height.exact=500"
+      ],
+      "readback": "n/a (inspect height + height.rule)",
+      "enforcement": "report"
+    },
+    "header": {
+      "type": "bool",
+      "description": "repeat row as table header on every page.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop header=true"
+      ],
+      "readback": "true when header, key absent otherwise",
+      "enforcement": "report"
+    },
+    "height.rule": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "row height rule readback — `exact` when the row enforces a fixed height, otherwise absent (auto/atLeast).",
+      "readback": "`exact` when set",
+      "enforcement": "report"
+    },
+    "cnfStyle": {
+      "type": "string",
+      "description": "conditional-formatting bitmask (ST_Cnf @val) on the row (trPr). A 12-digit binary string — each '0'/'1' flags one region in order: firstRow, lastRow, firstColumn, lastColumn, oddVBand, evenVBand, oddHBand, evenHBand, firstRowFirstColumn, firstRowLastColumn, lastRowFirstColumn, lastRowLastColumn. Short binary input is right-padded to 12. Not a hex number.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop cnfStyle=100000000000"
+      ],
+      "readback": "12-digit binary bitmask string",
+      "enforcement": "report"
+    },
+    "gridBefore": {
+      "type": "int",
+      "description": "number of leading grid columns this row skips (w:gridBefore @val). Pairs with wBefore (the preferred width reserved for the skipped span) to indent the row's left edge — produces a ragged/indented table edge.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop gridBefore=2"
+      ],
+      "readback": "integer column count",
+      "enforcement": "report"
+    },
+    "wBefore": {
+      "type": "string",
+      "description": "preferred width of the leading skipped-column span (w:wBefore w:w/w:type). Same unit-qualified form as cell width: 'Ndxa', 'N%', 'auto', or 'nil'.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop wBefore=100dxa"
+      ],
+      "readback": "'Ndxa' | 'N%' | 'auto' | 'nil'",
+      "enforcement": "report"
+    },
+    "gridAfter": {
+      "type": "int",
+      "description": "number of trailing grid columns this row skips (w:gridAfter @val). Pairs with wAfter (the preferred width reserved for the skipped span) to shorten the row's right edge — produces a ragged/indented table edge.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop gridAfter=1"
+      ],
+      "readback": "integer column count",
+      "enforcement": "report"
+    },
+    "wAfter": {
+      "type": "string",
+      "description": "preferred width of the trailing skipped-column span (w:wAfter w:w/w:type). Same unit-qualified form as cell width: 'Ndxa', 'N%', 'auto', or 'nil'.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop wAfter=14dxa"
+      ],
+      "readback": "'Ndxa' | 'N%' | 'auto' | 'nil'",
+      "enforcement": "report"
+    }
+  }
+}

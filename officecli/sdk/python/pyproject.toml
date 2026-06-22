@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77"]   # >=77 for the PEP 639 SPDX `license` string
+build-backend = "setuptools.build_meta"
+
+[project]
+# Distribution (pip) name. NOT the import name — the module stays `officecli`
+# (`import officecli`), like `pip install pillow` → `import PIL`. PyPI rejects
+# the bare name "officecli" as too similar to the unrelated "office-cli" project.
+name = "officecli-sdk"
+version = "0.1.3"
+description = "Thin Python SDK for the officecli resident pipe — forwards officecli commands to a running resident, no per-command process spawn."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "Apache-2.0"   # PEP 639 SPDX expression (do NOT also add a License:: classifier — PyPI rejects the combo)
+keywords = ["officecli", "office", "docx", "xlsx", "pptx", "ooxml"]
+dependencies = []  # standard library only
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+]
+# TODO(maintainer): optionally add authors = [{ name = "...", email = "..." }] above.
+
+[project.urls]
+Homepage = "https://officecli.ai"
+Repository = "https://github.com/iOfficeAI/OfficeCLI"
+
+# IMPORTANT: this package is only the SDK. It shells out to the `officecli`
+# CLI binary, which must be installed separately and on PATH (Homebrew, etc.).
+# pip cannot install that binary for you — see README.
+
+[tool.setuptools]
+py-modules = ["officecli"]  # single-file module: officecli.py

@@ -1,0 +1,269 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "abstractNum",
+  "parent": "numbering",
+  "addParent": "/numbering",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": ["/numbering/abstractNum[@id=N]"],
+    "positional": ["/numbering/abstractNum[N]"]
+  },
+  "note": "Numbering template (<w:abstractNum>). Defines what a list LOOKS like — 9 levels, each with its own number format, marker text, indent, start value, and marker run properties. Reusable: many <w:num> instances can share one abstractNum. To apply the list to paragraphs, create a <w:num> pointing at this abstractNumId (--type num --prop abstractNumId=N), then reference that numId on the paragraph or style (--prop numId=N --prop ilvl=L). Top-level format/text/start/indent are shorthand for level0.*; per-level customization uses level<N>.* (N = 0..8). If a top-level format is set, every level inherits it instead of cycling through decimal/lowerLetter/lowerRoman.",
+  "properties": {
+    "id": {
+      "type": "int",
+      "description": "abstractNumId (w:abstractNumId, unique within /numbering). Omit for auto-assignment. Renaming after Add would orphan every <w:num> referencing it; not supported.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "examples": ["--prop id=5"],
+      "readback": "integer abstractNumId",
+      "enforcement": "strict"
+    },
+    "type": {
+      "type": "enum",
+      "values": ["hybridMultilevel", "multilevel", "singleLevel"],
+      "aliases": {
+        "hybridMultilevel": ["hybrid"],
+        "multilevel": ["multi"],
+        "singleLevel": ["single"]
+      },
+      "description": "multiLevelType (w:multiLevelType). Default: hybridMultilevel. Hybrid is what Word writes for ad-hoc lists; singleLevel locks bullets/numbers to level 0.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop type=hybridMultilevel"],
+      "readback": "hybridMultilevel | multilevel | singleLevel",
+      "enforcement": "report"
+    },
+    "name": {
+      "type": "string",
+      "description": "human-readable name (w:name). Optional; Word shows this in the Numbering dialog.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop name=\"Chapter outline\""],
+      "readback": "AbstractNumDefinitionName.Val",
+      "enforcement": "report"
+    },
+    "styleLink": {
+      "type": "string",
+      "description": "back-reference to a numbering style (w:styleLink). Optional.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop styleLink=MyListStyle"],
+      "readback": "StyleLink.Val",
+      "enforcement": "report"
+    },
+    "numStyleLink": {
+      "type": "string",
+      "description": "link to another abstractNum via numbering style (w:numStyleLink). Optional.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": ["--prop numStyleLink=OutlineList"],
+      "readback": "NumberingStyleLink.Val",
+      "enforcement": "report"
+    },
+    "format": {
+      "type": "string",
+      "description": "numFmt for level 0 (and propagated to all 9 levels if no per-level override). Common values: decimal, decimalZero, upperRoman, lowerRoman, upperLetter, lowerLetter, ordinal, cardinalText, ordinalText, bullet, chineseCounting, chineseLegalSimplified, japaneseCounting, koreanCounting, hex. Script-localized formats: arabicAlpha (أ ب ت ث), arabicAbjad (أ ب ج د), hebrew1, hebrew2, hindiNumbers, hindiVowels, hindiCounting, hindiConsonants, thaiCounting, thaiNumbers, thaiLetters. Top-level bare 'format' is shorthand for level0.format; setting it also defaults every other level to the same format instead of the decimal/lowerLetter/lowerRoman cycle.",
+      "aliases": ["fmt", "numFmt"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop format=decimal",
+        "--prop format=bullet",
+        "--prop format=chineseCounting",
+        "--prop format=arabicAlpha"
+      ],
+      "readback": "n/a (surfaces on /numbering/abstractNum[@id=N]/level[L])",
+      "enforcement": "report"
+    },
+    "text": {
+      "type": "string",
+      "description": "lvlText for level 0. Use %N as placeholder for level N's running counter (e.g. '%1.', '%1.%2', '第%1章'). Bullet marker default: •. Top-level bare 'text' is shorthand for level0.text.",
+      "aliases": ["lvlText"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop text=\"%1.\"",
+        "--prop text=\"第%1章\"",
+        "--prop lvlText=\"%1.%2\""
+      ],
+      "readback": "n/a (surfaces on /numbering/abstractNum[@id=N]/level[L])",
+      "enforcement": "report"
+    },
+    "start": {
+      "type": "int",
+      "description": "starting number for level 0. Default 1. Shorthand for level0.start.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop start=5"],
+      "readback": "n/a (surfaces on /numbering/abstractNum[@id=N]/level[L])",
+      "enforcement": "report"
+    },
+    "indent": {
+      "type": "int",
+      "description": "left indent in twips for level 0. Default (level+1)*720. Shorthand for level0.indent.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop indent=720"],
+      "readback": "n/a (surfaces on /numbering/abstractNum[@id=N]/level[L])",
+      "enforcement": "report"
+    },
+    "level<N>.format": {
+      "type": "string",
+      "description": "numFmt for level N (N = 0..8). Same vocabulary as bare 'format'. Per-level override; only set the levels you actually use, the rest fall back to decimal/lowerLetter/lowerRoman cycle (or whatever 'format' propagates).",
+      "aliases": ["level<N>.fmt", "level<N>.numFmt"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop level0.format=upperRoman --prop level1.format=decimal"
+      ],
+      "readback": "n/a (surfaces on level[N])",
+      "enforcement": "report"
+    },
+    "level<N>.text": {
+      "type": "string",
+      "description": "lvlText for level N. Same %N placeholder syntax.",
+      "aliases": ["level<N>.lvlText"],
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop level0.text=\"%1.\" --prop level1.text=\"%1.%2\""
+      ],
+      "readback": "n/a (surfaces on level[N])",
+      "enforcement": "report"
+    },
+    "level<N>.start": {
+      "type": "int",
+      "description": "starting number for level N.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level3.start=1"],
+      "readback": "n/a (surfaces on level[N])",
+      "enforcement": "report"
+    },
+    "level<N>.indent": {
+      "type": "int",
+      "description": "left indent in twips for level N.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.indent=720"],
+      "readback": "n/a (surfaces on level[N])",
+      "enforcement": "report"
+    },
+    "level<N>.hanging": {
+      "type": "int",
+      "description": "hanging indent in twips for level N. Default 360.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.hanging=360"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "level<N>.justification": {
+      "type": "enum",
+      "values": ["left", "center", "right"],
+      "aliases": ["level<N>.jc"],
+      "description": "lvlJc — marker alignment within the indent area. Default left.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.justification=left"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "level<N>.suff": {
+      "type": "enum",
+      "values": ["tab", "space", "nothing"],
+      "description": "what comes between the marker and the text content. Default tab.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.suff=space"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "level<N>.font": {
+      "type": "string",
+      "description": "marker font (rPr/rFonts on the level). Useful for bullet glyphs that need Symbol or Wingdings.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.font=Symbol"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "level<N>.size": {
+      "type": "font-size",
+      "description": "marker font size (rPr/sz on the level). Bare number = pt.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.size=14"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "level<N>.color": {
+      "type": "color",
+      "description": "marker color (rPr/color on the level).",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.color=#FF0000"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "level<N>.bold": {
+      "type": "bool",
+      "description": "bold marker.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.bold=true"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "level<N>.italic": {
+      "type": "bool",
+      "description": "italic marker.",
+      "add": true,
+      "set": false,
+      "get": false,
+      "examples": ["--prop level0.italic=true"],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "abstractNumId": {
+      "type": "int",
+      "description": "readback alias for id (matches the w:abstractNumId attribute name).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "integer",
+      "enforcement": "report"
+    }
+  },
+  "children": [
+    { "element": "level", "pathSegment": "level", "cardinality": "0..9" }
+  ]
+}

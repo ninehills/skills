@@ -1,0 +1,394 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "workbook",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": false
+  },
+  "paths": {
+    "positional": [
+      "/"
+    ]
+  },
+  "note": "Root container. Get returns sheet list and workbook-level metadata. Set exists for workbook-wide properties (defaultFont, defaultFontSize, calc.mode, calc.iterate, author, title, subject). Sheets are mutated via /SheetName paths.",
+  "children": [
+    {
+      "element": "sheet",
+      "pathSegment": "{SheetName}",
+      "cardinality": "1..n"
+    }
+  ],
+  "extends": "_shared/root-metadata",
+  "properties": {
+    "defaultFont": {
+      "type": "string",
+      "description": "default font for all cells (fontname alias). Not implemented in ExcelHandler — Add/Set/Get all return n/a today; manage cell fonts directly.",
+      "aliases": [
+        "fontName",
+        "fontname"
+      ],
+      "add": false,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop defaultFont=Calibri"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "defaultFontSize": {
+      "type": "length",
+      "description": "default font size. Not implemented in ExcelHandler — Add/Set/Get all return n/a today; manage cell fonts directly.",
+      "aliases": [
+        "fontSize",
+        "fontsize"
+      ],
+      "add": false,
+      "set": false,
+      "get": false,
+      "examples": [
+        "--prop defaultFontSize=11"
+      ],
+      "readback": "n/a",
+      "enforcement": "report"
+    },
+    "author": {
+      "type": "string",
+      "description": "document author (core properties).",
+      "aliases": [
+        "creator"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop author=\"Alice\""
+      ],
+      "readback": "author string",
+      "enforcement": "report"
+    },
+    "title": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop title=\"Q1 Report\""
+      ],
+      "readback": "title string",
+      "enforcement": "report"
+    },
+    "calc.mode": {
+      "type": "enum",
+      "values": [
+        "auto",
+        "manual",
+        "autoExceptTables"
+      ],
+      "description": "workbook formula calculation mode. 'auto' recalculates on every change, 'manual' requires F9, 'autoExceptTables' skips data tables.",
+      "aliases": [
+        "calcmode"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop calc.mode=manual",
+        "--prop calcmode=auto"
+      ],
+      "readback": "calc mode name",
+      "enforcement": "report"
+    },
+    "calc.iterate": {
+      "type": "bool",
+      "description": "enable iterative calculation for circular references.",
+      "aliases": [
+        "iterate"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop calc.iterate=true",
+        "--prop iterate=false"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "calc.iterateCount": {
+      "type": "number",
+      "description": "maximum number of iterations when calc.iterate is enabled.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop calc.iterateCount=100"
+      ],
+      "readback": "integer",
+      "enforcement": "report"
+    },
+    "calc.iterateDelta": {
+      "type": "number",
+      "description": "maximum change between iterations to consider the calculation converged.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop calc.iterateDelta=0.001"
+      ],
+      "readback": "number",
+      "enforcement": "report"
+    },
+    "calc.fullPrecision": {
+      "type": "bool",
+      "description": "if true, calculations use full precision rather than the displayed value.",
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop calc.fullPrecision=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "lastModifiedBy": {
+      "type": "string",
+      "aliases": [
+        "lastmodifiedby"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "from docProps/core.xml lastModifiedBy field.",
+      "examples": [
+        "--prop lastModifiedBy=\"Alice\""
+      ],
+      "readback": "author string",
+      "enforcement": "report"
+    },
+    "created": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "creation timestamp ISO-8601.",
+      "readback": "ISO-8601 timestamp",
+      "enforcement": "report"
+    },
+    "modified": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "last modification timestamp ISO-8601.",
+      "readback": "ISO-8601 timestamp",
+      "enforcement": "report"
+    },
+    "extended.application": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "from docProps/app.xml application identifier (e.g. \"Microsoft Excel\").",
+      "readback": "application string",
+      "enforcement": "report"
+    },
+    "category": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/core.xml Category field.",
+      "examples": [
+        "--prop category=Reports"
+      ],
+      "readback": "category string",
+      "enforcement": "report"
+    },
+    "description": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/core.xml Description field.",
+      "examples": [
+        "--prop description=\"Annual revenue summary\""
+      ],
+      "readback": "description string",
+      "enforcement": "report"
+    },
+    "keywords": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/core.xml Keywords field.",
+      "examples": [
+        "--prop keywords=\"finance,2026\""
+      ],
+      "readback": "keyword list string",
+      "enforcement": "report"
+    },
+    "revisionNumber": {
+      "type": "string",
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "docProps/core.xml Revision field — workbook save counter.",
+      "examples": [
+        "--prop revisionNumber=3"
+      ],
+      "readback": "revision number string",
+      "enforcement": "report"
+    },
+    "activeTab": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "workbook BookViews activeTab — index of the sheet active when the file opens.",
+      "readback": "integer (0-based)",
+      "enforcement": "report"
+    },
+    "firstSheet": {
+      "type": "number",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "workbook BookViews firstSheet — index of the leftmost visible sheet.",
+      "readback": "integer (0-based)",
+      "enforcement": "report"
+    },
+    "calc.fullCalcOnLoad": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "CalculationProperties FullCalculationOnLoad flag — force a full recalc when the workbook opens.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "calc.refMode": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "CalculationProperties ReferenceMode (A1 or R1C1).",
+      "readback": "reference mode string",
+      "enforcement": "report"
+    },
+    "workbook.backupFile": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "WorkbookProperties BackupFile flag — Excel keeps a backup .bak alongside saves.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "workbook.codeName": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "WorkbookProperties CodeName — VBA project workbook codename (e.g. ThisWorkbook).",
+      "readback": "codename string",
+      "enforcement": "report"
+    },
+    "workbook.date1904": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "WorkbookProperties Date1904 flag — true means dates use the 1904 epoch (Mac legacy).",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "workbook.dateCompatibility": {
+      "type": "bool",
+      "aliases": ["datecompatibility"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "WorkbookProperties DateCompatibility flag — controls 1900 vs 1904 date system compatibility.",
+      "examples": [
+        "--prop workbook.dateCompatibility=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "workbook.filterPrivacy": {
+      "type": "bool",
+      "aliases": ["filterprivacy"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "WorkbookProperties FilterPrivacy flag — when true, Excel hides personal info from filter saves.",
+      "examples": [
+        "--prop workbook.filterPrivacy=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "workbook.showObjects": {
+      "type": "enum",
+      "values": ["all", "placeholders", "none"],
+      "aliases": ["showobjects"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "WorkbookProperties ShowObjects — visibility of embedded objects (charts, pictures, shapes) in the workbook view.",
+      "examples": [
+        "--prop workbook.showObjects=all",
+        "--prop workbook.showObjects=none"
+      ],
+      "readback": "all|placeholders|none",
+      "enforcement": "report"
+    },
+    "workbook.lockStructure": {
+      "type": "bool",
+      "aliases": ["lockstructure"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "WorkbookProtection LockStructure flag — when true, sheets cannot be added/deleted/renamed/reordered.",
+      "examples": [
+        "--prop workbook.lockStructure=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "workbook.lockWindows": {
+      "type": "bool",
+      "aliases": ["lockwindows"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "WorkbookProtection LockWindows flag — when true, workbook window size and position are locked.",
+      "examples": [
+        "--prop workbook.lockWindows=true"
+      ],
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "workbook.password": {
+      "type": "string",
+      "aliases": ["workbookpassword"],
+      "add": false,
+      "set": true,
+      "get": true,
+      "description": "WorkbookProtection legacy password (ECMA-376 short hash). Set the plaintext to apply; pass empty or 'none' to clear. Get returns '***' when present (the plaintext is not recoverable from the stored hash). Known weak — back-compat only.",
+      "examples": [
+        "--prop workbook.password=secret",
+        "--prop workbook.password=none"
+      ],
+      "readback": "*** if set, otherwise omitted",
+      "enforcement": "report"
+    }
+  }
+}

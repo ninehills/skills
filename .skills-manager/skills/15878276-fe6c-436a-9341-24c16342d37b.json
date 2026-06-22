@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "skill_id": "15878276-fe6c-436a-9341-24c16342d37b",
+  "path": "oracle",
+  "path_key": "oracle",
+  "enabled": true,
+  "tags": [],
+  "source": {
+    "type": "git",
+    "ref": "https://github.com/steipete/oracle/tree/main/skills/oracle",
+    "subpath": "skills/oracle",
+    "branch": "main"
+  }
+}

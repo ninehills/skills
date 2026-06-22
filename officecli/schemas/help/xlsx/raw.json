@@ -1,0 +1,33 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "raw",
+  "operations": {
+    "add": false,
+    "set": false,
+    "get": false,
+    "query": false,
+    "remove": false
+  },
+  "properties": {},
+  "description": "Raw OOXML access via the `raw` (read) and `raw-set` (write) commands. Use only when L2 DOM operations cannot express what you need. Two part-path forms are accepted: (1) semantic short names (recommended — stable across sheet rename/reorder) and (2) zip-internal URIs (any path ending in .xml is resolved literally against the package, e.g. /xl/worksheets/sheet1.xml).",
+  "parts": [
+    { "name": "/workbook",      "desc": "Workbook part (sheet refs, defined names, calc properties)" },
+    { "name": "/styles",        "desc": "Stylesheet (fonts, fills, borders, numFmts, cellXfs)" },
+    { "name": "/sharedStrings", "desc": "Shared string table" },
+    { "name": "/theme",         "desc": "Theme (color scheme, font scheme)" },
+    { "name": "/<SheetName>",   "desc": "Worksheet by name, e.g. /Sheet1" },
+    { "name": "/<SheetName>/drawing", "desc": "Drawing part for that sheet (shapes, charts, pictures)" },
+    { "name": "/<SheetName>/chart[N]", "desc": "Nth chart on the named sheet" },
+    { "name": "/chart[N]",      "desc": "Nth chart globally (across all sheets)" },
+    { "name": "/<SheetName>/<rId>", "desc": "Sheet-relationship part by relId (covers OLE embeds, images, etc.)" },
+    { "name": "/<zip-uri>.xml", "desc": "Any path ending in .xml is resolved as a literal zip-internal URI (e.g. /xl/worksheets/sheet1.xml, /xl/styles.xml, /xl/sharedStrings.xml, /xl/theme/theme1.xml). Use when you need positional-by-zip-order access; semantic names are preferred for stability." }
+  ],
+  "examples": [
+    "officecli raw data.xlsx /workbook",
+    "officecli raw data.xlsx /Sheet1",
+    "officecli raw data.xlsx /styles",
+    "officecli raw data.xlsx /xl/worksheets/sheet1.xml",
+    "officecli raw-set data.xlsx /Sheet1 --xpath \"//x:c[@r='A1']\" --action replace --xml \"<c r='A1'><v>42</v></c>\""
+  ]
+}

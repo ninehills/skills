@@ -1,0 +1,168 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "endnote",
+  "parent": "paragraph|body",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/endnote[N]"
+    ]
+  },
+  "note": "Endnotes live in EndnotesPart. Semantics mirror footnote.json. Parent must be a paragraph path (/body/p[N]); use --index N to control position within the paragraph. Run-level parent (/body/p[N]/r[M]) is not accepted -- the endnote reference is inserted as a new run.",
+  "properties": {
+    "text": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop text=\"End-of-doc reference\""
+      ],
+      "readback": "concatenated text",
+      "enforcement": "report"
+    },
+    "direction": {
+      "type": "enum",
+      "values": [
+        "rtl",
+        "ltr"
+      ],
+      "aliases": [
+        "dir",
+        "bidi"
+      ],
+      "description": "Reading direction. 'rtl' writes <w:bidi/> on the endnote content paragraph and cascades <w:rtl/> to the paragraph mark.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "enforcement": "report"
+    },
+    "align": {
+      "type": "enum",
+      "values": [
+        "left",
+        "center",
+        "right",
+        "justify",
+        "both",
+        "distribute"
+      ],
+      "description": "Horizontal alignment applied to the endnote content paragraph (<w:jc/>).",
+      "aliases": [
+        "alignment"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop align=right"
+      ],
+      "enforcement": "report"
+    },
+    "font.cs": {
+      "type": "string",
+      "description": "Complex-script font (rFonts/cs).",
+      "aliases": [
+        "font.complexscript",
+        "font.complex"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop font.cs=\"Arabic Typesetting\""
+      ],
+      "enforcement": "report"
+    },
+    "font.ea": {
+      "type": "string",
+      "description": "East-Asian font slot (rFonts/eastAsia) — Chinese / Japanese / Korean typefaces.",
+      "aliases": [
+        "font.eastasia",
+        "font.eastasian"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop font.ea=\"メイリオ\""
+      ],
+      "enforcement": "report"
+    },
+    "font.latin": {
+      "type": "string",
+      "description": "Latin font slots (rFonts/ascii + hAnsi) — ASCII / Western text.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop font.latin=Calibri"
+      ],
+      "enforcement": "report"
+    },
+    "bold.cs": {
+      "type": "bool",
+      "description": "complex-script bold for the endnote's runs (<w:bCs/>). Required for Arabic / Hebrew bold rendering.",
+      "aliases": [
+        "font.bold.cs",
+        "boldcs"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop bold.cs=true"
+      ],
+      "enforcement": "report"
+    },
+    "italic.cs": {
+      "type": "bool",
+      "description": "complex-script italic (<w:iCs/>) for the endnote's runs.",
+      "aliases": [
+        "font.italic.cs",
+        "italiccs"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop italic.cs=true"
+      ],
+      "enforcement": "report"
+    },
+    "size.cs": {
+      "type": "font-size",
+      "description": "complex-script font size (<w:szCs/>) for the endnote's runs.",
+      "aliases": [
+        "font.size.cs",
+        "sizecs"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop size.cs=14pt"
+      ],
+      "enforcement": "report"
+    },
+    "id": {
+      "type": "number",
+      "description": "OOXML endnote id; source of @endnoteId in stable path /endnote[@endnoteId=N].",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "integer",
+      "enforcement": "report"
+    }
+  }
+}

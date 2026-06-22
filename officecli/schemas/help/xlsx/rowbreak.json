@@ -1,0 +1,46 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "rowbreak",
+  "parent": "sheet",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": ["/SheetName/rowbreak[N]"]
+  },
+  "note": "Manual page break before the specified row. 'pagebreak' with col= routes to colbreak.",
+  "properties": {
+    "row": {
+      "type": "int",
+      "description": "1-based row index where the break occurs. Alias: index.",
+      "aliases": ["index"],
+      "add": true, "set": true, "get": false,
+      "examples": ["--prop row=20"],
+      "readback": "n/a (see sheet.rowBreaks)",
+      "enforcement": "report"
+    },
+    "manual": {
+      "type": "bool",
+      "description": "true ⇒ user-inserted (manual) break; false ⇒ automatic.",
+      "add": false, "set": true, "get": false,
+      "enforcement": "report"
+    },
+    "min": {
+      "type": "int",
+      "description": "zero-based start column the break spans (OOXML brk@min).",
+      "add": false, "set": true, "get": false,
+      "enforcement": "report"
+    },
+    "max": {
+      "type": "int",
+      "description": "zero-based end column the break spans (OOXML brk@max).",
+      "add": false, "set": true, "get": false,
+      "enforcement": "report"
+    }
+  }
+}

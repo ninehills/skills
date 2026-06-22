@@ -1,0 +1,19 @@
+{
+  "$schema": "../_schema.json",
+  "shared_base": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "NonVisualDrawingProperties Name (used for stable @name addressing).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop name=SalesData",
+        "--prop name=Summary"
+      ],
+      "readback": "name string",
+      "enforcement": "strict"
+    }
+  }
+}

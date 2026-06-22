@@ -1,6 +1,6 @@
 ---
 name: design
-description: "Produces distinctive, production-grade UI for pages, components, visual interfaces, typography, and screenshot-driven polish. Use when users ask 设计/做页面/做组件/UI/前端/截图 or say a screen is ugly, unclear, inconsistent, or visually wrong. Not for backend logic or data pipelines."
+description: "Produces distinctive, production-grade UI for pages, components, visual interfaces, typography, and screenshot-driven polish. Use when users ask in any language for UI, page, component, frontend, typography, screenshot-grounded visual polish, or complaints that a screen looks unclear, ugly, inconsistent, or visually wrong. Not for backend logic or data pipelines."
 when_to_use: "设计, 做页面, 做组件, 不好看, 不和谐, 不清晰, 很丑, 很怪, 很傻, 突兀, 不协调, 字体, 字形, 排印, 排版, 样式, 前端, UI, 截图, build page, create component, make it look good, style, design, screenshot with visual complaint, typography, font looks wrong"
 dispatch_intent: "UI, component, page, visual interface, frontend, artifact-grounded screenshot aesthetic complaint"
 ---
@@ -74,6 +74,8 @@ Activate when the user sends a screenshot or image alongside a complaint ("这�
 - The real running product is the oracle. Product pages, app screenshots, release pages, and current UI state override generic style instincts.
 - Do not flatten specific taste feedback into generic UI adjectives. "More premium" is not a diagnosis; "caption baseline drifts above the Chinese line" is.
 - If the screenshot exposes a regression, broken render, timing issue, or generated asset defect rather than taste, route to `/hunt` and preserve the visual evidence.
+
+**Native screenshot handoff.** For native apps, once you have proven the app builds, runs, and can reach the target view, do not spend repeated cycles fighting focus, window ordering, or coordinate-click automation just to capture final visual proof. Make one bounded automation attempt. If it is flaky, name the exact screen and ask the user for the screenshot to iterate against. This is a visual QA boundary, not a substitute for build/run verification.
 
 **Boundary**: if the fix requires changing 3 or more components, or if it reveals a direction problem rather than a specific bug, pause and run the full direction lock before continuing.
 

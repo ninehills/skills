@@ -1,0 +1,90 @@
+{
+  "$schema": "../_schema.json",
+  "format": "pptx",
+  "element": "equation",
+  "parent": "slide|shape",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/slide[N]/shape[M]/oMath[K]"
+    ]
+  },
+  "note": "Aliases: formula, math. FormulaParser parses LaTeX-ish input. Adding a 'shape' or 'textbox' with 'formula' prop also routes here.",
+  "extends": "_shared/equation",
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "cNvPr equation id. add honors a caller-supplied id so dump-replay keeps it stable for spTgt animation refs; immutable after creation.",
+      "add": true,
+      "set": false,
+      "get": true,
+      "readback": "integer shape id (cNvPr)",
+      "enforcement": "report"
+    },
+    "formula": {
+      "type": "string",
+      "description": "math expression. Aliases: text.",
+      "aliases": [
+        "text"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop formula=\"x^2 + y^2 = z^2\""
+      ],
+      "readback": "LaTeX expression reconstructed from the <m:oMath> tree (PowerPointHandler.NodeBuilder.cs emits Format[\"formula\"]). docx does not implement this readback yet — see _shared/equation.json.",
+      "enforcement": "report"
+    },
+    "x": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop x=2cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "y": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop y=2cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop width=10cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop height=3cm"
+      ],
+      "readback": "length in cm (e.g. \"2cm\")",
+      "enforcement": "report"
+    }
+  }
+}

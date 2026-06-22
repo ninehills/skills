@@ -1,0 +1,163 @@
+// Copyright 2026 OfficeCLI (https://OfficeCLI.AI)
+// SPDX-License-Identifier: Apache-2.0
+//
+// TrackingPropertyDictionary — wraps a property dictionary and records
+// which keys the handler actually accessed (TryGetValue / ContainsKey /
+// indexer / Remove). Used by the Add path to detect "user supplied
+// --prop X=Y but the handler never read X" — which is the new
+// definition of "unsupported property" under handler-as-truth.
+//
+// Architectural note: replaces the old SchemaHelpLoader.ValidateProperties
+// pre-filter at CLI entry. Schema is no longer the runtime gate; the
+// handler's actual consumption is. Aliases that the handler genuinely
+// understands (whether or not the schema enumerates them) now flow
+// through without warning. Real typos still produce a warning because
+// the handler never reads them.
+//
+// Implementation note: we exploit Dictionary<TKey,TValue>'s use of
+// IEqualityComparer<TKey>.Equals on every hash-based operation
+// (TryGetValue, ContainsKey, indexer, Remove). The custom comparer
+// records each lookup key. We seed the dictionary in the constructor
+// before enabling recording so initial Add operations don't pollute
+// the access set.
+//
+// Known leaks (acceptable for the typo-detection goal):
+//  - foreach iteration: iterators don't go through the comparer, so a
+//    handler that exhaustively foreaches the dict to find what it
+//    wants won't mark anything as accessed. Mitigated two ways:
+//    (a) the `new GetEnumerator` override below fires when the static
+//        type is TrackingPropertyDictionary;
+//    (b) we re-declare IEnumerable<KeyValuePair<>> on this class so
+//        interface-dispatched foreach (e.g. LINQ Where/Select on a
+//        `Dictionary<string,string>`-typed variable) also lands on our
+//        tracking enumerator instead of the base's silent one. Without
+//        (b), patterns like `props.Where(kv => IsDeferredKey(kv.Key))`
+//        in chart/media Add paths bypassed tracking entirely and
+//        emitted spurious unsupported_property warnings for keys the
+//        handler had functionally consumed (issue #102).
+
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace OfficeCli.Core;
+
+internal sealed class TrackingPropertyDictionary
+    : Dictionary<string, string>, IEnumerable<KeyValuePair<string, string>>
+{
+    private readonly TrackingComparer _cmp;
+    private readonly HashSet<string> _initialKeys;
+    private readonly HashSet<string> _forcedUnsupported =
+        new(System.StringComparer.OrdinalIgnoreCase);
+
+    public TrackingPropertyDictionary(IDictionary<string, string> source)
+        : base(new TrackingComparer(System.StringComparer.OrdinalIgnoreCase))
+    {
+        _cmp = (TrackingComparer)Comparer;
+        foreach (var kv in source) base.Add(kv.Key, kv.Value);
+        _initialKeys = new HashSet<string>(Keys, System.StringComparer.OrdinalIgnoreCase);
+        _cmp.RecordingEnabled = true;
+    }
+
+    /// <summary>
+    /// Keys the user supplied on the command line that the handler never
+    /// touched via TryGetValue / ContainsKey / indexer / Remove. The
+    /// caller surfaces these as <c>unsupported_property</c> warnings.
+    /// </summary>
+    public IReadOnlyCollection<string> UnusedKeys =>
+        _initialKeys
+            .Where(k => !_cmp.AccessedKeys.Contains(k) || _forcedUnsupported.Contains(k))
+            .ToList();
+
+    /// <summary>
+    /// Mark keys the handler DID observe (via TryGetValue) but then explicitly
+    /// rejected downstream — e.g. a deferred chart property that
+    /// SetChartProperties returns in its unsupported list. Without this, a key
+    /// that was read into a deferred bucket counts as "accessed" and never
+    /// surfaces as unsupported_property even though it was not applied.
+    /// Only keys actually present in the input are forced (mirrors UnusedKeys).
+    /// </summary>
+    public void MarkUnsupported(IEnumerable<string> keys)
+    {
+        if (keys == null) return;
+        foreach (var k in keys)
+            if (k != null && _initialKeys.Contains(k))
+                _forcedUnsupported.Add(k);
+    }
+
+    /// <summary>Keys handler accessed (subset of input ∪ keys it added).</summary>
+    public IReadOnlyCollection<string> AccessedKeys => _cmp.AccessedKeys;
+
+    /// <summary>
+    /// Explicitly mark a set of keys as consumed by the handler. Use this
+    /// from sites where the property dictionary is rebound to a fresh
+    /// (non-tracking) <see cref="Dictionary{TKey,TValue}"/> downstream — e.g.
+    /// pivot/autoFilter helpers that normalize aliases into a new dict — so
+    /// the original <see cref="UnusedKeys"/> doesn't falsely flag those
+    /// inputs as unsupported. Comparison is case-insensitive (matches the
+    /// underlying comparer); only keys that are actually present in the
+    /// input dictionary are marked, matching how a successful TryGetValue
+    /// would have behaved.
+    /// </summary>
+    public void MarkAllConsumed(IEnumerable<string> keys)
+    {
+        if (keys == null) return;
+        foreach (var k in keys)
+        {
+            if (k == null) continue;
+            // Mirror Dictionary lookup semantics: only mark if the key is
+            // actually present (case-insensitively) in our input set. This
+            // matches the AccessedKeys contract — we only record keys the
+            // handler observed, not arbitrary keys the caller listed.
+            if (_initialKeys.Contains(k))
+                _cmp.AccessedKeys.Add(k);
+        }
+    }
+
+    public new IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+    {
+        // Statically bind to Dictionary<,>.GetEnumerator (struct enumerator)
+        // — virtual / interface dispatch would loop back into us via the
+        // explicit IEnumerable<KVP> impl below.
+        var e = base.GetEnumerator();
+        while (e.MoveNext())
+        {
+            _cmp.AccessedKeys.Add(e.Current.Key);
+            yield return e.Current;
+        }
+    }
+
+    // Re-declare IEnumerable<KVP> so LINQ / interface-dispatched foreach
+    // routes to the tracking enumerator above even when the variable's
+    // static type is Dictionary<string,string> (the common case in
+    // handler signatures). Without this, .Where()/.Select() bypassed
+    // tracking and triggered false unsupported_property warnings.
+    IEnumerator<KeyValuePair<string, string>>
+        IEnumerable<KeyValuePair<string, string>>.GetEnumerator()
+        => GetEnumerator();
+
+    private sealed class TrackingComparer : IEqualityComparer<string>
+    {
+        private readonly IEqualityComparer<string> _inner;
+        public bool RecordingEnabled;
+        public readonly HashSet<string> AccessedKeys =
+            new(System.StringComparer.OrdinalIgnoreCase);
+
+        public TrackingComparer(IEqualityComparer<string> inner) => _inner = inner;
+
+        public bool Equals(string? x, string? y)
+        {
+            if (RecordingEnabled)
+            {
+                // Dictionary<,> calls Equals(lookup_key, stored_key). Both
+                // refer to the same logical key (case-insensitive); record
+                // the canonical (stored) form so we don't double-count
+                // case variants.
+                if (y != null) AccessedKeys.Add(y);
+            }
+            return _inner.Equals(x, y);
+        }
+
+        public int GetHashCode(string obj) => _inner.GetHashCode(obj);
+    }
+}

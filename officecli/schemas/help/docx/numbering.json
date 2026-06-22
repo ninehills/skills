@@ -1,0 +1,26 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "numbering",
+  "parent": "document",
+  "container": true,
+  "operations": {
+    "add": false,
+    "set": false,
+    "get": true,
+    "query": true,
+    "remove": false
+  },
+  "paths": {
+    "positional": ["/numbering"]
+  },
+  "note": "NumberingDefinitionsPart container — bullet / numbered list definitions. The container itself is read-only; mutate via its children: --type abstractNum (the template) and --type num (the instance), see docx/abstractNum.json and docx/num.json. Paragraphs/styles then bind to an instance by id via the 'numId' / 'ilvl' props, or via the higher-level 'listStyle' shortcut (see docx/paragraph.json).",
+  "properties": {
+    "abstractNumCount": { "type":"number", "add":false, "set":false, "get":true, "description":"total number of abstractNum definitions in numbering.xml.", "readback":"integer abstractNum count", "enforcement":"report" },
+    "abstractNumId":    { "type":"number", "add":false, "set":false, "get":true, "description":"per-num child readback — the abstractNumId referenced by each /num child. Surfaces on enumerated num child nodes, not the numbering container itself.", "readback":"integer abstractNum reference", "enforcement":"report" }
+  },
+  "children": [
+    { "element": "abstractNum", "pathSegment": "abstractNum", "cardinality": "0..n" },
+    { "element": "num",         "pathSegment": "num",         "cardinality": "0..n" }
+  ]
+}

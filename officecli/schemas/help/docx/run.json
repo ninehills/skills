@@ -1,0 +1,717 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "run",
+  "elementAliases": ["r"],
+  "parent": "paragraph",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "remove": true
+  },
+  "paths": {
+    "stable": [
+      "/body/p[@paraId=ID]/r[N]"
+    ],
+    "positional": [
+      "/body/p[N]/r[N]"
+    ]
+  },
+  "note": "effective.* keys (effective.size, effective.bold, effective.color, ...) are read-only inheritance-resolved values: the run does not set the property directly, but resolves it by walking the run/paragraph style chain up to docDefaults. Each carries a paired effective.X.src pointer (e.g. \"/styles/Heading1\" or \"/docDefaults\") so callers can locate the writing layer. effective.* never appears when the run has the corresponding direct value — direct always wins.",
+  "extends": [
+    "_shared/run",
+    "_shared/run.docx-pptx",
+    "_shared/run.docx-xlsx"
+  ],
+  "properties": {
+    "highlight": {
+      "type": "color",
+      "description": "Word built-in highlight color. Accepts named colors (yellow, green, cyan, magenta, blue, red, ...).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop highlight=yellow"
+      ],
+      "readback": "highlight color name",
+      "enforcement": "report"
+    },
+    "strike": {
+      "type": "bool",
+      "description": "single strikethrough.",
+      "aliases": [
+        "strikethrough",
+        "font.strike",
+        "font.strikethrough"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop strike=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "dstrike": {
+      "type": "bool",
+      "description": "double strikethrough.",
+      "aliases": [
+        "doublestrike",
+        "doubleStrike"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop dstrike=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "caps": {
+      "type": "bool",
+      "description": "render text in all caps (display only; underlying text unchanged).",
+      "aliases": [
+        "allCaps"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop caps=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "smallcaps": {
+      "type": "bool",
+      "description": "render lowercase as small caps.",
+      "aliases": [
+        "smallCaps"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop smallcaps=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "vanish": {
+      "type": "bool",
+      "description": "hidden text (not rendered, but present in the file).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop vanish=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "outline": {
+      "type": "bool",
+      "description": "outline (text effect).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop outline=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "shadow": {
+      "type": "bool",
+      "description": "shadow (text effect).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop shadow=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "emboss": {
+      "type": "bool",
+      "description": "emboss (text effect).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop emboss=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "imprint": {
+      "type": "bool",
+      "description": "imprint / engrave (text effect).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop imprint=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "noproof": {
+      "type": "bool",
+      "description": "exclude this run from spell/grammar checking.",
+      "aliases": [
+        "noProof"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop noproof=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "rtl": {
+      "type": "bool",
+      "description": "right-to-left text (legacy alias of 'direction'). Get surfaces this as direction=rtl|ltr.",
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop rtl=true"
+      ],
+      "enforcement": "strict"
+    },
+    "direction": {
+      "type": "enum",
+      "values": [
+        "ltr",
+        "rtl"
+      ],
+      "description": "run reading direction. Use 'rtl' for Arabic / Hebrew, 'ltr' to clear. Canonical key for run direction; matches paragraph/section vocabulary.",
+      "aliases": [
+        "dir"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop direction=rtl"
+      ],
+      "readback": "rtl | ltr",
+      "enforcement": "strict"
+    },
+    "font.cs": {
+      "type": "string",
+      "description": "Complex-script font slot (rFonts/cs) — Arabic / Hebrew / Thai typefaces.",
+      "aliases": [
+        "font.complexscript",
+        "font.complex"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.cs=\"Arabic Typesetting\""
+      ],
+      "enforcement": "report"
+    },
+    "font.ea": {
+      "type": "string",
+      "description": "East-Asian font slot (rFonts/eastAsia) — Chinese / Japanese / Korean typefaces.",
+      "aliases": [
+        "font.eastasia",
+        "font.eastasian"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.ea=\"メイリオ\""
+      ],
+      "enforcement": "report"
+    },
+    "font.latin": {
+      "type": "string",
+      "description": "Latin font slots (rFonts/ascii + hAnsi) — ASCII / Western text.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.latin=Calibri"
+      ],
+      "enforcement": "report"
+    },
+    "font.hint": {
+      "type": "string",
+      "description": "Font slot hint (rFonts/hint) — tells Word which slot (eastAsia / cs / default) to use for ambiguous characters (CJK digits, punctuation) so they render with the intended font. Values: eastAsia, cs, default.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.hint=eastAsia"
+      ],
+      "enforcement": "report"
+    },
+    "font.asciiTheme": {
+      "type": "string",
+      "description": "Theme font binding for the ascii slot (rFonts/asciiTheme). Values: minorHAnsi, majorHAnsi, minorEastAsia, majorEastAsia, minorBidi, majorBidi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.asciiTheme=minorHAnsi"
+      ],
+      "enforcement": "report"
+    },
+    "font.hAnsiTheme": {
+      "type": "string",
+      "description": "Theme font binding for the hAnsi slot (rFonts/hAnsiTheme).",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.hAnsiTheme=minorHAnsi"
+      ],
+      "enforcement": "report"
+    },
+    "font.eaTheme": {
+      "type": "string",
+      "description": "Theme font binding for the East-Asia slot (rFonts/eastAsiaTheme). Values: minorEastAsia, majorEastAsia.",
+      "aliases": [
+        "font.eastAsiaTheme"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.eaTheme=minorEastAsia"
+      ],
+      "enforcement": "report"
+    },
+    "font.csTheme": {
+      "type": "string",
+      "description": "Theme font binding for the complex-script slot (rFonts/cstheme). Values: minorBidi, majorBidi.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop font.csTheme=minorBidi"
+      ],
+      "enforcement": "report"
+    },
+    "bold.cs": {
+      "type": "bool",
+      "description": "complex-script bold (<w:bCs/>). Word renders Arabic / Hebrew bold via this flag, NOT <w:b/>. Required for Arabic bold to actually render.",
+      "aliases": [
+        "font.bold.cs",
+        "boldcs"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop bold.cs=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "italic.cs": {
+      "type": "bool",
+      "description": "complex-script italic (<w:iCs/>). Same role as bold.cs for italic styling on Arabic / Hebrew text.",
+      "aliases": [
+        "font.italic.cs",
+        "italiccs"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop italic.cs=true"
+      ],
+      "readback": "true | false",
+      "enforcement": "strict"
+    },
+    "size.cs": {
+      "type": "font-size",
+      "description": "complex-script font size (<w:szCs/>). Independent from the bare 'size' (<w:sz/>) which only sizes Latin text.",
+      "aliases": [
+        "font.size.cs",
+        "sizecs"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop size.cs=14pt",
+        "--prop size.cs=14"
+      ],
+      "readback": "unit-qualified, e.g. \"14pt\"",
+      "enforcement": "strict"
+    },
+    "lang.latin": {
+      "type": "string",
+      "description": "Latin-script language tag (<w:lang w:val=.../>). e.g. en-US, fr-FR.",
+      "aliases": [
+        "lang",
+        "lang.val"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lang.latin=en-US"
+      ],
+      "readback": "BCP-47 / xml:lang tag, e.g. \"en-US\"",
+      "enforcement": "lenient"
+    },
+    "lang.ea": {
+      "type": "string",
+      "description": "EastAsian-script language tag (<w:lang w:eastAsia=.../>). e.g. zh-CN, ja-JP.",
+      "aliases": [
+        "lang.eastAsia",
+        "lang.eastAsian"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lang.ea=zh-CN"
+      ],
+      "readback": "BCP-47 / xml:lang tag",
+      "enforcement": "lenient"
+    },
+    "lang.cs": {
+      "type": "string",
+      "description": "ComplexScript language tag (<w:lang w:bidi=.../>). e.g. ar-SA, he-IL.",
+      "aliases": [
+        "lang.complexScript",
+        "lang.bidi"
+      ],
+      "add": false,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop lang.cs=ar-SA"
+      ],
+      "readback": "BCP-47 / xml:lang tag",
+      "enforcement": "lenient"
+    },
+    "vertAlign": {
+      "type": "enum",
+      "description": "vertical text alignment. Values: superscript|super, subscript|sub, baseline.",
+      "aliases": [
+        "vertalign"
+      ],
+      "values": [
+        "superscript",
+        "super",
+        "subscript",
+        "sub",
+        "baseline"
+      ],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": [
+        "--prop vertAlign=superscript"
+      ],
+      "readback": "n/a (surfaces as superscript/subscript flag)",
+      "enforcement": "report"
+    },
+    "charSpacing": {
+      "type": "length",
+      "description": "character spacing (letter spacing) in points. Stored as twips × 20.",
+      "aliases": [
+        "charspacing",
+        "letterspacing",
+        "letterSpacing",
+        "spacing"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop charSpacing=1pt",
+        "--prop charspacing=2"
+      ],
+      "readback": "unit-qualified pt, e.g. \"1pt\"",
+      "enforcement": "report"
+    },
+    "shading": {
+      "type": "color",
+      "description": "background shading color or '<pattern>;<fill>;<color>' triplet.",
+      "aliases": [
+        "shd"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop shading=FFFF00",
+        "--prop shd=clear;FFFF00;auto"
+      ],
+      "readback": "fill #RRGGBB",
+      "enforcement": "report"
+    },
+    "textOutline": {
+      "type": "string",
+      "description": "w14 text outline 'WIDTHpt-COLOR' (e.g. '1pt-FF0000'). Width first, color second; '-' or ';' separator.",
+      "aliases": [
+        "textoutline"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textOutline=1pt-FF0000"
+      ],
+      "readback": "\"{width}pt\" or \"{width}pt;#RRGGBB\"",
+      "enforcement": "report"
+    },
+    "textFill": {
+      "type": "string",
+      "description": "w14 text fill (color or gradient spec).",
+      "aliases": [
+        "textfill"
+      ],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop textFill=FF0000"
+      ],
+      "readback": "#RRGGBB (solid) | C1;C2;angle (gradient) | radial:C1;C2",
+      "enforcement": "report"
+    },
+    "w14shadow": {
+      "type": "string",
+      "description": "w14 text shadow effect.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop w14shadow=FF0000"
+      ],
+      "readback": "#RRGGBB;blur_pt;angle_deg;dist_pt;opacity",
+      "enforcement": "report"
+    },
+    "w14glow": {
+      "type": "string",
+      "description": "w14 text glow effect.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop w14glow=FF0000"
+      ],
+      "readback": "#RRGGBB;radius_pt;opacity",
+      "enforcement": "report"
+    },
+    "w14reflection": {
+      "type": "string",
+      "description": "w14 text reflection effect.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop w14reflection=true"
+      ],
+      "readback": "semicolon-delimited reflection parameters",
+      "enforcement": "report"
+    },
+    "effective.size.src": {
+      "type": "string",
+      "description": "source pointer for effective.size — path of the writing layer (e.g. \"/styles/Heading1\", \"/docDefaults\"). Documented but not emitted today; only the resolved `effective.size` value surfaces on Get.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned — only effective.size emits today)",
+      "enforcement": "report"
+    },
+    "effective.font.ascii": {
+      "type": "string",
+      "description": "inheritance-resolved Latin/ASCII font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.ascii.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.ascii. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.font.eastAsia": {
+      "type": "string",
+      "description": "inheritance-resolved East-Asian font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.eastAsia.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.eastAsia. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.font.hAnsi": {
+      "type": "string",
+      "description": "inheritance-resolved High-ANSI font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.hAnsi.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.hAnsi. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.font.cs": {
+      "type": "string",
+      "description": "inheritance-resolved complex-script font slot (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "effective.font.cs.src": {
+      "type": "string",
+      "description": "source pointer for effective.font.cs. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.bold.src": {
+      "type": "string",
+      "description": "source pointer for effective.bold. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.italic": {
+      "type": "bool",
+      "description": "inheritance-resolved italic (read-only). Surfaced only when the run does not set 'italic' directly.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "effective.italic.src": {
+      "type": "string",
+      "description": "source pointer for effective.italic. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.color.src": {
+      "type": "string",
+      "description": "source pointer for effective.color. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.underline": {
+      "type": "string",
+      "description": "inheritance-resolved underline style (read-only).",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "underline style name",
+      "enforcement": "report"
+    },
+    "effective.underline.src": {
+      "type": "string",
+      "description": "source pointer for effective.underline. Documented but not emitted today.",
+      "add": false,
+      "set": false,
+      "get": false,
+      "readback": "n/a (planned)",
+      "enforcement": "report"
+    },
+    "effective.rtl": {
+      "type": "bool",
+      "description": "inheritance-resolved right-to-left flag (read-only). Emitted even when 'rtl' is set directly so callers can compare direct vs cascade-resolved state.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "true | false",
+      "enforcement": "report"
+    },
+    "effective.rtl.src": {
+      "type": "string",
+      "description": "source pointer for effective.rtl.",
+      "add": false,
+      "set": false,
+      "get": true,
+      "readback": "style/docDefaults path",
+      "enforcement": "report"
+    },
+    "dirty": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "true when the run is flagged as dirty (rPr/dirty=1) — Word treats it as needing reflow on next open.",
+      "readback": "true|false",
+      "enforcement": "report"
+    },
+    "font.ascii": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "individual rFonts @ascii slot readback. On Add/Set use the unified `font.latin` key (which writes both ascii + hAnsi).",
+      "readback": "font family name",
+      "enforcement": "report"
+    },
+    "font.eastAsia": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": false,
+      "description": "legacy alias for the rFonts @eastAsia slot. Get emits only the canonical `font.ea` key (for runs, paragraphs, and styles alike); use `font.ea` on Add/Set/Get.",
+      "readback": "see font.ea",
+      "enforcement": "report"
+    },
+    "font.hAnsi": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "individual rFonts @hAnsi slot readback. On Add/Set use the unified `font.latin` key (which writes both ascii + hAnsi).",
+      "readback": "font family name",
+      "enforcement": "report"
+    }
+  }
+}

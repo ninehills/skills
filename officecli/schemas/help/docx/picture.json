@@ -1,0 +1,243 @@
+{
+  "$schema": "../_schema.json",
+  "format": "docx",
+  "element": "picture",
+  "parent": "paragraph",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "query": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/body/p[@paraId=X]/r[N]"
+    ]
+  },
+  "note": "Aliases: image, img. 'src' is required (alias 'path'). Image source resolved via ImageSource — accepts file path, URL, data-URI, or raw bytes. SVGs auto-generate a PNG fallback.",
+  "extends": [
+    "_shared/picture",
+    "_shared/picture.docx-pptx",
+    "_shared/picture.docx-xlsx"
+  ],
+  "properties": {
+    "crop": {
+      "type": "string",
+      "description": "Crop rectangle in percent (0-100), 1 or 4 comma-separated values (left,top,right,bottom). Stored as <a:srcRect> inside <a:blipFill> (1000ths-of-a-percent). Get emits the canonical 4-value form (e.g. 12,6,18,9); the per-side keys (cropLeft/cropTop/cropRight/cropBottom) are accepted on add/set only.",
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop crop=10",
+        "--prop crop=12,6,18,9"
+      ],
+      "readback": "left,top,right,bottom percent",
+      "enforcement": "report"
+    },
+    "cropLeft": {
+      "type": "string",
+      "description": "Crop from the left edge as percent (0-100). Set/add only — Get folds all sides into the canonical crop key.",
+      "aliases": ["cropleft"],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop cropLeft=10"],
+      "enforcement": "report"
+    },
+    "cropTop": {
+      "type": "string",
+      "description": "Crop from the top edge as percent (0-100). Set/add only — Get folds all sides into the canonical crop key.",
+      "aliases": ["croptop"],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop cropTop=10"],
+      "enforcement": "report"
+    },
+    "cropRight": {
+      "type": "string",
+      "description": "Crop from the right edge as percent (0-100). Set/add only — Get folds all sides into the canonical crop key.",
+      "aliases": ["cropright"],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop cropRight=10"],
+      "enforcement": "report"
+    },
+    "cropBottom": {
+      "type": "string",
+      "description": "Crop from the bottom edge as percent (0-100). Set/add only — Get folds all sides into the canonical crop key.",
+      "aliases": ["cropbottom"],
+      "add": true,
+      "set": true,
+      "get": false,
+      "examples": ["--prop cropBottom=10"],
+      "enforcement": "report"
+    },
+    "anchor": {
+      "type": "bool",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "true to create a floating (anchored) picture instead of inline. Required to enable wrap/hPosition/vPosition/hRelative/vRelative/behindText.",
+      "examples": [
+        "--prop anchor=true --prop wrap=square"
+      ],
+      "readback": "true on floating pictures",
+      "enforcement": "report"
+    },
+    "wrap": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "text wrapping mode for floating picture (none, square, tight, topandbottom, through). For 'behind text', use wrap=none + behindText=true.",
+      "examples": [
+        "--prop wrap=square"
+      ],
+      "readback": "wrap token",
+      "enforcement": "report"
+    },
+    "behindText": {
+      "type": "bool",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "true when the picture floats behind text (anchor @behindDoc=1).",
+      "readback": "true on behind-text floats",
+      "enforcement": "report"
+    },
+    "relativeHeight": {
+      "type": "integer",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "z-order (stacking) of an anchored/floating picture (anchor @relativeHeight). Higher = nearer the front. Distinct per overlapping float; round-trips the raw OOXML value.",
+      "examples": [
+        "--prop anchor=true --prop relativeHeight=251664384"
+      ],
+      "readback": "raw uint z-order on floating pictures (e.g. `251664384`)",
+      "enforcement": "report"
+    },
+    "effectExtent": {
+      "type": "string",
+      "add": true,
+      "set": false,
+      "get": false,
+      "description": "drawing visual overflow/effect margin (wp:effectExtent) as 4 comma-separated EMU ints: left,top,right,bottom. Word's inline-picture layout height depends on this even when wp:extent is identical, so the dump→batch round-trip restores it byte-for-byte. Round-trip prop — emitted by `dump --format batch`, not by `get`; absent value defaults to 0,0,0,0 (the interactive Add default).",
+      "examples": [
+        "--prop effectExtent=0,0,9525,9525"
+      ],
+      "enforcement": "report"
+    },
+    "hPosition": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "absolute horizontal anchor position in cm (positionH/posOffset).",
+      "examples": [
+        "--prop hPosition=3cm"
+      ],
+      "readback": "length in cm (e.g. `5.0cm`)",
+      "enforcement": "report"
+    },
+    "vPosition": {
+      "type": "length",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "absolute vertical anchor position in cm (positionV/posOffset).",
+      "examples": [
+        "--prop vPosition=4cm"
+      ],
+      "readback": "length in cm (e.g. `4.0cm`)",
+      "enforcement": "report"
+    },
+    "hRelative": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "horizontal anchor reference frame (e.g. page, margin, column, character).",
+      "readback": "OOXML positionH @relativeFrom token",
+      "enforcement": "report"
+    },
+    "vRelative": {
+      "type": "string",
+      "add": true,
+      "set": true,
+      "get": true,
+      "description": "vertical anchor reference frame (e.g. page, margin, paragraph, line).",
+      "readback": "OOXML positionV @relativeFrom token",
+      "enforcement": "report"
+    },
+    "hAlign": {
+      "type": "string",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "relative horizontal alignment keyword for a floating picture (left, center, right, inside, outside) via positionH/align. Overrides hPosition when set.",
+      "examples": [
+        "--prop anchor=true --prop hAlign=right --prop hRelative=margin"
+      ],
+      "readback": "OOXML positionH/align keyword",
+      "enforcement": "report"
+    },
+    "vAlign": {
+      "type": "string",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "relative vertical alignment keyword for a floating picture (top, bottom, center, inside, outside) via positionV/align. Overrides vPosition when set.",
+      "examples": [
+        "--prop anchor=true --prop vAlign=top --prop vRelative=margin"
+      ],
+      "readback": "OOXML positionV/align keyword",
+      "enforcement": "report"
+    },
+    "link": {
+      "type": "string",
+      "add": true,
+      "set": false,
+      "get": true,
+      "description": "click-hyperlink target for the image, making it clickable (<a:hlinkClick> on pic:cNvPr). An absolute URL or relative target round-trips as a TargetMode=External relationship; a '#anchor' or bare bookmark name round-trips as an internal anchor.",
+      "examples": [
+        "--prop src=logo.png --prop link=https://example.com"
+      ],
+      "readback": "resolved external URL, or internal anchor name",
+      "enforcement": "report"
+    },
+    "width": {
+      "type": "length",
+      "description": "width — cm length (extent.Cy/Cx in EMU formatted to cm).",
+      "aliases": ["w"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop width=5",
+        "--prop width=3in",
+        "--prop w=3in"
+      ],
+      "readback": "length string",
+      "enforcement": "report"
+    },
+    "height": {
+      "type": "length",
+      "description": "height — cm length (extent.Cy/Cx in EMU formatted to cm).",
+      "aliases": ["h"],
+      "add": true,
+      "set": true,
+      "get": true,
+      "examples": [
+        "--prop height=5",
+        "--prop height=2in",
+        "--prop h=2in"
+      ],
+      "readback": "length string",
+      "enforcement": "report"
+    }
+  }
+}

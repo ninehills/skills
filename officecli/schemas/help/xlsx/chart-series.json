@@ -1,0 +1,51 @@
+{
+  "$schema": "../_schema.json",
+  "format": "xlsx",
+  "element": "chart-series",
+  "parent": "chart",
+  "operations": {
+    "add": true,
+    "set": true,
+    "get": true,
+    "remove": true
+  },
+  "paths": {
+    "positional": [
+      "/SheetName/chart[N]/series[K]"
+    ]
+  },
+  "note": "At Add time, series pass as dotted props on the parent chart (series1.name, series1.values, series1.color, series1.categories); this schema is per-series Set/Get after creation. Combo charts (mixed chartType / secondary axis) are unsupported — create separate charts. `lineStyle` is not a key (rejected as UNSUPPORTED — use lineWidth + lineDash).",
+  "extends": [
+    "_shared/chart-series",
+    "_shared/chart-series.pptx-xlsx"
+  ],
+  "properties": {
+    "valuesRef": {
+      "type": "string",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "A1 cell range backing the series values.",
+      "readback": "A1 range string",
+      "enforcement": "report"
+    },
+    "trendline.dispEq": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "trendline displayEquation flag.",
+      "readback": "true when shown",
+      "enforcement": "report"
+    },
+    "trendline.dispRSqr": {
+      "type": "bool",
+      "add": false,
+      "set": false,
+      "get": true,
+      "description": "trendline displayRSquaredValue flag.",
+      "readback": "true when shown",
+      "enforcement": "report"
+    }
+  }
+}
